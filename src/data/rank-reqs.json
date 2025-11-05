@@ -1,0 +1,102 @@
+[{
+      "id": "rank_scout",
+      "name": "Scout",
+      "requirements": [
+        { "id": "1", "text": "Repeat the Scout Oath, Scout Law, Scout Motto, and Scout Slogan from memory." },
+        { "id": "2", "text": "Explain in your own words what the Scout Oath and Scout Law mean to you." },
+        { "id": "3", "text": "Describe what the patrol method is and how your patrol is named and organized." },
+        { "id": "4", "text": "Show the Scout sign, salute, and handshake. Explain when to use them." },
+        { "id": "5", "text": "Tie the square knot and two half hitches and explain how they are used." },
+        { "id": "6", "text": "Describe the requirements for earning the Scout rank and how you fulfilled each one." },
+        { "id": "7", "text": "With your parent or guardian, complete the exercises in the pamphlet 'How to Protect Your Children From Child Abuse: A Parent's Guide'." }
+      ]
+    },
+    {
+      "id": "rank_tenderfoot",
+      "name": "Tenderfoot",
+      "requirements": [
+        { "id": "1", "text": "Present yourself to your leader, prepared for an overnight camping trip." },
+        { "id": "2", "text": "Describe the steps in the BSA outdoor ethics standard, Leave No Trace, and the Outdoor Code." },
+        { "id": "3", "text": "Demonstrate how to start a fire outdoors with a match and extinguish it safely." },
+        { "id": "4", "text": "Know the rules of safe hiking and explain how to prevent and treat blisters." },
+        { "id": "5", "text": "Demonstrate the proper care of a kitchen and eating utensils." },
+        { "id": "6", "text": "Explain and demonstrate the treatment for heatstroke, dehydration, and hypothermia." },
+        { "id": "7", "text": "Demonstrate tying the taut-line hitch and the sheet bend." },
+        { "id": "8", "text": "Participate in a flag ceremony." },
+        { "id": "9", "text": "Do a Good Turn for an hour." },
+        { "id": "10", "text": "Participate in a Scoutmaster conference." },
+        { "id": "11", "text": "Successfully complete a Board of Review." }
+      ]
+    },
+    {
+      "id": "rank_second_class",
+      "name": "Second Class",
+      "requirements": [
+        { "id": "1", "text": "Go on a troop or patrol overnight camping trip. Sleep in a tent." },
+        { "id": "2", "text": "Use a map and compass to complete an orienteering course." },
+        { "id": "3", "text": "Help plan and cook one hot meal and one cold meal for your patrol or a guest." },
+        { "id": "4", "text": "Show your ability to make a stove or fire, for cooking, using three different methods." },
+        { "id": "5", "text": "Demonstrate the proper technique for rescuing someone who has fallen through ice." },
+        { "id": "6", "text": "Demonstrate the proper use of a pocketknife, ax, and saw." },
+        { "id": "7", "text": "Explain the concept of service to others and participate in a service project of at least 3 hours." },
+        { "id": "8", "text": "Show that you are current on BSA cybersafety and bullying prevention guidelines." },
+        { "id": "9", "text": "Participate in a Scoutmaster conference." },
+        { "id": "10", "text": "Successfully complete a Board of Review." }
+      ]
+    },
+    {
+      "id": "rank_first_class",
+      "name": "First Class",
+      "requirements": [
+        { "id": "1", "text": "Successfully complete the BSA swimmer test." },
+        { "id": "2", "text": "Help plan, pack, and prepare a meal for your patrol while on a camping trip." },
+        { "id": "3", "text": "Demonstrate your ability to use a compass and map to travel at least 1 mile." },
+        { "id": "4", "text": "Visit a place that practices Leave No Trace." },
+        { "id": "5", "text": "Demonstrate the use of three different kinds of lashings." },
+        { "id": "6", "text": "Identify four poisonous plants found in your local area." },
+        { "id": "7", "text": "Help a Scout from another patrol or another unit get started on a Tenderfoot requirement." },
+        { "id": "8", "text": "Participate in a minimum of 6 hours of approved service projects." },
+        { "id": "9", "text": "Participate in a Scoutmaster conference." },
+        { "id": "10", "text": "Successfully complete a Board of Review." }
+      ]
+    },
+    {
+      "id": "rank_star",
+      "name": "Star",
+      "requirements": [
+        { "id": "1", "text": "Be active in your troop and patrol for at least 4 months as a First Class Scout." },
+        { "id": "2", "text": "Be subject to the Scout Oath and Law." },
+        { "id": "3", "text": "Earn six merit badges, including four from the Eagle-required list." },
+        { "id": "4", "text": "Hold a position of responsibility for at least 4 months." },
+        { "id": "5", "text": "Plan, develop, and give leadership to one service project of at least 6 hours." },
+        { "id": "6", "text": "Participate in a Scoutmaster conference." },
+        { "id": "7", "text": "Successfully complete a Board of Review." }
+      ]
+    },
+    {
+      "id": "rank_life",
+      "name": "Life",
+      "requirements": [
+        { "id": "1", "text": "Be active in your troop and patrol for at least 6 months as a Star Scout." },
+        { "id": "2", "text": "Be subject to the Scout Oath and Law." },
+        { "id": "3", "text": "Earn five additional merit badges, including three from the Eagle-required list." },
+        { "id": "4", "text": "Hold a position of responsibility for at least 6 months." },
+        { "id": "5", "text": "Plan, develop, and give leadership to one service project of at least 6 hours." },
+        { "id": "6", "text": "Participate in a Scoutmaster conference." },
+        { "id": "7", "text": "Successfully complete a Board of Review." }
+      ]
+    },
+    {
+      "id": "rank_eagle",
+      "name": "Eagle",
+      "requirements": [
+        { "id": "1", "text": "Be active in your troop and patrol for at least 6 months as a Life Scout." },
+        { "id": "2", "text": "Be subject to the Scout Oath and Law." },
+        { "id": "3", "text": "Earn a total of 21 merit badges, including the 13 required for Eagle." },
+        { "id": "4", "text": "Hold a position of responsibility for at least 6 months." },
+        { "id": "5", "text": "Plan, develop, and give leadership to a service project that is helpful to any religious institution, school, or community." },
+        { "id": "6", "text": "Participate in a Scoutmaster conference." },
+        { "id": "7", "text": "Successfully complete a Board of Review." }
+      ]
+    }
+]

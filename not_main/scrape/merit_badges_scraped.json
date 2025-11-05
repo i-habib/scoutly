@@ -1,0 +1,27 @@
+{
+  "meritBadges": [
+    {
+      "id": "mb_american_business",
+      "name": "American Business",
+      "eagleRequired": false,
+      "requirements": [
+        {
+          "id": "1",
+          "text": "Fair Labor Standards Act (FLSA)"
+        },
+        {
+          "id": "2",
+          "text": "Occupational Safety and Health Act (OSHA)"
+        },
+        {
+          "id": "3",
+          "text": "Family and Medical Leave Act (FMLA)"
+        },
+        {
+          "id": "4",
+          "text": "Employee Retirement Income Security Act (ERISA)"
+        }
+      ]
+    }
+  ]
+}
