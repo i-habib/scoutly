@@ -1,6 +1,6 @@
 // src/services/storageService.ts
 import { initialUserData } from '../data/userData';
-import type { UserData, Event } from '../data/userData';
+import type { UserData, Event, ChatMessage } from '../data/userData';
 
 const USER_DATA_KEY = 'scoutly_user_data';
 
@@ -84,7 +84,13 @@ export const updateNotificationPreferences = async (
   preferences: Partial<NonNullable<UserData['profile']['notificationPreferences']>>
 ): Promise<UserData> => {
   const user = await fetchUserData();
+  const defaults = {
+    meetingReminders: true,
+    eventReminders: true,
+    progressUpdates: true,
+  };
   user.profile.notificationPreferences = {
+    ...defaults,
     ...user.profile.notificationPreferences,
     ...preferences,
   };
@@ -97,7 +103,12 @@ export const updateTroopInfo = async (
   troopData: Partial<NonNullable<UserData['profile']['troopInfo']>>
 ): Promise<UserData> => {
   const user = await fetchUserData();
-  user.profile.troopInfo = { ...user.profile.troopInfo, ...troopData };
+  const defaults = {
+    troopNumber: null,
+    meetingDay: null,
+    meetingTime: null,
+  };
+  user.profile.troopInfo = { ...defaults, ...user.profile.troopInfo, ...troopData };
   localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
   return user;
 };
@@ -117,7 +128,12 @@ export const addRequirementNote = async ({
     user.progress[badgeId] = {};
   }
   if (!user.progress[badgeId][requirementId]) {
-    user.progress[badgeId][requirementId] = {};
+    user.progress[badgeId][requirementId] = {
+      completedAt: '',
+      notes: note,
+    };
+    localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
+    return user;
   }
   
   // Store both completion date and notes
@@ -128,7 +144,10 @@ export const addRequirementNote = async ({
       notes: note,
     };
   } else {
-    user.progress[badgeId][requirementId].notes = note;
+    user.progress[badgeId][requirementId] = {
+      completedAt: user.progress[badgeId][requirementId].completedAt || '',
+      notes: note,
+    };
   }
   
   localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
@@ -189,4 +208,39 @@ export const getProgressStats = async (): Promise<{
       ? Math.round((completedRequirements / totalRequirements) * 100) 
       : 0,
   };
+};
+
+// AI Plan Management
+export const updateAIPlan = async (plan: string, chatHistory: ChatMessage[]): Promise<UserData> => {
+  const user = await fetchUserData();
+  user.aiPlan = {
+    plan,
+    lastUpdated: new Date().toISOString(),
+    chatHistory,
+  };
+  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
+  return user;
+};
+
+export const addChatMessage = async (message: ChatMessage): Promise<UserData> => {
+  const user = await fetchUserData();
+  if (!user.aiPlan) {
+    user.aiPlan = {
+      plan: '',
+      lastUpdated: new Date().toISOString(),
+      chatHistory: [],
+    };
+  }
+  user.aiPlan.chatHistory.push(message);
+  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
+  return user;
+};
+
+export const clearChatHistory = async (): Promise<UserData> => {
+  const user = await fetchUserData();
+  if (user.aiPlan) {
+    user.aiPlan.chatHistory = [];
+  }
+  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
+  return user;
 };

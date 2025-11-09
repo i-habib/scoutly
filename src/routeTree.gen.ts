@@ -9,17 +9,38 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as EventsRouteImport } from './routes/events'
+import { Route as AiCoachRouteImport } from './routes/ai-coach'
+import { Route as AdvancementRouteImport } from './routes/advancement'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MeritBadgesIndexRouteImport } from './routes/merit-badges/index'
 import { Route as MeritBadgesBadgeIdRouteImport } from './routes/merit-badges/$badgeId'
-import { Route as ApiUserDataRouteImport } from './routes/api/user-data'
-import { Route as ApiUserRouteImport } from './routes/api/user'
-import { Route as ApiAiCoachRouteImport } from './routes/api/ai-coach'
 
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventsRoute = EventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiCoachRoute = AiCoachRouteImport.update({
+  id: '/ai-coach',
+  path: '/ai-coach',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdvancementRoute = AdvancementRouteImport.update({
+  id: '/advancement',
+  path: '/advancement',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,47 +58,35 @@ const MeritBadgesBadgeIdRoute = MeritBadgesBadgeIdRouteImport.update({
   path: '/merit-badges/$badgeId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiUserDataRoute = ApiUserDataRouteImport.update({
-  id: '/api/user-data',
-  path: '/api/user-data',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiUserRoute = ApiUserRouteImport.update({
-  id: '/api/user',
-  path: '/api/user',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAiCoachRoute = ApiAiCoachRouteImport.update({
-  id: '/api/ai-coach',
-  path: '/api/ai-coach',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/advancement': typeof AdvancementRoute
+  '/ai-coach': typeof AiCoachRoute
+  '/events': typeof EventsRoute
   '/onboarding': typeof OnboardingRoute
-  '/api/ai-coach': typeof ApiAiCoachRoute
-  '/api/user': typeof ApiUserRoute
-  '/api/user-data': typeof ApiUserDataRoute
+  '/profile': typeof ProfileRoute
   '/merit-badges/$badgeId': typeof MeritBadgesBadgeIdRoute
   '/merit-badges': typeof MeritBadgesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/advancement': typeof AdvancementRoute
+  '/ai-coach': typeof AiCoachRoute
+  '/events': typeof EventsRoute
   '/onboarding': typeof OnboardingRoute
-  '/api/ai-coach': typeof ApiAiCoachRoute
-  '/api/user': typeof ApiUserRoute
-  '/api/user-data': typeof ApiUserDataRoute
+  '/profile': typeof ProfileRoute
   '/merit-badges/$badgeId': typeof MeritBadgesBadgeIdRoute
   '/merit-badges': typeof MeritBadgesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/advancement': typeof AdvancementRoute
+  '/ai-coach': typeof AiCoachRoute
+  '/events': typeof EventsRoute
   '/onboarding': typeof OnboardingRoute
-  '/api/ai-coach': typeof ApiAiCoachRoute
-  '/api/user': typeof ApiUserRoute
-  '/api/user-data': typeof ApiUserDataRoute
+  '/profile': typeof ProfileRoute
   '/merit-badges/$badgeId': typeof MeritBadgesBadgeIdRoute
   '/merit-badges/': typeof MeritBadgesIndexRoute
 }
@@ -85,49 +94,81 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/advancement'
+    | '/ai-coach'
+    | '/events'
     | '/onboarding'
-    | '/api/ai-coach'
-    | '/api/user'
-    | '/api/user-data'
+    | '/profile'
     | '/merit-badges/$badgeId'
     | '/merit-badges'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/advancement'
+    | '/ai-coach'
+    | '/events'
     | '/onboarding'
-    | '/api/ai-coach'
-    | '/api/user'
-    | '/api/user-data'
+    | '/profile'
     | '/merit-badges/$badgeId'
     | '/merit-badges'
   id:
     | '__root__'
     | '/'
+    | '/advancement'
+    | '/ai-coach'
+    | '/events'
     | '/onboarding'
-    | '/api/ai-coach'
-    | '/api/user'
-    | '/api/user-data'
+    | '/profile'
     | '/merit-badges/$badgeId'
     | '/merit-badges/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdvancementRoute: typeof AdvancementRoute
+  AiCoachRoute: typeof AiCoachRoute
+  EventsRoute: typeof EventsRoute
   OnboardingRoute: typeof OnboardingRoute
-  ApiAiCoachRoute: typeof ApiAiCoachRoute
-  ApiUserRoute: typeof ApiUserRoute
-  ApiUserDataRoute: typeof ApiUserDataRoute
+  ProfileRoute: typeof ProfileRoute
   MeritBadgesBadgeIdRoute: typeof MeritBadgesBadgeIdRoute
   MeritBadgesIndexRoute: typeof MeritBadgesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/events': {
+      id: '/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-coach': {
+      id: '/ai-coach'
+      path: '/ai-coach'
+      fullPath: '/ai-coach'
+      preLoaderRoute: typeof AiCoachRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/advancement': {
+      id: '/advancement'
+      path: '/advancement'
+      fullPath: '/advancement'
+      preLoaderRoute: typeof AdvancementRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -151,36 +192,16 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MeritBadgesBadgeIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/user-data': {
-      id: '/api/user-data'
-      path: '/api/user-data'
-      fullPath: '/api/user-data'
-      preLoaderRoute: typeof ApiUserDataRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/user': {
-      id: '/api/user'
-      path: '/api/user'
-      fullPath: '/api/user'
-      preLoaderRoute: typeof ApiUserRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/ai-coach': {
-      id: '/api/ai-coach'
-      path: '/api/ai-coach'
-      fullPath: '/api/ai-coach'
-      preLoaderRoute: typeof ApiAiCoachRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdvancementRoute: AdvancementRoute,
+  AiCoachRoute: AiCoachRoute,
+  EventsRoute: EventsRoute,
   OnboardingRoute: OnboardingRoute,
-  ApiAiCoachRoute: ApiAiCoachRoute,
-  ApiUserRoute: ApiUserRoute,
-  ApiUserDataRoute: ApiUserDataRoute,
+  ProfileRoute: ProfileRoute,
   MeritBadgesBadgeIdRoute: MeritBadgesBadgeIdRoute,
   MeritBadgesIndexRoute: MeritBadgesIndexRoute,
 }

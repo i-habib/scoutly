@@ -1,13 +1,31 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useEffect } from 'react';
-import { Compass, Target, Calendar, Award, TrendingUp, Sparkles } from 'lucide-react';
+import { createFileRoute, useNavigate, Link } from '@tanstack/react-router';
+import { useEffect, useState } from 'react';
+import { Download, Loader2, FileDown } from 'lucide-react';
 import { useUserData } from '../hooks/useUserData';
+import { generateInitialPlan } from '../services/aiService';
+import ReactMarkdown from 'react-markdown';
+import meritBadgesData from '../data/merit-badges.json';
+import { RankAdvancement } from '../components/RankAdvancement';
 
 export const Route = createFileRoute('/')({ component: Dashboard });
 
 function Dashboard() {
   const navigate = useNavigate();
-  const { userData, isLoading } = useUserData();
+  const { userData, isLoading, updateAIPlan } = useUserData();
+  const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
+  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+
+  // Load checked state from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('scoutly_plan_checkboxes');
+    if (saved) {
+      try {
+        setCheckedItems(JSON.parse(saved));
+      } catch (e) {
+        console.error('Failed to load checkbox state:', e);
+      }
+    }
+  }, [userData?.aiPlan?.plan]); // Reload when plan changes
 
   // Redirect to onboarding if no profile name
   useEffect(() => {
@@ -15,6 +33,171 @@ function Dashboard() {
       navigate({ to: '/onboarding' });
     }
   }, [userData, isLoading, navigate]);
+
+  const handleGeneratePlan = async () => {
+    if (!userData) return;
+    setIsGeneratingPlan(true);
+    try {
+      const plan = await generateInitialPlan(userData);
+      await updateAIPlan(plan, []);
+    } catch (error) {
+      console.error('Failed to generate plan:', error);
+      alert('Failed to generate plan. Please try again.');
+    } finally {
+      setIsGeneratingPlan(false);
+    }
+  };
+
+  const handleDownloadPlan = () => {
+    if (!userData?.aiPlan?.plan) return;
+    
+    const blob = new Blob([userData.aiPlan.plan], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `eagle-scout-plan-${new Date().toISOString().split('T')[0]}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadPDF = () => {
+    if (!userData?.aiPlan?.plan) return;
+
+    // Create a printable version
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const planContent = userData.aiPlan.plan
+      .replace(/^## /gm, '<h2 style="color: #22d3ee; margin-top: 24px; margin-bottom: 12px;">')
+      .replace(/\n/g, '</h2>\n')
+      .replace(/^### /gm, '<h3 style="color: #06b6d4; margin-top: 16px; margin-bottom: 8px;">')
+      .replace(/- \[ \] /g, '☐ ')
+      .replace(/- \[x\] /g, '☑ ')
+      .replace(/\*\*(.+?)\*\*/g, '<strong style="color: #22d3ee;">$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em style="color: #3b82f6;">$1</em>')
+      .replace(/^- /gm, '• ')
+      .replace(/\n/g, '<br>');
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Eagle Scout Plan - ${userData.profile.name}</title>
+          <style>
+            @media print {
+              body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            }
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+              max-width: 800px;
+              margin: 40px auto;
+              padding: 20px;
+              line-height: 1.6;
+              color: #1e293b;
+              background: white;
+            }
+            h1 {
+              color: #0f172a;
+              border-bottom: 3px solid #22d3ee;
+              padding-bottom: 12px;
+              margin-bottom: 24px;
+            }
+            h2 {
+              color: #22d3ee;
+              margin-top: 24px;
+              margin-bottom: 12px;
+            }
+            h3 {
+              color: #06b6d4;
+              margin-top: 16px;
+              margin-bottom: 8px;
+            }
+            strong {
+              color: #22d3ee;
+            }
+            em {
+              color: #3b82f6;
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 40px;
+            }
+            .footer {
+              margin-top: 40px;
+              padding-top: 20px;
+              border-top: 2px solid #e2e8f0;
+              font-size: 12px;
+              color: #64748b;
+              text-align: center;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>🦅 Eagle Scout Plan</h1>
+            <p><strong>${userData.profile.name}</strong> • ${userData.profile.currentRank || 'Scout'} Rank</p>
+            <p>Generated: ${new Date().toLocaleDateString()}</p>
+          </div>
+          ${planContent}
+          <div class="footer">
+            <p>Generated by Scoutly • ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
+          </div>
+        </body>
+      </html>
+    `);
+    
+    printWindow.document.close();
+    setTimeout(() => {
+      printWindow.print();
+    }, 250);
+  };
+
+  // Calculate real stats
+  const calculateStats = () => {
+    if (!userData) return { completed: 0, total: 21, events: 0, daysToEagle: '--', percentage: 0 };
+
+    const eagleRequiredBadges = meritBadgesData.meritBadges.filter(b => b.eagleRequired);
+    let completedCount = 0;
+
+    eagleRequiredBadges.forEach(badge => {
+      const badgeProgress = userData.progress[badge.id] || {};
+      const totalReqs = badge.requirements.reduce((acc, req) => acc + (req.requiredCount || 1), 0);
+      let completed = 0;
+
+      badge.requirements.forEach((req, reqIndex) => {
+        if (req.sub_requirements && req.sub_requirements.length > 0) {
+          let completedSubReqs = 0;
+          req.sub_requirements.forEach((_, subIndex) => {
+            if (badgeProgress[`req_${reqIndex}_${subIndex}`]) completedSubReqs++;
+          });
+          completed += Math.min(completedSubReqs, req.requiredCount || req.sub_requirements.length);
+        } else {
+          if (badgeProgress[`req_${reqIndex}`]) completed++;
+        }
+      });
+
+      if (completed >= totalReqs) completedCount++;
+    });
+
+    let daysToEagle = '--';
+    if (userData.profile.targetEagleDate) {
+      const targetDate = new Date(userData.profile.targetEagleDate);
+      const today = new Date();
+      const diffTime = targetDate.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      daysToEagle = diffDays > 0 ? diffDays.toString() : 'Past';
+    }
+
+    return {
+      completed: completedCount,
+      total: 21,
+      events: userData.events?.length || 0,
+      daysToEagle,
+      percentage: Math.round((completedCount / 21) * 100),
+    };
+  };
 
   if (isLoading) {
     return (
@@ -28,6 +211,8 @@ function Dashboard() {
   }
 
   const userName = userData?.profile?.name || 'Scout';
+  const stats = calculateStats();
+  const currentPlan = userData?.aiPlan?.plan;
 
   return (
     <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900">
@@ -44,7 +229,7 @@ function Dashboard() {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-12 h-12 bg-linear-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/30">
-              <Compass className="w-6 h-6 text-white" />
+              <span className="text-2xl">🧭</span>
             </div>
             <div>
               <h1 className="text-3xl font-bold text-white">
@@ -58,87 +243,238 @@ function Dashboard() {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Progress Card */}
-          <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center">
-                <Target className="w-5 h-5 text-cyan-400" />
+          <Link to="/merit-badges" className="block">
+            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 cursor-pointer">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-10 h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+                  <span className="text-xl">🎯</span>
+                </div>
+                <span className="text-2xl font-bold text-white">{stats.percentage}%</span>
               </div>
-              <span className="text-2xl font-bold text-white">0%</span>
+              <h3 className="text-gray-400 text-sm font-medium">Overall Progress</h3>
             </div>
-            <h3 className="text-gray-400 text-sm font-medium">Overall Progress</h3>
-          </div>
+          </Link>
 
           {/* Merit Badges Card */}
-          <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-amber-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/10">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center">
-                <Award className="w-5 h-5 text-amber-400" />
+          <Link to="/merit-badges" className="block">
+            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-amber-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/10 cursor-pointer">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center">
+                  <span className="text-xl">🏅</span>
+                </div>
+                <span className="text-2xl font-bold text-white">{stats.completed}/{stats.total}</span>
               </div>
-              <span className="text-2xl font-bold text-white">0/21</span>
+              <h3 className="text-gray-400 text-sm font-medium">Eagle Required</h3>
             </div>
-            <h3 className="text-gray-400 text-sm font-medium">Eagle Required</h3>
-          </div>
+          </Link>
 
           {/* Upcoming Events Card */}
-          <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                <Calendar className="w-5 h-5 text-purple-400" />
+          <Link to="/events" className="block">
+            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10 cursor-pointer">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                  <span className="text-xl">📅</span>
+                </div>
+                <span className="text-2xl font-bold text-white">{stats.events}</span>
               </div>
-              <span className="text-2xl font-bold text-white">0</span>
+              <h3 className="text-gray-400 text-sm font-medium">Upcoming Events</h3>
             </div>
-            <h3 className="text-gray-400 text-sm font-medium">Upcoming Events</h3>
-          </div>
+          </Link>
 
           {/* Days to Eagle Card */}
           <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-emerald-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/10">
             <div className="flex items-center justify-between mb-4">
               <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-emerald-400" />
+                <span className="text-xl">📈</span>
               </div>
-              <span className="text-2xl font-bold text-white">--</span>
+              <span className="text-2xl font-bold text-white">{stats.daysToEagle}</span>
             </div>
             <h3 className="text-gray-400 text-sm font-medium">Days to Goal</h3>
           </div>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* What's Next Section */}
-          <div className="lg:col-span-2 bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-linear-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
+        {/* Main Content Grid - More balanced 5-column layout (3:2 ratio) */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          {/* AI Eagle Plan - Featured Section */}
+          <div className="lg:col-span-3 bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl overflow-hidden">
+            {/* Header */}
+            <div className="bg-linear-to-r from-cyan-500/20 to-blue-500/20 border-b border-white/10 px-6 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-linear-to-br from-cyan-500 to-blue-600 rounded-xl">
+                    <span className="text-xl">🦅</span>
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-white">Your Eagle Scout Plan</h2>
+                    <p className="text-sm text-cyan-200">AI-powered personalized roadmap</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {currentPlan && (
+                    <>
+                      <button
+                        onClick={handleDownloadPDF}
+                        className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                        title="Download as PDF"
+                      >
+                        <FileDown className="w-5 h-5 text-cyan-400" />
+                      </button>
+                      <button
+                        onClick={handleDownloadPlan}
+                        className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                        title="Download as Markdown"
+                      >
+                        <Download className="w-5 h-5 text-cyan-400" />
+                      </button>
+                    </>
+                  )}
+                  <Link
+                    to="/ai-coach"
+                    className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                    title="Open AI Coach chat"
+                  >
+                    <span className="text-xl">💬</span>
+                  </Link>
+                </div>
               </div>
-              <h2 className="text-xl font-bold text-white">What's Next?</h2>
             </div>
-            
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Sparkles className="w-8 h-8 text-gray-500" />
-              </div>
-              <p className="text-gray-400">Start tracking your progress to get personalized recommendations</p>
+
+            {/* Plan Content */}
+            <div className="p-6">
+              {currentPlan ? (
+                <div className="prose prose-invert prose-sm max-w-none">
+                  <ReactMarkdown
+                    components={{
+                      h1: ({ children }) => (
+                        <h1 className="text-2xl font-bold text-white mb-4">{children}</h1>
+                      ),
+                      h2: ({ children }) => (
+                        <h2 className="text-xl font-bold text-white mb-3 mt-6">{children}</h2>
+                      ),
+                      h3: ({ children }) => (
+                        <h3 className="text-lg font-semibold text-cyan-400 mb-2 mt-4">{children}</h3>
+                      ),
+                      p: ({ children }) => (
+                        <p className="text-slate-300 mb-3 leading-relaxed">{children}</p>
+                      ),
+                      ul: ({ children }) => (
+                        <ul className="space-y-2 text-slate-300 mb-4">{children}</ul>
+                      ),
+                      ol: ({ children }) => (
+                        <ol className="list-decimal list-inside space-y-2 text-slate-300 mb-4">{children}</ol>
+                      ),
+                      li: ({ children }) => {
+                        const childText = String(children);
+                        // Check if this is a task list item (starts with [ ] or [x])
+                        if (childText.includes('[ ]') || childText.includes('[x]')) {
+                          const isInitiallyChecked = childText.includes('[x]');
+                          const text = childText.replace(/\[[ x]\]\s*/, '');
+                          
+                          // Create a unique ID for this checkbox based on text content
+                          const checkboxId = `checkbox-${text.substring(0, 50).replace(/[^a-zA-Z0-9]/g, '-')}`;
+                          const isChecked = checkedItems[checkboxId] ?? isInitiallyChecked;
+                          
+                          return (
+                            <li className="flex items-start gap-2 text-slate-300">
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={(e) => {
+                                  const newCheckedItems = {
+                                    ...checkedItems,
+                                    [checkboxId]: e.target.checked,
+                                  };
+                                  setCheckedItems(newCheckedItems);
+                                  localStorage.setItem('scoutly_plan_checkboxes', JSON.stringify(newCheckedItems));
+                                }}
+                                className="mt-1 w-4 h-4 rounded border-cyan-500 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-slate-800 bg-slate-700 cursor-pointer"
+                              />
+                              <span className={isChecked ? 'line-through text-slate-500' : ''}>{text}</span>
+                            </li>
+                          );
+                        }
+                        return <li className="text-slate-300 ml-6">{children}</li>;
+                      },
+                      strong: ({ children }) => (
+                        <strong className="text-cyan-400 font-semibold">{children}</strong>
+                      ),
+                      em: ({ children }) => (
+                        <em className="text-blue-400">{children}</em>
+                      ),
+                      a: ({ href, children }) => {
+                        // Extract text from children (handle both string and array cases)
+                        const linkText = typeof children === 'string' 
+                          ? children 
+                          : Array.isArray(children) 
+                            ? children.join('') 
+                            : String(children);
+                        
+                        return (
+                          <a 
+                            href={href} 
+                            className="text-cyan-400 hover:text-cyan-300 underline decoration-cyan-400/50 hover:decoration-cyan-300 transition-colors font-medium"
+                            target={href?.startsWith('http') ? '_blank' : undefined}
+                            rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+                          >
+                            {linkText}
+                          </a>
+                        );
+                      },
+                      code: ({ children }) => (
+                        <code className="bg-slate-700/50 px-2 py-1 rounded text-cyan-400 text-sm">{children}</code>
+                      ),
+                      hr: () => (
+                        <hr className="border-slate-700 my-6" />
+                      ),
+                    }}
+                  >
+                    {currentPlan}
+                  </ReactMarkdown>
+                  {userData?.aiPlan?.lastUpdated && (
+                    <p className="text-xs text-slate-500 mt-6 border-t border-slate-700 pt-4">
+                      Last updated: {new Date(userData.aiPlan.lastUpdated).toLocaleDateString()} at{' '}
+                      {new Date(userData.aiPlan.lastUpdated).toLocaleTimeString()}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-linear-to-br from-cyan-500/20 to-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-3xl">📋</span>
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-2">No Plan Yet</h3>
+                  <p className="text-slate-400 mb-6 max-w-md mx-auto">
+                    Let our AI coach create a personalized roadmap to help you reach Eagle Scout based on your progress and goals.
+                  </p>
+                  <button
+                    onClick={handleGeneratePlan}
+                    disabled={isGeneratingPlan}
+                    className="px-6 py-3 bg-linear-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:shadow-lg hover:shadow-cyan-500/20 transition-all disabled:opacity-50 inline-flex items-center gap-2"
+                  >
+                    {isGeneratingPlan ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Generating Plan...
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-lg">✨</span>
+                        Generate My Eagle Plan
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Quick Actions / Recent Activity */}
-          <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-white mb-6">Quick Actions</h2>
+          {/* Sidebar - Quick Actions & Rank Advancement */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Quick Actions look to bad so not including */}
             
-            <div className="space-y-3">
-              <button className="w-full px-4 py-3 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 hover:border-cyan-500/50 rounded-lg text-cyan-400 font-medium transition-all text-left">
-                Add Progress
-              </button>
-              <a 
-                href="/merit-badges"
-                className="w-full px-4 py-3 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 hover:border-blue-500/50 rounded-lg text-blue-400 font-medium transition-all text-left block"
-              >
-                View Merit Badges
-              </a>
-              <button className="w-full px-4 py-3 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 hover:border-purple-500/50 rounded-lg text-purple-400 font-medium transition-all text-left">
-                Schedule Event
-              </button>
-            </div>
+
+            {/* Rank Advancement Checklist */}
+            {userData && <RankAdvancement userData={userData} />}
           </div>
         </div>
       </div>

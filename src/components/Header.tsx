@@ -6,6 +6,10 @@ import {
   Menu,
   X,
   Award,
+  Sparkles,
+  Calendar,
+  User,
+  Trophy,
 } from 'lucide-react'
 
 export default function Header() {
@@ -13,31 +17,105 @@ export default function Header() {
 
   return (
     <>
-      <header className="p-4 flex items-center bg-gray-800 text-white shadow-lg">
-        <button
-          onClick={() => setIsOpen(true)}
-          className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-          aria-label="Open menu"
-        >
-          <Menu size={24} />
-        </button>
-        <h1 className="ml-4 text-xl font-semibold">
-          <Link to="/" className="text-white hover:text-cyan-400 transition-colors">
-            Scoutly
+      <header className="sticky top-0 z-50 px-4 py-3 flex items-center justify-between bg-slate-900/95 backdrop-blur-sm text-white shadow-lg border-b border-slate-800">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setIsOpen(true)}
+            className="p-2 hover:bg-slate-800 rounded-lg transition-colors lg:hidden"
+            aria-label="Open menu"
+          >
+            <Menu size={24} />
+          </button>
+          <h1 className="text-xl font-semibold">
+            <Link to="/" className="text-white hover:text-cyan-400 transition-colors flex items-center gap-2">
+              <div className="w-8 h-8 bg-linear-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
+              Scoutly
+            </Link>
+          </h1>
+        </div>
+
+        {/* Desktop Navigation */}
+        <nav className="hidden lg:flex items-center gap-2">
+          <Link
+            to="/"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium"
+            activeProps={{
+              className: 'flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors text-sm font-medium',
+            }}
+          >
+            <Home size={18} />
+            <span>Dashboard</span>
           </Link>
-        </h1>
+
+          <Link
+            to="/ai-coach"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium"
+            activeProps={{
+              className: 'flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors text-sm font-medium',
+            }}
+          >
+            <Sparkles size={18} />
+            <span>AI Coach</span>
+          </Link>
+
+          <Link
+            to="/advancement"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium"
+            activeProps={{
+              className: 'flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors text-sm font-medium',
+            }}
+          >
+            <Trophy size={18} />
+            <span>Advancement</span>
+          </Link>
+
+          <Link
+            to="/merit-badges"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium"
+            activeProps={{
+              className: 'flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors text-sm font-medium',
+            }}
+          >
+            <Award size={18} />
+            <span>Merit Badges</span>
+          </Link>
+
+          <Link
+            to="/events"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium"
+            activeProps={{
+              className: 'flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors text-sm font-medium',
+            }}
+          >
+            <Calendar size={18} />
+            <span>Events</span>
+          </Link>
+
+          <Link
+            to="/profile"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium"
+            activeProps={{
+              className: 'flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors text-sm font-medium',
+            }}
+          >
+            <User size={18} />
+            <span>Profile</span>
+          </Link>
+        </nav>
       </header>
 
       <aside
-        className={`fixed top-0 left-0 h-full w-80 bg-gray-900 text-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${
+        className={`fixed top-0 left-0 h-full w-80 bg-slate-900 text-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="flex items-center justify-between p-4 border-b border-gray-700">
+        <div className="flex items-center justify-between p-4 border-b border-slate-800">
           <h2 className="text-xl font-bold">Navigation</h2>
           <button
             onClick={() => setIsOpen(false)}
-            className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
             aria-label="Close menu"
           >
             <X size={24} />
@@ -48,20 +126,46 @@ export default function Header() {
           <Link
             to="/"
             onClick={() => setIsOpen(false)}
-            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors mb-2"
             activeProps={{
               className:
                 'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
             }}
           >
             <Home size={20} />
-            <span className="font-medium">Home</span>
+            <span className="font-medium">Dashboard</span>
+          </Link>
+
+          <Link
+            to="/ai-coach"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors mb-2"
+            activeProps={{
+              className:
+                'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
+            }}
+          >
+            <Sparkles size={20} />
+            <span className="font-medium">AI Eagle Coach</span>
+          </Link>
+
+          <Link
+            to="/advancement"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors mb-2"
+            activeProps={{
+              className:
+                'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
+            }}
+          >
+            <Trophy size={20} />
+            <span className="font-medium">Advancement</span>
           </Link>
 
           <Link
             to="/merit-badges"
             onClick={() => setIsOpen(false)}
-            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors mb-2"
             activeProps={{
               className:
                 'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
@@ -71,7 +175,30 @@ export default function Header() {
             <span className="font-medium">Merit Badges</span>
           </Link>
 
-          {/* Application routes will go here */}
+          <Link
+            to="/events"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-3 p-3 rounded-lg transition-colors mb-2 hover:bg-slate-800"
+            activeProps={{
+              className: 'flex items-center gap-3 p-3 rounded-lg transition-colors mb-2 bg-cyan-500 text-white'
+            }}
+          >
+            <Calendar size={20} />
+            <span className="font-medium">Events</span>
+          </Link>
+
+          <Link
+            to="/profile"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors mb-2"
+            activeProps={{
+              className:
+                'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
+            }}
+          >
+            <User size={20} />
+            <span className="font-medium">Profile</span>
+          </Link>
         </nav>
       </aside>
     </>

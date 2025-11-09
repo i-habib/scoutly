@@ -1,7 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { CheckCircle2, Circle, ChevronLeft, Award, Calendar, BookOpen, Lightbulb } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useUserData } from '../../hooks/useUserData';
 import meritBadgesData from '../../data/merit-badges.json';
+import * as storage from '../../services/storageService';
 
 export const Route = createFileRoute('/merit-badges/$badgeId')({
   component: MeritBadgeDetail,
@@ -9,7 +11,8 @@ export const Route = createFileRoute('/merit-badges/$badgeId')({
 
 function MeritBadgeDetail() {
   const { badgeId } = Route.useParams();
-  const { userData, updateProgress } = useUserData();
+  const { userData } = useUserData();
+  const queryClient = useQueryClient();
   
   const badge = meritBadgesData.meritBadges.find((b) => b.id === badgeId);
   
@@ -52,14 +55,107 @@ function MeritBadgeDetail() {
   });
   
   const completionPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+  const isFullyCompleted = completionPercentage === 100;
 
-  const handleToggleRequirement = (reqId: string) => {
+  const handleToggleRequirement = async (reqId: string, reqIndex?: number, isSubReq?: boolean) => {
     const isCompleted = progress[reqId];
-    updateProgress({
-      badgeId,
-      requirementId: reqId,
-      completedDate: isCompleted ? null : new Date().toISOString().split('T')[0],
+    const newCompletedDate = isCompleted ? null : new Date().toISOString().split('T')[0];
+    
+    // Get the current user data directly from localStorage to batch updates
+    const currentUserData = await storage.fetchUserData();
+    
+    // Initialize progress for this badge if it doesn't exist
+    if (!currentUserData.progress[badgeId]) {
+      currentUserData.progress[badgeId] = {};
+    }
+    
+    // Update the clicked requirement
+    currentUserData.progress[badgeId][reqId] = newCompletedDate;
+    
+    // If this is a main requirement with sub-requirements, handle auto-checking children
+    if (!isSubReq && reqIndex !== undefined && badge.requirements[reqIndex]) {
+      const requirement = badge.requirements[reqIndex];
+      const hasSubReqs = requirement.sub_requirements && requirement.sub_requirements.length > 0;
+      const reqText = requirement.text.toLowerCase();
+      
+      // If this requirement doesn't specify a number (ONE, TWO, THREE, etc.), auto-check all
+      const hasNumberWord = /\b(one|two|three|four|five|six|seven|eight|nine|ten)\b/i.test(reqText);
+      
+      if (hasSubReqs && !hasNumberWord) {
+        // Update all sub-requirements
+        requirement.sub_requirements.forEach((_, subIndex) => {
+          const subReqId = `req_${reqIndex}_${subIndex}`;
+          currentUserData.progress[badgeId][subReqId] = newCompletedDate;
+        });
+      }
+    }
+    
+    // If this is a sub-requirement, check if parent should be auto-checked
+    if (isSubReq && reqIndex !== undefined && badge.requirements[reqIndex]) {
+      const requirement = badge.requirements[reqIndex];
+      const parentReqId = `req_${reqIndex}`;
+      const requiredCount = requirement.requiredCount || requirement.sub_requirements.length;
+      
+      // Count how many sub-requirements will be completed after this update
+      let completedSubReqs = 0;
+      requirement.sub_requirements.forEach((_, subIndex) => {
+        const subReqId = `req_${reqIndex}_${subIndex}`;
+        // Check if this sub-requirement will be completed
+        if (currentUserData.progress[badgeId][subReqId]) {
+          completedSubReqs++;
+        }
+      });
+      
+      // Auto-check parent if we've met the required count
+      if (completedSubReqs >= requiredCount && newCompletedDate) {
+        currentUserData.progress[badgeId][parentReqId] = newCompletedDate;
+      } else if (completedSubReqs < requiredCount) {
+        // Uncheck parent if we're now below required count
+        currentUserData.progress[badgeId][parentReqId] = null;
+      }
+    }
+    
+    // Save all updates at once
+    localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
+    
+    // Invalidate the query to refresh the UI
+    queryClient.invalidateQueries({ queryKey: ['userData'] });
+  };
+
+  const handleMarkAllComplete = async () => {
+    const currentUserData = await storage.fetchUserData();
+    
+    if (!currentUserData.progress[badgeId]) {
+      currentUserData.progress[badgeId] = {};
+    }
+    
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Mark all main requirements and sub-requirements as complete
+    badge.requirements.forEach((req, reqIndex) => {
+      const mainReqId = `req_${reqIndex}`;
+      currentUserData.progress[badgeId][mainReqId] = today;
+      
+      if (req.sub_requirements && req.sub_requirements.length > 0) {
+        req.sub_requirements.forEach((_, subIndex) => {
+          const subReqId = `req_${reqIndex}_${subIndex}`;
+          currentUserData.progress[badgeId][subReqId] = today;
+        });
+      }
     });
+    
+    localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
+    queryClient.invalidateQueries({ queryKey: ['userData'] });
+  };
+
+  const handleClearAllProgress = async () => {
+    if (!confirm('Are you sure you want to clear all progress for this merit badge?')) return;
+    
+    const currentUserData = await storage.fetchUserData();
+    currentUserData.progress[badgeId] = {};
+    
+    localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
+    queryClient.invalidateQueries({ queryKey: ['userData'] });
   };
 
   return (
@@ -136,6 +232,32 @@ function MeritBadgeDetail() {
                   <span>Track your progress</span>
                 </div>
               </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 mt-4">
+                {!isFullyCompleted ? (
+                  <button
+                    onClick={handleMarkAllComplete}
+                    className="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 rounded-lg text-white text-sm font-medium transition-all flex items-center gap-2"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    Mark All Complete
+                  </button>
+                ) : (
+                  <div className="px-4 py-2 bg-green-500/20 border border-green-500/50 rounded-lg text-green-400 text-sm font-medium flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4" />
+                    Badge Complete!
+                  </div>
+                )}
+                {completedCount > 0 && (
+                  <button
+                    onClick={handleClearAllProgress}
+                    className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-400 text-sm font-medium transition-all"
+                  >
+                    Clear Progress
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
@@ -184,7 +306,7 @@ function MeritBadgeDetail() {
                   {/* Main Requirement */}
                   <div
                     className="flex items-start gap-4 cursor-pointer group"
-                    onClick={() => handleToggleRequirement(`req_${index}`)}
+                    onClick={() => handleToggleRequirement(`req_${index}`, index)}
                   >
                     <div className="shrink-0 mt-1">
                       {progress[`req_${index}`] ? (
@@ -221,7 +343,7 @@ function MeritBadgeDetail() {
                         <div
                           key={subIndex}
                           className="flex items-start gap-3 cursor-pointer group"
-                          onClick={() => handleToggleRequirement(`req_${index}_${subIndex}`)}
+                          onClick={() => handleToggleRequirement(`req_${index}_${subIndex}`, index, true)}
                         >
                           <div className="shrink-0 mt-1">
                             {progress[`req_${index}_${subIndex}`] ? (

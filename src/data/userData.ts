@@ -25,6 +25,13 @@ export interface UserProgress {
   };
 }
 
+// Separate interface for rank progress
+export interface RankProgress {
+  [rankId: string]: {
+    [requirementId: string]: string | null;
+  };
+}
+
 export interface Event {
   id: string;
   name: string;
@@ -35,10 +42,25 @@ export interface Event {
   createdAt: string;
 }
 
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: string;
+}
+
+export interface AIPlan {
+  plan: string;
+  lastUpdated: string;
+  chatHistory: ChatMessage[];
+}
+
 export interface UserData {
   profile: UserProfile;
   progress: UserProgress;
+  rankProgress?: RankProgress;
   events: Event[];
+  aiPlan?: AIPlan;
 }
 
 export const initialUserData: UserData = {
@@ -60,4 +82,5 @@ export const initialUserData: UserData = {
   },
   progress: {},
   events: [],
+  aiPlan: undefined,
 };

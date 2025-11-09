@@ -19,10 +19,28 @@ function MeritBadgesList() {
     
     // Type filter
     const progress = userData?.progress?.[badge.id] || {};
-    const requirements = badge.requirements.reduce((acc, req) => acc + (req.sub_requirements?.length || 1), 0);
-    const completed = Object.values(progress).filter(Boolean).length;
-    const isStarted = completed > 0 && completed < requirements;
-    const isCompleted = completed === requirements && requirements > 0;
+    
+    // Smart counting - matches the card display logic
+    const totalCount = badge.requirements.reduce((acc, req) => {
+      return acc + (req.requiredCount || 1);
+    }, 0);
+    
+    // Count completed items
+    let completedCount = 0;
+    badge.requirements.forEach((req, reqIndex) => {
+      if (req.sub_requirements && req.sub_requirements.length > 0) {
+        let completedSubReqs = 0;
+        req.sub_requirements.forEach((_, subIndex) => {
+          if (progress[`req_${reqIndex}_${subIndex}`]) completedSubReqs++;
+        });
+        completedCount += Math.min(completedSubReqs, req.requiredCount || req.sub_requirements.length);
+      } else {
+        if (progress[`req_${reqIndex}`]) completedCount++;
+      }
+    });
+    
+    const isStarted = completedCount > 0 && completedCount < totalCount;
+    const isCompleted = completedCount === totalCount && totalCount > 0;
 
     let matchesFilter = true;
     if (filterType === 'eagle') matchesFilter = badge.eagleRequired;
