@@ -134,42 +134,6 @@ function MeritBadgeDetail() {
     queryClient.invalidateQueries({ queryKey: ['userData'] });
   };
 
-  const handleMarkAllComplete = async () => {
-    const currentUserData = await storage.fetchUserData();
-    
-    if (!currentUserData.progress[badgeId]) {
-      currentUserData.progress[badgeId] = {};
-    }
-    
-    const today = new Date().toISOString().split('T')[0];
-    
-    // Mark all main requirements and sub-requirements as complete
-    badge.requirements.forEach((req, reqIndex) => {
-      const mainReqId = `req_${reqIndex}`;
-      currentUserData.progress[badgeId][mainReqId] = today;
-      
-      if (req.sub_requirements && req.sub_requirements.length > 0) {
-        req.sub_requirements.forEach((_, subIndex) => {
-          const subReqId = `req_${reqIndex}_${subIndex}`;
-          currentUserData.progress[badgeId][subReqId] = today;
-        });
-      }
-    });
-    
-    localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
-    queryClient.invalidateQueries({ queryKey: ['userData'] });
-  };
-
-  const handleClearAllProgress = async () => {
-    if (!confirm('Are you sure you want to clear all progress for this merit badge?')) return;
-    
-    const currentUserData = await storage.fetchUserData();
-    currentUserData.progress[badgeId] = {};
-    
-    localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
-    queryClient.invalidateQueries({ queryKey: ['userData'] });
-  };
-
   return (
     <div 
       className="min-h-screen bg-black"
@@ -250,31 +214,15 @@ function MeritBadgeDetail() {
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-3 mt-4">
-                {!isFullyCompleted ? (
-                  <button
-                    onClick={handleMarkAllComplete}
-                    className="px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-white text-sm font-medium transition-all flex items-center gap-2"
-                  >
-                    <CheckCircle2 className="w-4 h-4" />
-                    Mark All Complete
-                  </button>
-                ) : (
+              {/* Completion Status */}
+              {isFullyCompleted && (
+                <div className="mt-4">
                   <div className="px-4 py-2 bg-green-500/20 border border-green-500/50 rounded-lg text-green-400 text-sm font-medium flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4" />
                     Badge Complete!
                   </div>
-                )}
-                {completedCount > 0 && (
-                  <button
-                    onClick={handleClearAllProgress}
-                    className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-400 text-sm font-medium transition-all"
-                  >
-                    Clear Progress
-                  </button>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
 

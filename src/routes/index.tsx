@@ -4,6 +4,7 @@ import { Download, Loader2, FileDown } from 'lucide-react';
 import { useUserData } from '../hooks/useUserData';
 import { generateInitialPlan } from '../services/aiService';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import meritBadgesData from '../data/merit-badges.json';
 import { RankAdvancement } from '../components/RankAdvancement';
 
@@ -349,6 +350,7 @@ function Dashboard() {
               {currentPlan ? (
                 <div className="prose prose-invert prose-sm max-w-none">
                   <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
                     components={{
                       h1: ({ children }) => (
                         <h1 className="text-2xl font-bold text-white mb-4">{children}</h1>
@@ -367,6 +369,26 @@ function Dashboard() {
                       ),
                       ol: ({ children }) => (
                         <ol className="list-decimal list-inside space-y-2 text-slate-300 mb-4">{children}</ol>
+                      ),
+                      table: ({ children }) => (
+                        <div className="overflow-x-auto my-4">
+                          <table className="w-full border-collapse border border-white/20">{children}</table>
+                        </div>
+                      ),
+                      thead: ({ children }) => (
+                        <thead className="bg-green-500/20">{children}</thead>
+                      ),
+                      tbody: ({ children }) => (
+                        <tbody className="divide-y divide-white/10">{children}</tbody>
+                      ),
+                      tr: ({ children }) => (
+                        <tr className="border-b border-white/10">{children}</tr>
+                      ),
+                      th: ({ children }) => (
+                        <th className="px-4 py-2 text-left text-green-400 font-semibold border border-white/20">{children}</th>
+                      ),
+                      td: ({ children }) => (
+                        <td className="px-4 py-2 text-slate-300 border border-white/20">{children}</td>
                       ),
                       li: ({ children }) => {
                         const childText = String(children);
@@ -463,7 +485,6 @@ function Dashboard() {
                       </>
                     ) : (
                       <>
-                        <span className="text-lg">✨</span>
                         Generate My Eagle Plan
                       </>
                     )}

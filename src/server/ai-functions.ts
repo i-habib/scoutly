@@ -253,19 +253,30 @@ Create a DETAILED, actionable 4-week plan in markdown format. For each week:
 
 ## Week [Number]: [Compelling Title]
 
+### Weekly Goal Summary
+- **Total Requirements to Complete:** [NUMBER] specific requirements
+- **Sign-offs Needed:** [NUMBER] leader/counselor signatures
+- **Time Commitment:** [HOURS] hours estimated for the week
+
 ### Priority Goals
 - List 2-3 main objectives for the week with specific completion criteria
 
 ### Merit Badge Work
 - Name each badge being worked on
-- List SPECIFIC requirements to complete (e.g., "Camping 9a - Plan and cook 3 trail meals")
+- List SPECIFIC requirements to complete with exact numbers (e.g., "Camping 9a - Plan and cook 3 trail meals")
+- **Count format:** "Complete 3 requirements: Camping 9a, First Aid 5b, Swimming 6c"
 - Include materials needed and who to contact for sign-offs
 - Estimate time required for each task
 
 ### Rank Advancement
 - Specific position of responsibility hours to complete
-- Leadership opportunities to pursue
+- Leadership opportunities to pursue  
 - Service hours and project ideas
+- **Count format:** "Complete 2 rank requirements: Star 4 (leadership), Star 5 (service hours)"
+
+### Sign-Off Tracking
+- List all sign-offs needed this week with specific people to contact
+- Example: "Get 4 sign-offs: Camping 9a (Mr. Smith), First Aid 5b (Troop Leader), Star leadership (Scoutmaster), Star service (Project coordinator)"
 
 ### Action Items with Deadlines
 - Break down each goal into concrete steps
@@ -274,6 +285,11 @@ Create a DETAILED, actionable 4-week plan in markdown format. For each week:
 
 ### Success Checklist
 - 4-5 checkboxes for the week's must-complete items
+
+IMPORTANT: At the start of EACH week, include the "Weekly Goal Summary" section with specific counts of:
+1. How many total requirements to complete (number)
+2. How many sign-offs needed (number)
+3. Estimated time commitment in hours
 
 Be EXTREMELY specific. Instead of "Work on First Aid", say "Complete First Aid requirements 5a-5c by practicing CPR on training dummy at troop meeting, get leader sign-off". Include practical tips, common pitfalls to avoid, and pro tips from experienced Scouts.
 

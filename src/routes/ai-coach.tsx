@@ -17,6 +17,7 @@ import {
 } from '../services/aiService';
 import type { ChatMessage } from '../data/userData';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export const Route = createFileRoute('/ai-coach')({
   component: AICoach,
@@ -298,6 +299,7 @@ function AICoach() {
               {monthlySummary ? (
                 <div className="prose prose-invert prose-sm max-w-none">
                   <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
                     components={{
                       h2: ({ children }) => (
                         <h2 className="text-base font-semibold text-white mb-2 mt-3">{children}</h2>
@@ -316,6 +318,26 @@ function AICoach() {
                       ),
                       strong: ({ children }) => (
                         <strong className="text-green-400 font-semibold">{children}</strong>
+                      ),
+                      table: ({ children }) => (
+                        <div className="overflow-x-auto my-2">
+                          <table className="w-full border-collapse border border-white/20 text-sm">{children}</table>
+                        </div>
+                      ),
+                      thead: ({ children }) => (
+                        <thead className="bg-green-500/20">{children}</thead>
+                      ),
+                      tbody: ({ children }) => (
+                        <tbody className="divide-y divide-white/10">{children}</tbody>
+                      ),
+                      tr: ({ children }) => (
+                        <tr className="border-b border-white/10">{children}</tr>
+                      ),
+                      th: ({ children }) => (
+                        <th className="px-2 py-1 text-left text-green-400 font-semibold border border-white/20 text-xs">{children}</th>
+                      ),
+                      td: ({ children }) => (
+                        <td className="px-2 py-1 text-slate-300 border border-white/20 text-xs">{children}</td>
                       ),
                     }}
                   >
@@ -446,6 +468,7 @@ function AICoach() {
               {currentPlan ? (
                 <div className="prose prose-invert prose-sm max-w-none">
                   <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
                     components={{
                       h2: ({ children }) => (
                         <h2 className="text-base font-bold text-white mb-2 mt-3">{children}</h2>
@@ -458,6 +481,26 @@ function AICoach() {
                       ),
                       ul: ({ children }) => (
                         <ul className="space-y-1 text-slate-300 mb-3 text-sm">{children}</ul>
+                      ),
+                      table: ({ children }) => (
+                        <div className="overflow-x-auto my-2">
+                          <table className="w-full border-collapse border border-white/20 text-sm">{children}</table>
+                        </div>
+                      ),
+                      thead: ({ children }) => (
+                        <thead className="bg-green-500/20">{children}</thead>
+                      ),
+                      tbody: ({ children }) => (
+                        <tbody className="divide-y divide-white/10">{children}</tbody>
+                      ),
+                      tr: ({ children }) => (
+                        <tr className="border-b border-white/10">{children}</tr>
+                      ),
+                      th: ({ children }) => (
+                        <th className="px-2 py-1 text-left text-green-400 font-semibold border border-white/20 text-xs">{children}</th>
+                      ),
+                      td: ({ children }) => (
+                        <td className="px-2 py-1 text-slate-300 border border-white/20 text-xs">{children}</td>
                       ),
                       li: ({ children }) => {
                         const childText = flattenChildrenToText(children);

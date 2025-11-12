@@ -14,7 +14,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 px-4 py-3 flex items-center justify-between bg-black/80 backdrop-blur-sm text-white shadow-lg border-b border-green-500/30">
+      <header className="sticky top-0 z-50 px-4 py-3 flex items-center justify-between bg-black/95 backdrop-blur-sm text-white shadow-lg border-b border-green-500/30">
         <div className="flex items-center gap-4">
           <button
             onClick={() => setIsOpen(true)}

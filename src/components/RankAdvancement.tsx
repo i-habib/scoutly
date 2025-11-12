@@ -108,35 +108,48 @@ export function RankAdvancement({ userData }: RankAdvancementProps) {
                 isSubRequirement ? 'ml-6' : ''
               }`}
             >
-              <input
-                type="checkbox"
-                checked={!!isCompleted}
-                disabled={!!hasSubRequirements}
-                onChange={() => {
-                  if (hasSubRequirements) return; // Parent items can't be checked
-                  
-                  // Toggle requirement completion
-                  const newProgress = { ...rankProgress };
-                  if (isCompleted) {
-                    delete newProgress[req.id];
-                  } else {
-                    newProgress[req.id] = new Date().toISOString().split('T')[0];
-                  }
-                  
-                  const updatedUserData = {
-                    ...userData,
-                    rankProgress: {
-                      ...userData.rankProgress,
-                      [nextRank.id]: newProgress,
-                    },
-                  };
-                  localStorage.setItem('scoutly_user_data', JSON.stringify(updatedUserData));
-                  window.dispatchEvent(new Event('storage'));
-                }}
-                className={`mt-0.5 w-4 h-4 rounded border-2 border-white/30 bg-white/10 checked:bg-linear-to-br checked:from-cyan-400 checked:to-blue-500 checked:border-cyan-400 focus:ring-2 focus:ring-cyan-400/50 transition-all ${
-                  hasSubRequirements ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'
-                }`}
-              />
+              <div className="relative flex-shrink-0 mt-0.5">
+                <input
+                  type="checkbox"
+                  checked={!!isCompleted}
+                  disabled={!!hasSubRequirements}
+                  onChange={() => {
+                    if (hasSubRequirements) return; // Parent items can't be checked
+                    
+                    // Toggle requirement completion
+                    const newProgress = { ...rankProgress };
+                    if (isCompleted) {
+                      delete newProgress[req.id];
+                    } else {
+                      newProgress[req.id] = new Date().toISOString().split('T')[0];
+                    }
+                    
+                    const updatedUserData = {
+                      ...userData,
+                      rankProgress: {
+                        ...userData.rankProgress,
+                        [nextRank.id]: newProgress,
+                      },
+                    };
+                    localStorage.setItem('scoutly_user_data', JSON.stringify(updatedUserData));
+                    window.dispatchEvent(new Event('storage'));
+                  }}
+                  className="peer sr-only"
+                />
+                <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
+                  hasSubRequirements 
+                    ? 'border-white/20 bg-white/5 cursor-not-allowed' 
+                    : isCompleted
+                    ? 'border-green-500 bg-green-500 shadow-lg shadow-green-500/30'
+                    : 'border-white/30 bg-white/10 group-hover:border-green-400 group-hover:bg-white/20'
+                }`}>
+                  {isCompleted && (
+                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </div>
+              </div>
               <span
                 className={`text-xs leading-relaxed transition-colors ${
                   isCompleted

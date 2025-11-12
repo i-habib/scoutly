@@ -3,7 +3,7 @@ import { useUserData } from '../hooks/useUserData';
 import { useState, useEffect } from 'react';
 import meritBadgesData from '../data/merit-badges.json';
 import rankRequirementsData from '../data/rank-reqs.json';
-import { ScoutFleurDeLis, EagleIcon } from '../components/ScoutIcons';
+import { ScoutFleurDeLis, EagleIcon, MeritBadgeIcon } from '../components/ScoutIcons';
 import { Edit2, Save, X } from 'lucide-react';
 
 export const Route = createFileRoute('/profile')({ component: Profile });
@@ -454,22 +454,40 @@ function Profile() {
               </h2>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {notStarted.map((badge) => (
-                <Link
-                  key={badge.id}
-                  to="/merit-badges/$badgeId"
-                  params={{ badgeId: badge.id }}
-                  className="group"
-                >
-                  <div className="bg-white/10/30 border-2 border-slate-600 rounded-lg p-3 text-center hover:bg-white/10/50 hover:border-slate-500 transition-all hover:scale-105 cursor-pointer">
-                    <div className="text-3xl mb-2 opacity-50">🏅</div>
-                    <div className="text-gray-400 font-semibold text-xs mb-1 line-clamp-2 min-h-8">
-                      {badge.name}
+              {notStarted.map((badge) => {
+                // Generate a color based on badge name for visual variety
+                const colors = [
+                  { bg: 'bg-red-500/20', border: 'border-red-500', icon: 'text-red-400' },
+                  { bg: 'bg-blue-500/20', border: 'border-blue-500', icon: 'text-blue-400' },
+                  { bg: 'bg-green-500/20', border: 'border-green-500', icon: 'text-green-400' },
+                  { bg: 'bg-yellow-500/20', border: 'border-yellow-500', icon: 'text-yellow-400' },
+                  { bg: 'bg-purple-500/20', border: 'border-purple-500', icon: 'text-purple-400' },
+                  { bg: 'bg-pink-500/20', border: 'border-pink-500', icon: 'text-pink-400' },
+                  { bg: 'bg-orange-500/20', border: 'border-orange-500', icon: 'text-orange-400' },
+                  { bg: 'bg-teal-500/20', border: 'border-teal-500', icon: 'text-teal-400' },
+                ];
+                const colorIndex = badge.name.charCodeAt(0) % colors.length;
+                const color = colors[colorIndex];
+                
+                return (
+                  <Link
+                    key={badge.id}
+                    to="/merit-badges/$badgeId"
+                    params={{ badgeId: badge.id }}
+                    className="group"
+                  >
+                    <div className={`${color.bg} border-2 ${color.border} border-opacity-30 rounded-lg p-3 text-center hover:border-opacity-60 transition-all hover:scale-105 cursor-pointer`}>
+                      <div className={`w-10 h-10 mx-auto mb-2 rounded-full ${color.bg} border ${color.border} border-opacity-50 flex items-center justify-center`}>
+                        <MeritBadgeIcon className={`w-6 h-6 ${color.icon}`} />
+                      </div>
+                      <div className="text-gray-300 font-semibold text-xs mb-1 line-clamp-2 min-h-8">
+                        {badge.name}
+                      </div>
+                      <div className="text-gray-500 font-bold text-sm">0%</div>
                     </div>
-                    <div className="text-gray-500 font-bold text-sm">0%</div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
           </div>
         )}
