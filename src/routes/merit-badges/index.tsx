@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { Award, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useState } from 'react';
 import { useUserData } from '../../hooks/useUserData';
 import meritBadgesData from '../../data/merit-badges.json';
+import { MeritBadgeIcon } from '../../components/ScoutIcons';
 
 export const Route = createFileRoute('/merit-badges/')({
   component: MeritBadgesList,
@@ -53,40 +54,45 @@ function MeritBadgesList() {
   const eagleRequiredCount = meritBadgesData.meritBadges.filter(b => b.eagleRequired).length;
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-linear-to-r from-cyan-500/5 via-blue-500/5 to-purple-500/5"></div>
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
-      </div>
+    <div 
+      className="min-h-screen bg-black"
+      style={{
+        backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
+        backgroundSize: '14px 14px',
+        backgroundPosition: '0 0, 14px 14px',
+      }}
+    >
+      {/* Gradient glows */}
+      <div className="fixed top-0 left-0 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
+      <div className="fixed -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-cyan-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s] pointer-events-none" />
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-linear-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/30">
-              <Award className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 bg-linear-to-br from-green-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/30">
+              <MeritBadgeIcon className="w-6 h-6 text-white" size={24} />
             </div>
             <div>
               <h1 className="text-3xl font-bold text-white">Merit Badges</h1>
-              <p className="text-gray-400">{meritBadgesData.meritBadges.length} badges available · {eagleRequiredCount} Eagle-required</p>
+              <p className="text-slate-400">{meritBadgesData.meritBadges.length} badges available · {eagleRequiredCount} Eagle-required</p>
             </div>
           </div>
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 mb-8">
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 mb-8">
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search merit badges..."
-                className="w-full pl-10 pr-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
               />
             </div>
 
@@ -96,8 +102,8 @@ function MeritBadgesList() {
                 onClick={() => setFilterType('all')}
                 className={`px-4 py-3 rounded-lg font-medium transition-all ${
                   filterType === 'all'
-                    ? 'bg-cyan-500 text-white'
-                    : 'bg-slate-900/50 text-gray-400 hover:bg-slate-900 hover:text-gray-300'
+                    ? 'bg-green-500 text-black font-bold'
+                    : 'bg-white/10 text-slate-400 hover:bg-white/20 hover:text-slate-300'
                 }`}
               >
                 All
@@ -107,7 +113,7 @@ function MeritBadgesList() {
                 className={`px-4 py-3 rounded-lg font-medium transition-all ${
                   filterType === 'eagle'
                     ? 'bg-amber-500 text-white'
-                    : 'bg-slate-900/50 text-gray-400 hover:bg-slate-900 hover:text-gray-300'
+                    : 'bg-white/10 text-slate-400 hover:bg-white/20 hover:text-slate-300'
                 }`}
               >
                 Eagle
@@ -117,7 +123,7 @@ function MeritBadgesList() {
                 className={`px-4 py-3 rounded-lg font-medium transition-all ${
                   filterType === 'started'
                     ? 'bg-blue-500 text-white'
-                    : 'bg-slate-900/50 text-gray-400 hover:bg-slate-900 hover:text-gray-300'
+                    : 'bg-white/10 text-slate-400 hover:bg-white/20 hover:text-slate-300'
                 }`}
               >
                 Started
@@ -127,7 +133,7 @@ function MeritBadgesList() {
                 className={`px-4 py-3 rounded-lg font-medium transition-all ${
                   filterType === 'completed'
                     ? 'bg-emerald-500 text-white'
-                    : 'bg-slate-900/50 text-gray-400 hover:bg-slate-900 hover:text-gray-300'
+                    : 'bg-white/10 text-slate-400 hover:bg-white/20 hover:text-slate-300'
                 }`}
               >
                 Completed
@@ -167,11 +173,11 @@ function MeritBadgesList() {
                 key={badge.id}
                 to="/merit-badges/$badgeId"
                 params={{ badgeId: badge.id }}
-                className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 group"
+                className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 hover:border-green-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/10 group"
               >
                 {/* Badge Icon */}
                 <div className="flex items-start gap-4 mb-4">
-                  <div className="w-16 h-16 bg-slate-700/30 rounded-xl flex items-center justify-center shadow-lg overflow-hidden border-2 border-slate-600 group-hover:border-cyan-500/50 transition-all">
+                  <div className="w-16 h-16 bg-white/10 rounded-xl flex items-center justify-center shadow-lg overflow-hidden border-2 border-white/10 group-hover:border-green-500/50 transition-all">
                     {'imageUrl' in badge && badge.imageUrl ? (
                       <img 
                         src={badge.imageUrl as string} 
@@ -183,10 +189,10 @@ function MeritBadgesList() {
                         }}
                       />
                     ) : null}
-                    <Award className="w-8 h-8 text-cyan-400 hidden" />
+                    <MeritBadgeIcon className="w-8 h-8 text-green-400 hidden" size={32} />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-white mb-1 group-hover:text-cyan-400 transition-colors">
+                    <h3 className="text-lg font-semibold text-white mb-1 group-hover:text-green-400 transition-colors">
                       {badge.name}
                     </h3>
                     {badge.eagleRequired && (
@@ -201,7 +207,7 @@ function MeritBadgesList() {
                 <div className="mb-3">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-gray-400 text-sm">Progress</span>
-                    <span className="text-cyan-400 text-sm font-semibold">{percentage}%</span>
+                    <span className="text-green-400 text-sm font-semibold">{percentage}%</span>
                   </div>
                   <div className="w-full h-2 bg-slate-900/50 rounded-full overflow-hidden">
                     <div
@@ -222,7 +228,7 @@ function MeritBadgesList() {
         {/* Empty State */}
         {filteredBadges.length === 0 && (
           <div className="text-center py-12">
-            <Award className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+            <MeritBadgeIcon className="w-16 h-16 text-gray-600 mx-auto mb-4" size={64} />
             <p className="text-gray-400 text-lg">No merit badges found</p>
             <p className="text-gray-500 text-sm mt-2">Try adjusting your search or filters</p>
           </div>

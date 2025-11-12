@@ -1,8 +1,9 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
-import { Calendar, User, Target, Rocket, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { useUserData } from '../hooks/useUserData';
 import { RANKS } from '../data/ranks';
+import { ScoutFleurDeLis, EagleIcon, CompassIcon, CampfireIcon } from '../components/ScoutIcons';
 
 export const Route = createFileRoute('/onboarding')({ component: Onboarding });
 
@@ -56,8 +57,20 @@ function Onboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-6">
-      <div className="w-full max-w-2xl">
+
+    <div 
+      className="min-h-screen bg-black flex items-center justify-center p-6"
+      style={{
+        backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
+        backgroundSize: '14px 14px',
+        backgroundPosition: '0 0, 14px 14px',
+      }}
+    >
+      {/* Gradient glows */}
+      <div className="fixed top-0 left-0 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
+      <div className="fixed -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-cyan-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s] pointer-events-none" />
+      
+      <div className="w-full max-w-2xl relative z-10">
         {/* Progress Indicator */}
         <div className="mb-8 flex items-center justify-center gap-2">
           {[1, 2, 3].map((s) => (
@@ -65,7 +78,7 @@ function Onboarding() {
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${
                   s === step
-                    ? 'bg-cyan-500 text-white scale-110 shadow-lg shadow-cyan-500/50'
+                    ? 'bg-green-500 text-white scale-110 shadow-lg shadow-cyan-500/50'
                     : s < step
                     ? 'bg-cyan-600 text-white'
                     : 'bg-slate-700 text-slate-400'
@@ -85,12 +98,12 @@ function Onboarding() {
         </div>
 
         {/* Main Card */}
-        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8 shadow-2xl">
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl mb-4 shadow-lg shadow-cyan-500/30">
-              {step === 1 && <User className="w-8 h-8 text-white" />}
-              {step === 2 && <Target className="w-8 h-8 text-white" />}
-              {step === 3 && <Calendar className="w-8 h-8 text-white" />}
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-green-500 to-cyan-600 rounded-2xl mb-4 shadow-lg shadow-green-500/30">
+              {step === 1 && <ScoutFleurDeLis className="w-8 h-8 text-white" size={32} />}
+              {step === 2 && <CompassIcon className="w-8 h-8 text-white" size={32} />}
+              {step === 3 && <EagleIcon className="w-8 h-8 text-white" size={32} />}
             </div>
             
             <h1 className="text-3xl font-bold text-white mb-2">
@@ -140,7 +153,7 @@ function Onboarding() {
                       onClick={() => setFormData({ ...formData, currentRank: rank.id })}
                       className={`p-4 rounded-lg border-2 transition-all duration-200 ${
                         formData.currentRank === rank.id
-                          ? 'border-cyan-500 bg-cyan-500/10 text-cyan-400 shadow-lg shadow-cyan-500/20'
+                          ? 'border-cyan-500 bg-green-500/10 text-green-400 shadow-lg shadow-cyan-500/20'
                           : 'border-slate-600 bg-slate-900/30 text-gray-300 hover:border-slate-500 hover:bg-slate-900/50'
                       }`}
                     >
@@ -189,7 +202,7 @@ function Onboarding() {
               <button
                 onClick={handleNext}
                 disabled={!isStepValid()}
-                className="flex-1 px-6 py-3 bg-cyan-500 hover:bg-cyan-600 disabled:bg-slate-600 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors shadow-lg shadow-cyan-500/30 disabled:shadow-none flex items-center justify-center gap-2"
+                className="flex-1 px-6 py-3 bg-green-500 hover:bg-cyan-600 disabled:bg-slate-600 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors shadow-lg shadow-cyan-500/30 disabled:shadow-none flex items-center justify-center gap-2"
               >
                 Continue
                 <ChevronRight className="w-5 h-5" />
@@ -205,7 +218,7 @@ function Onboarding() {
                 ) : (
                   <>
                     Start Your Journey
-                    <Rocket className="w-5 h-5" />
+                    <CampfireIcon className="w-5 h-5" size={20} />
                   </>
                 )}
               </button>

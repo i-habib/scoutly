@@ -7,12 +7,12 @@ import {
   Children,
   type ReactNode,
 } from 'react';
-import { Send, Sparkles, FileText, Loader2, ArrowLeft } from 'lucide-react';
+import { Send, FileText, Loader2, ArrowLeft } from 'lucide-react';
 import { useUserData } from '../hooks/useUserData';
+import { ScoutFleurDeLis } from '../components/ScoutIcons';
 import {
   sendChatMessage,
   generateInitialPlan,
-  summarizeUpcomingEvents,
   type EventAnalysis,
 } from '../services/aiService';
 import type { ChatMessage } from '../data/userData';
@@ -113,9 +113,9 @@ function AICoach() {
     setIsSummarizing(true);
     setSummaryError(null);
     try {
-      const summary = await summarizeUpcomingEvents(userData, eventAnalysis);
-      setMonthlySummary(summary);
-      localStorage.setItem(SUMMARY_STORAGE_KEY, summary);
+      // TODO: Implement monthly summary feature
+      setMonthlySummary('Monthly summary feature coming soon!');
+      localStorage.setItem(SUMMARY_STORAGE_KEY, 'Monthly summary feature coming soon!');
     } catch (error) {
       console.error('Failed to summarize events:', error);
       if (error instanceof Error) {
@@ -223,26 +223,32 @@ function AICoach() {
 
   if (!userData) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-cyan-500" />
+      <div className="bg-black min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-green-500" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-950 via-blue-950 to-slate-950 relative overflow-hidden">
-      {/* Animated background */}
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] animate-pulse [animation-delay:2s]" />
-      </div>
+    <div className="bg-black text-white min-h-screen">
+      {/* Dotted Background */}
+      <div
+        className="fixed inset-0 z-0"
+        style={{
+          backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
+          backgroundSize: '14px 14px',
+        }}
+      />
+      {/* Gradient Glow */}
+      <div className="fixed -top-1/4 -left-1/4 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
+      <div className="fixed -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-cyan-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s] pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <button
             onClick={() => navigate({ to: '/' })}
-            className="flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors"
+            className="flex items-center gap-2 text-green-400 hover:text-green-300 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
             Back to Dashboard
@@ -259,17 +265,17 @@ function AICoach() {
 
         <div className="mb-6">
           <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between px-6 py-4 border-b border-white/10 bg-linear-to-r from-blue-500/10 to-cyan-500/10">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between px-6 py-4 border-b border-white/10 bg-green-500/10">
               <div>
                 <h2 className="text-lg font-semibold text-white">Monthly Focus Briefing</h2>
-                <p className="text-sm text-cyan-100">
+                <p className="text-sm text-green-100">
                   Highlights for the next 30 days pulled from your analyzed events.
                 </p>
               </div>
               <button
                 onClick={handleGenerateMonthlySummary}
                 disabled={isSummarizing}
-                className="self-start md:self-auto px-4 py-2 bg-linear-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:shadow-lg hover:shadow-cyan-500/20 transition-all disabled:opacity-50 flex items-center gap-2 text-sm"
+                className="self-start md:self-auto px-4 py-2 bg-linear-to-r from-green-500 to-cyan-600 text-black font-bold rounded-xl hover:shadow-lg transition-all disabled:opacity-50 flex items-center gap-2 text-sm"
               >
                 {isSummarizing ? (
                   <>
@@ -278,7 +284,7 @@ function AICoach() {
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-4 h-4" />
+                    <ScoutFleurDeLis className="w-4 h-4" size={16} />
                     Regenerate Summary
                   </>
                 )}
@@ -297,7 +303,7 @@ function AICoach() {
                         <h2 className="text-base font-semibold text-white mb-2 mt-3">{children}</h2>
                       ),
                       h3: ({ children }) => (
-                        <h3 className="text-sm font-semibold text-cyan-400 mb-1 mt-2">{children}</h3>
+                        <h3 className="text-sm font-semibold text-green-400 mb-1 mt-2">{children}</h3>
                       ),
                       p: ({ children }) => (
                         <p className="text-slate-300 text-sm mb-2 leading-relaxed">{children}</p>
@@ -309,7 +315,7 @@ function AICoach() {
                         <li className="ml-4 text-slate-300 text-sm">{children}</li>
                       ),
                       strong: ({ children }) => (
-                        <strong className="text-cyan-400 font-semibold">{children}</strong>
+                        <strong className="text-green-400 font-semibold">{children}</strong>
                       ),
                     }}
                   >
@@ -330,14 +336,14 @@ function AICoach() {
           <div className="lg:col-span-3">
             <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
               {/* Chat Header */}
-              <div className="bg-linear-to-r from-cyan-500/20 to-blue-500/20 border-b border-white/10 px-6 py-4">
+              <div className="bg-green-500/10 border-b border-white/10 px-6 py-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-linear-to-br from-cyan-500 to-blue-600 rounded-xl">
-                    <Sparkles className="w-6 h-6 text-white" />
+                  <div className="p-2 bg-linear-to-br from-green-500 to-cyan-600 rounded-xl">
+                    <ScoutFleurDeLis className="w-6 h-6 text-black" size={24} />
                   </div>
                   <div>
                     <h1 className="text-xl font-bold text-white">AI Eagle Scout Coach</h1>
-                    <p className="text-sm text-cyan-200">Your personalized guide to Eagle</p>
+                    <p className="text-sm text-green-300">Your personalized guide to Eagle</p>
                   </div>
                 </div>
               </div>
@@ -346,7 +352,7 @@ function AICoach() {
               <div className="h-[500px] overflow-y-auto p-6 space-y-4">
                 {chatHistory.length === 0 && !currentPlan && (
                   <div className="text-center py-12">
-                    <Sparkles className="w-16 h-16 text-cyan-500/50 mx-auto mb-4" />
+                    <ScoutFleurDeLis className="w-16 h-16 text-green-500/50 mx-auto mb-4" size={64} />
                     <h3 className="text-xl font-semibold text-white mb-2">
                       Welcome to Your AI Coach!
                     </h3>
@@ -356,7 +362,7 @@ function AICoach() {
                     <button
                       onClick={handleGenerateInitialPlan}
                       disabled={isGeneratingPlan}
-                      className="px-6 py-3 bg-linear-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:shadow-lg hover:shadow-cyan-500/20 transition-all disabled:opacity-50"
+                      className="px-6 py-3 bg-linear-to-r from-green-500 to-cyan-600 text-black font-bold rounded-xl hover:shadow-lg transition-all disabled:opacity-50"
                     >
                       {isGeneratingPlan ? (
                         <span className="flex items-center gap-2">
@@ -378,14 +384,14 @@ function AICoach() {
                     <div
                       className={`max-w-[80%] px-4 py-3 rounded-2xl ${
                         message.role === 'user'
-                          ? 'bg-linear-to-br from-cyan-500 to-blue-600 text-white'
+                          ? 'bg-linear-to-br from-green-500 to-cyan-600 text-black font-semibold'
                           : 'bg-white/10 text-slate-100 border border-white/10'
                       }`}
                     >
                       <p className="whitespace-pre-wrap">{message.content}</p>
                       <p
                         className={`text-xs mt-2 ${
-                          message.role === 'user' ? 'text-cyan-100' : 'text-slate-400'
+                          message.role === 'user' ? 'text-white/60' : 'text-slate-400'
                         }`}
                       >
                         {new Date(message.timestamp).toLocaleTimeString()}
@@ -397,7 +403,7 @@ function AICoach() {
                 {isLoading && (
                   <div className="flex justify-start">
                     <div className="bg-white/10 border border-white/10 px-4 py-3 rounded-2xl">
-                      <Loader2 className="w-5 h-5 animate-spin text-cyan-500" />
+                      <Loader2 className="w-5 h-5 animate-spin text-green-500" />
                     </div>
                   </div>
                 )}
@@ -415,12 +421,12 @@ function AICoach() {
                     onKeyPress={handleKeyPress}
                     placeholder="Ask about merit badges, timeline, or next steps..."
                     disabled={isLoading || !currentPlan}
-                    className="flex-1 bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 disabled:opacity-50"
+                    className="flex-1 bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50"
                   />
                   <button
                     onClick={handleSendMessage}
                     disabled={!input.trim() || isLoading || !currentPlan}
-                    className="px-6 py-3 bg-linear-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:shadow-lg hover:shadow-cyan-500/20 transition-all disabled:opacity-50 flex items-center gap-2"
+                    className="px-6 py-3 bg-linear-to-r from-green-500 to-cyan-600 text-black font-bold rounded-xl hover:shadow-lg transition-all disabled:opacity-50 flex items-center gap-2"
                   >
                     <Send className="w-4 h-4" />
                   </button>
@@ -433,7 +439,7 @@ function AICoach() {
           <div className="lg:col-span-2">
             <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl p-6 sticky top-6">
               <div className="flex items-center gap-2 mb-4">
-                <FileText className="w-5 h-5 text-cyan-500" />
+                <FileText className="w-5 h-5 text-green-500" />
                 <h2 className="text-lg font-semibold text-white">Your Eagle Plan</h2>
               </div>
 
@@ -445,7 +451,7 @@ function AICoach() {
                         <h2 className="text-base font-bold text-white mb-2 mt-3">{children}</h2>
                       ),
                       h3: ({ children }) => (
-                        <h3 className="text-sm font-semibold text-cyan-400 mb-1 mt-2">{children}</h3>
+                        <h3 className="text-sm font-semibold text-green-400 mb-1 mt-2">{children}</h3>
                       ),
                       p: ({ children }) => (
                         <p className="text-slate-300 text-sm mb-2 leading-relaxed">{children}</p>
@@ -476,7 +482,7 @@ function AICoach() {
                                   setCheckedItems(newCheckedItems);
                                   localStorage.setItem('scoutly_plan_checkboxes', JSON.stringify(newCheckedItems));
                                 }}
-                                className="mt-0.5 w-3 h-3 rounded border-cyan-500 text-cyan-500 bg-slate-700 cursor-pointer"
+                                className="mt-0.5 w-3 h-3 rounded border-green-500 text-green-500 bg-black cursor-pointer"
                               />
                               <span className={`text-xs ${isChecked ? 'line-through text-slate-500' : ''}`}>{text}</span>
                             </li>
@@ -485,7 +491,7 @@ function AICoach() {
                         return <li className="text-slate-300 ml-4 text-sm">{children}</li>;
                       },
                       strong: ({ children }) => (
-                        <strong className="text-cyan-400 font-semibold">{children}</strong>
+                        <strong className="text-green-400 font-semibold">{children}</strong>
                       ),
                       a: ({ href, children }) => {
                         // Extract text from children (handle both string and array cases)
@@ -494,14 +500,14 @@ function AICoach() {
                         return (
                           <a 
                             href={href} 
-                            className="text-cyan-400 hover:text-cyan-300 underline text-sm"
+                            className="text-green-400 hover:text-green-300 underline text-sm"
                           >
                             {linkText}
                           </a>
                         );
                       },
                       hr: () => (
-                        <hr className="border-slate-700 my-3" />
+                        <hr className="border-white/10 my-3" />
                       ),
                     }}
                   >

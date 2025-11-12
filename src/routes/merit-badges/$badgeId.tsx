@@ -1,9 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { CheckCircle2, Circle, ChevronLeft, Award, Calendar, BookOpen, Lightbulb } from 'lucide-react';
+import { CheckCircle2, Circle, ChevronLeft, Calendar, BookOpen, Lightbulb } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useUserData } from '../../hooks/useUserData';
 import meritBadgesData from '../../data/merit-badges.json';
 import * as storage from '../../services/storageService';
+import { MeritBadgeIcon } from '../../components/ScoutIcons';
 
 export const Route = createFileRoute('/merit-badges/$badgeId')({
   component: MeritBadgeDetail,
@@ -18,9 +19,20 @@ function MeritBadgeDetail() {
   
   if (!badge) {
     return (
-      <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-400 text-xl">Merit Badge not found</p>
+      <div 
+        className="min-h-screen bg-black flex items-center justify-center"
+        style={{
+          backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
+          backgroundSize: '14px 14px',
+          backgroundPosition: '0 0, 14px 14px',
+        }}
+      >
+        {/* Gradient glows */}
+        <div className="fixed top-0 left-0 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
+        <div className="fixed -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s] pointer-events-none" />
+        
+        <div className="text-center relative z-10">
+          <p className="text-slate-400 text-xl">Merit Badge not found</p>
         </div>
       </div>
     );
@@ -159,30 +171,35 @@ function MeritBadgeDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-linear-to-r from-cyan-500/5 via-blue-500/5 to-purple-500/5"></div>
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
-      </div>
+    <div 
+      className="min-h-screen bg-black"
+      style={{
+        backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
+        backgroundSize: '14px 14px',
+        backgroundPosition: '0 0, 14px 14px',
+      }}
+    >
+      {/* Gradient glows */}
+      <div className="fixed top-0 left-0 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
+      <div className="fixed -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-cyan-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s] pointer-events-none" />
 
       {/* Content */}
       <div className="relative z-10 max-w-4xl mx-auto px-6 py-8">
         {/* Back Button */}
         <a
           href="/merit-badges"
-          className="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 mb-6 transition-colors"
+          className="inline-flex items-center gap-2 text-green-400 hover:text-cyan-300 mb-6 transition-colors"
         >
           <ChevronLeft className="w-5 h-5" />
           Back to Merit Badges
         </a>
 
         {/* Badge Header */}
-        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8 mb-6">
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 mb-6">
           <div className="flex items-start gap-6">
             {/* Badge Image */}
             <div className="shrink-0">
-              <div className="w-32 h-32 bg-slate-700/30 rounded-2xl flex items-center justify-center shadow-lg overflow-hidden border-2 border-slate-600">
+              <div className="w-32 h-32 bg-white/10 rounded-2xl flex items-center justify-center shadow-lg overflow-hidden border-2 border-white/10">
                 {'imageUrl' in badge && badge.imageUrl ? (
                   <img 
                     src={badge.imageUrl as string} 
@@ -195,7 +212,7 @@ function MeritBadgeDetail() {
                     }}
                   />
                 ) : null}
-                <Award className="w-16 h-16 text-cyan-400 hidden" />
+                <MeritBadgeIcon className="w-16 h-16 text-green-400 hidden" size={64} />
               </div>
               {badge.eagleRequired && (
                 <div className="mt-3 px-3 py-1 bg-amber-500/20 border border-amber-500/50 rounded-full text-amber-400 text-xs font-semibold text-center">
@@ -212,7 +229,7 @@ function MeritBadgeDetail() {
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-gray-400 text-sm">Progress</span>
-                  <span className="text-cyan-400 font-semibold">{completionPercentage}%</span>
+                  <span className="text-green-400 font-semibold">{completionPercentage}%</span>
                 </div>
                 <div className="w-full h-3 bg-slate-900/50 rounded-full overflow-hidden">
                   <div
@@ -224,7 +241,7 @@ function MeritBadgeDetail() {
 
               <div className="flex items-center gap-4 text-sm text-gray-400">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-cyan-400" />
+                  <CheckCircle2 className="w-4 h-4 text-green-400" />
                   <span>{completedCount} / {totalCount} completed</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -238,7 +255,7 @@ function MeritBadgeDetail() {
                 {!isFullyCompleted ? (
                   <button
                     onClick={handleMarkAllComplete}
-                    className="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 rounded-lg text-white text-sm font-medium transition-all flex items-center gap-2"
+                    className="px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-white text-sm font-medium transition-all flex items-center gap-2"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     Mark All Complete
@@ -278,7 +295,7 @@ function MeritBadgeDetail() {
         {/* Requirements */}
         <div className="space-y-4">
           <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-            <BookOpen className="w-6 h-6 text-cyan-400" />
+            <BookOpen className="w-6 h-6 text-green-400" />
             Requirements
           </h2>
 
@@ -300,7 +317,7 @@ function MeritBadgeDetail() {
             return (
               <div
                 key={index}
-                className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-slate-600 transition-all"
+                className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 hover:border-slate-600 transition-all"
               >
                 <div className="space-y-4">
                   {/* Main Requirement */}
@@ -310,7 +327,7 @@ function MeritBadgeDetail() {
                   >
                     <div className="shrink-0 mt-1">
                       {progress[`req_${index}`] ? (
-                        <CheckCircle2 className="w-6 h-6 text-cyan-400" />
+                        <CheckCircle2 className="w-6 h-6 text-green-400" />
                       ) : (
                         <Circle className="w-6 h-6 text-slate-600 group-hover:text-slate-500 transition-colors" />
                       )}
@@ -324,7 +341,7 @@ function MeritBadgeDetail() {
                       {showProgress && (
                         <div className="mt-2 flex items-center gap-2">
                           <div className="flex items-center gap-1.5 text-xs">
-                            <span className="text-cyan-400 font-semibold">{completedSubReqCount}</span>
+                            <span className="text-green-400 font-semibold">{completedSubReqCount}</span>
                             <span className="text-gray-500">/</span>
                             <span className="text-gray-400">{requiredCount} required</span>
                             {requiredCount < totalSubReqs && (
@@ -369,7 +386,7 @@ function MeritBadgeDetail() {
         {completionPercentage === 100 && (
           <div className="mt-8 p-6 bg-linear-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/50 rounded-xl">
             <div className="flex items-center gap-3">
-              <CheckCircle2 className="w-8 h-8 text-cyan-400" />
+              <CheckCircle2 className="w-8 h-8 text-green-400" />
               <div>
                 <h3 className="text-xl font-bold text-white">Congratulations!</h3>
                 <p className="text-gray-300">You've completed all requirements for {badge.name}. Don't forget to get it signed off!</p>

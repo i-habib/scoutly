@@ -3,6 +3,7 @@ import { useUserData } from '../hooks/useUserData';
 import { useState, useEffect } from 'react';
 import meritBadgesData from '../data/merit-badges.json';
 import rankRequirementsData from '../data/rank-reqs.json';
+import { ScoutFleurDeLis, EagleIcon } from '../components/ScoutIcons';
 
 export const Route = createFileRoute('/profile')({ component: Profile });
 
@@ -150,10 +151,21 @@ function Profile() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading profile...</p>
+      <div 
+        className="min-h-screen bg-black flex items-center justify-center"
+        style={{
+          backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
+          backgroundSize: '14px 14px',
+          backgroundPosition: '0 0, 14px 14px',
+        }}
+      >
+        {/* Gradient glows */}
+        <div className="fixed top-0 left-0 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
+        <div className="fixed -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-cyan-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s] pointer-events-none" />
+        
+        <div className="text-center relative z-10">
+          <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-400">Loading profile...</p>
         </div>
       </div>
     );
@@ -163,21 +175,25 @@ function Profile() {
   const { completed, inProgress, notStarted } = getBadgeProgress();
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-linear-to-r from-cyan-500/5 via-blue-500/5 to-purple-500/5"></div>
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      </div>
+    <div 
+      className="min-h-screen bg-black"
+      style={{
+        backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
+        backgroundSize: '14px 14px',
+        backgroundPosition: '0 0, 14px 14px',
+      }}
+    >
+      {/* Gradient glows */}
+      <div className="fixed top-0 left-0 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
+      <div className="fixed -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-cyan-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s] pointer-events-none" />
 
       {/* Main Content */}
       <div className="relative z-10 max-w-6xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-linear-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/30">
-              <span className="text-2xl">👤</span>
+            <div className="w-12 h-12 bg-linear-to-br from-green-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/30">
+              <ScoutFleurDeLis className="text-white" size={28} />
             </div>
             <div>
               <h1 className="text-3xl font-bold text-white">
@@ -189,27 +205,27 @@ function Profile() {
         </div>
 
         {/* Rank Progress Section */}
-        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 mb-6">
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 mb-6">
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-2xl">🎖️</span>
+            <EagleIcon className="text-green-400" size={28} />
             <h2 className="text-xl font-bold text-white">Current Rank Progress</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Current Rank */}
-            <div className="bg-slate-700/50 rounded-lg p-4 text-center">
+            <div className="bg-white/10/50 rounded-lg p-4 text-center">
               <div className="text-3xl mb-2">🏆</div>
-              <div className="text-cyan-400 font-semibold text-sm mb-1">Current Rank</div>
+              <div className="text-green-400 font-semibold text-sm mb-1">Current Rank</div>
               <div className="text-white font-bold text-xl">{rankInfo?.currentRankDisplay}</div>
             </div>
 
             {/* Next Rank Progress */}
-            <div className="bg-slate-700/50 rounded-lg p-4">
+            <div className="bg-white/10/50 rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-2xl">🎯</span>
                 <span className="text-white font-bold text-2xl">{rankInfo?.progress}%</span>
               </div>
-              <div className="text-cyan-400 font-semibold text-sm mb-2">
+              <div className="text-green-400 font-semibold text-sm mb-2">
                 Progress to {rankInfo?.nextRankDisplay}
               </div>
               <div className="h-2 rounded-full bg-slate-600 overflow-hidden mb-2">
@@ -224,9 +240,9 @@ function Profile() {
             </div>
 
             {/* Target Date */}
-            <div className="bg-slate-700/50 rounded-lg p-4 text-center">
+            <div className="bg-white/10/50 rounded-lg p-4 text-center">
               <div className="text-3xl mb-2">📅</div>
-              <div className="text-cyan-400 font-semibold text-sm mb-1">Eagle Target</div>
+              <div className="text-green-400 font-semibold text-sm mb-1">Eagle Target</div>
               <div className="text-white font-bold text-xl">
                 {userData?.profile.targetEagleDate 
                   ? new Date(userData.profile.targetEagleDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
@@ -250,7 +266,7 @@ function Profile() {
 
         {/* Completed Badges */}
         {completed.length > 0 && (
-          <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 mb-6">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 mb-6">
             <div className="flex items-center gap-3 mb-4">
               <span className="text-2xl">✅</span>
               <h2 className="text-xl font-bold text-white">
@@ -280,7 +296,7 @@ function Profile() {
 
         {/* In Progress Badges */}
         {inProgress.length > 0 && (
-          <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 mb-6">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 mb-6">
             <div className="flex items-center gap-3 mb-4">
               <span className="text-2xl">🔄</span>
               <h2 className="text-xl font-bold text-white">
@@ -295,7 +311,7 @@ function Profile() {
                   params={{ badgeId: badge.id }}
                   className="group"
                 >
-                  <div className="bg-slate-700/50 border-2 border-cyan-500/50 rounded-lg p-3 text-center hover:bg-slate-700 hover:border-cyan-500 transition-all hover:scale-105 cursor-pointer">
+                  <div className="bg-white/10/50 border-2 border-cyan-500/50 rounded-lg p-3 text-center hover:bg-white/10 hover:border-cyan-500 transition-all hover:scale-105 cursor-pointer">
                     <div className="text-3xl mb-2">🏅</div>
                     <div className="text-white font-semibold text-xs mb-2 line-clamp-2 min-h-8">
                       {badge.name}
@@ -306,7 +322,7 @@ function Profile() {
                         style={{ width: `${badge.percentage}%` }}
                       />
                     </div>
-                    <div className="text-cyan-400 font-bold text-sm">{badge.percentage}%</div>
+                    <div className="text-green-400 font-bold text-sm">{badge.percentage}%</div>
                   </div>
                 </Link>
               ))}
@@ -316,7 +332,7 @@ function Profile() {
 
         {/* Not Started Badges */}
         {notStarted.length > 0 && (
-          <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6">
             <div className="flex items-center gap-3 mb-4">
               <span className="text-2xl">⬜</span>
               <h2 className="text-xl font-bold text-white">
@@ -331,7 +347,7 @@ function Profile() {
                   params={{ badgeId: badge.id }}
                   className="group"
                 >
-                  <div className="bg-slate-700/30 border-2 border-slate-600 rounded-lg p-3 text-center hover:bg-slate-700/50 hover:border-slate-500 transition-all hover:scale-105 cursor-pointer">
+                  <div className="bg-white/10/30 border-2 border-slate-600 rounded-lg p-3 text-center hover:bg-white/10/50 hover:border-slate-500 transition-all hover:scale-105 cursor-pointer">
                     <div className="text-3xl mb-2 opacity-50">🏅</div>
                     <div className="text-gray-400 font-semibold text-xs mb-1 line-clamp-2 min-h-8">
                       {badge.name}

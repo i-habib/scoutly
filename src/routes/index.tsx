@@ -201,10 +201,10 @@ function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+      <div className="bg-black min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading your journey...</p>
+          <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-400">Loading your journey...</p>
         </div>
       </div>
     );
@@ -215,27 +215,32 @@ function Dashboard() {
   const currentPlan = userData?.aiPlan?.plan;
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-linear-to-r from-cyan-500/5 via-blue-500/5 to-purple-500/5"></div>
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      </div>
+    <div className="bg-black text-white min-h-screen">
+      {/* Dotted Background */}
+      <div
+        className="fixed inset-0 z-0"
+        style={{
+          backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
+          backgroundSize: '14px 14px',
+        }}
+      />
+      {/* Gradient Glow */}
+      <div className="fixed -top-1/4 -left-1/4 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
+      <div className="fixed -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-cyan-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s] pointer-events-none" />
 
       {/* Main Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
         {/* Welcome Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-linear-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/30">
+            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-cyan-600 rounded-xl flex items-center justify-center">
               <span className="text-2xl">🧭</span>
             </div>
             <div>
               <h1 className="text-3xl font-bold text-white">
-                Welcome back, <span className="bg-linear-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">{userName}</span>
+                Welcome back, <span className="text-green-400">{userName}</span>
               </h1>
-              <p className="text-gray-400">Let's continue your Eagle Scout journey</p>
+              <p className="text-slate-400">Let's continue your Eagle Scout journey</p>
             </div>
           </div>
         </div>
@@ -244,69 +249,69 @@ function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Progress Card */}
           <Link to="/merit-badges" className="block">
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 cursor-pointer">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-green-500/50 transition-all backdrop-blur-sm">
               <div className="flex items-center justify-between mb-4">
-                <div className="w-10 h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
                   <span className="text-xl">🎯</span>
                 </div>
                 <span className="text-2xl font-bold text-white">{stats.percentage}%</span>
               </div>
-              <h3 className="text-gray-400 text-sm font-medium">Overall Progress</h3>
+              <h3 className="text-slate-400 text-sm font-medium">Overall Progress</h3>
             </div>
           </Link>
 
           {/* Merit Badges Card */}
           <Link to="/merit-badges" className="block">
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-amber-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/10 cursor-pointer">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-green-500/50 transition-all backdrop-blur-sm">
               <div className="flex items-center justify-between mb-4">
-                <div className="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
                   <span className="text-xl">🏅</span>
                 </div>
                 <span className="text-2xl font-bold text-white">{stats.completed}/{stats.total}</span>
               </div>
-              <h3 className="text-gray-400 text-sm font-medium">Eagle Required</h3>
+              <h3 className="text-slate-400 text-sm font-medium">Eagle Required</h3>
             </div>
           </Link>
 
           {/* Upcoming Events Card */}
           <Link to="/events" className="block">
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10 cursor-pointer">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-cyan-500/50 transition-all backdrop-blur-sm">
               <div className="flex items-center justify-between mb-4">
-                <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center">
                   <span className="text-xl">📅</span>
                 </div>
                 <span className="text-2xl font-bold text-white">{stats.events}</span>
               </div>
-              <h3 className="text-gray-400 text-sm font-medium">Upcoming Events</h3>
+              <h3 className="text-slate-400 text-sm font-medium">Upcoming Events</h3>
             </div>
           </Link>
 
           {/* Days to Eagle Card */}
-          <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-emerald-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/10">
+          <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-green-500/50 transition-all backdrop-blur-sm">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
                 <span className="text-xl">📈</span>
               </div>
               <span className="text-2xl font-bold text-white">{stats.daysToEagle}</span>
             </div>
-            <h3 className="text-gray-400 text-sm font-medium">Days to Goal</h3>
+            <h3 className="text-slate-400 text-sm font-medium">Days to Goal</h3>
           </div>
         </div>
 
         {/* Main Content Grid - More balanced 5-column layout (3:2 ratio) */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* AI Eagle Plan - Featured Section */}
-          <div className="lg:col-span-3 bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl overflow-hidden">
+          <div className="lg:col-span-3 bg-white/5 border border-white/10 rounded-xl overflow-hidden backdrop-blur-sm">
             {/* Header */}
-            <div className="bg-linear-to-r from-cyan-500/20 to-blue-500/20 border-b border-white/10 px-6 py-4">
+            <div className="bg-green-500/10 border-b border-white/10 px-6 py-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-linear-to-br from-cyan-500 to-blue-600 rounded-xl">
+                  <div className="p-2 bg-gradient-to-br from-green-500 to-cyan-600 rounded-xl">
                     <span className="text-xl">🦅</span>
                   </div>
                   <div>
                     <h2 className="text-xl font-bold text-white">Your Eagle Scout Plan</h2>
-                    <p className="text-sm text-cyan-200">AI-powered personalized roadmap</p>
+                    <p className="text-sm text-green-300">AI-powered personalized roadmap</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -317,14 +322,14 @@ function Dashboard() {
                         className="p-2 hover:bg-white/10 rounded-lg transition-colors"
                         title="Download as PDF"
                       >
-                        <FileDown className="w-5 h-5 text-cyan-400" />
+                        <FileDown className="w-5 h-5 text-green-400" />
                       </button>
                       <button
                         onClick={handleDownloadPlan}
                         className="p-2 hover:bg-white/10 rounded-lg transition-colors"
                         title="Download as Markdown"
                       >
-                        <Download className="w-5 h-5 text-cyan-400" />
+                        <Download className="w-5 h-5 text-green-400" />
                       </button>
                     </>
                   )}
@@ -352,7 +357,7 @@ function Dashboard() {
                         <h2 className="text-xl font-bold text-white mb-3 mt-6">{children}</h2>
                       ),
                       h3: ({ children }) => (
-                        <h3 className="text-lg font-semibold text-cyan-400 mb-2 mt-4">{children}</h3>
+                        <h3 className="text-lg font-semibold text-green-400 mb-2 mt-4">{children}</h3>
                       ),
                       p: ({ children }) => (
                         <p className="text-slate-300 mb-3 leading-relaxed">{children}</p>
@@ -387,7 +392,7 @@ function Dashboard() {
                                   setCheckedItems(newCheckedItems);
                                   localStorage.setItem('scoutly_plan_checkboxes', JSON.stringify(newCheckedItems));
                                 }}
-                                className="mt-1 w-4 h-4 rounded border-cyan-500 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-slate-800 bg-slate-700 cursor-pointer"
+                                className="mt-1 w-4 h-4 rounded border-green-500 text-green-500 focus:ring-green-500 bg-black cursor-pointer"
                               />
                               <span className={isChecked ? 'line-through text-slate-500' : ''}>{text}</span>
                             </li>
@@ -396,10 +401,10 @@ function Dashboard() {
                         return <li className="text-slate-300 ml-6">{children}</li>;
                       },
                       strong: ({ children }) => (
-                        <strong className="text-cyan-400 font-semibold">{children}</strong>
+                        <strong className="text-green-400 font-semibold">{children}</strong>
                       ),
                       em: ({ children }) => (
-                        <em className="text-blue-400">{children}</em>
+                        <em className="text-cyan-400">{children}</em>
                       ),
                       a: ({ href, children }) => {
                         // Extract text from children (handle both string and array cases)
@@ -412,7 +417,7 @@ function Dashboard() {
                         return (
                           <a 
                             href={href} 
-                            className="text-cyan-400 hover:text-cyan-300 underline decoration-cyan-400/50 hover:decoration-cyan-300 transition-colors font-medium"
+                            className="text-green-400 hover:text-green-300 underline transition-colors font-medium"
                             target={href?.startsWith('http') ? '_blank' : undefined}
                             rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
                           >
@@ -421,10 +426,10 @@ function Dashboard() {
                         );
                       },
                       code: ({ children }) => (
-                        <code className="bg-slate-700/50 px-2 py-1 rounded text-cyan-400 text-sm">{children}</code>
+                        <code className="bg-white/10 px-2 py-1 rounded text-green-400 text-sm">{children}</code>
                       ),
                       hr: () => (
-                        <hr className="border-slate-700 my-6" />
+                        <hr className="border-white/10 my-6" />
                       ),
                     }}
                   >
@@ -439,7 +444,7 @@ function Dashboard() {
                 </div>
               ) : (
                 <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-linear-to-br from-cyan-500/20 to-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                     <span className="text-3xl">📋</span>
                   </div>
                   <h3 className="text-xl font-semibold text-white mb-2">No Plan Yet</h3>
@@ -449,7 +454,7 @@ function Dashboard() {
                   <button
                     onClick={handleGeneratePlan}
                     disabled={isGeneratingPlan}
-                    className="px-6 py-3 bg-linear-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:shadow-lg hover:shadow-cyan-500/20 transition-all disabled:opacity-50 inline-flex items-center gap-2"
+                    className="px-6 py-3 bg-linear-to-r from-green-500 to-cyan-600 text-black font-bold rounded-xl hover:shadow-lg transition-all disabled:opacity-50 inline-flex items-center gap-2"
                   >
                     {isGeneratingPlan ? (
                       <>

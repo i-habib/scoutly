@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import React, { useState, useEffect } from 'react';
-import { Calendar, Upload, Trash2, MapPin, Clock, Plus, X, Target, Award, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Upload, Trash2, MapPin, Clock, Plus, X, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { useUserData } from '../hooks/useUserData';
 import { analyzeCalendarEvents, needsEventReanalysis, type EventAnalysis } from '../services/aiService';
 import type { Event } from '../data/userData';
+import { TentIcon, MeritBadgeIcon, CompassIcon } from '../components/ScoutIcons';
 import meritBadgesData from '../data/merit-badges.json';
 
 export const Route = createFileRoute('/events')({
@@ -177,17 +178,19 @@ function EventsPage() {
   const events = userData?.events || [];
   
   // Sort events by priority score (highest first), then by date
+  const priorityValue = (p: string) => p === 'high' ? 3 : p === 'medium' ? 2 : 1;
+  
   const upcomingEvents = events
     .filter(e => new Date(e.startTime) >= new Date())
     .map(e => ({
       ...e,
       analysis: eventAnalysis[e.id],
-      priority: eventAnalysis[e.id]?.priority || 0
+      priorityNum: priorityValue(eventAnalysis[e.id]?.priority || 'low')
     }))
     .sort((a, b) => {
       // First sort by priority (high to low)
-      if (b.priority !== a.priority) {
-        return b.priority - a.priority;
+      if (b.priorityNum !== a.priorityNum) {
+        return b.priorityNum - a.priorityNum;
       }
       // Then by date (soonest first)
       return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
@@ -281,7 +284,7 @@ function EventsPage() {
     setIsAnalyzing(true);
     try {
       console.log('🤖 Manually triggering AI analysis...');
-      const analysis = await analyzeCalendarEvents(userData, eventAnalysis, { force: true });
+      const analysis = await analyzeCalendarEvents(userData, eventAnalysis, { skipCache: true });
       setEventAnalysis(prev => {
         const updated = { ...prev, ...analysis };
         localStorage.setItem('scoutly_event_analysis', JSON.stringify(updated));
@@ -490,23 +493,38 @@ function EventsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading events...</p>
+      <div 
+        className="min-h-screen bg-black flex items-center justify-center"
+        style={{
+          backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
+          backgroundSize: '14px 14px',
+          backgroundPosition: '0 0, 14px 14px',
+        }}
+      >
+        {/* Gradient glows */}
+        <div className="fixed top-0 left-0 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
+        <div className="fixed -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s] pointer-events-none" />
+        
+        <div className="text-center relative z-10">
+          <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-400">Loading events...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-linear-to-r from-cyan-500/5 via-blue-500/5 to-purple-500/5"></div>
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      </div>
+    <div 
+      className="min-h-screen bg-black"
+      style={{
+        backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
+        backgroundSize: '14px 14px',
+        backgroundPosition: '0 0, 14px 14px',
+      }}
+    >
+      {/* Gradient glows */}
+      <div className="fixed top-0 left-0 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
+      <div className="fixed -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s] pointer-events-none" />
 
       {/* Main Content */}
       <div className="relative z-10 max-w-6xl mx-auto px-6 py-8">
@@ -514,8 +532,8 @@ function EventsPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-linear-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/30">
-                <Calendar className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 bg-linear-to-br from-green-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/30">
+                <TentIcon className="w-6 h-6 text-white" size={24} />
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-white">Troop Events</h1>
@@ -539,14 +557,14 @@ function EventsPage() {
                     onClick={handleManualAnalysis}
                     className="px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 rounded-lg text-purple-400 transition-all flex items-center gap-2"
                   >
-                    <Target className="w-4 h-4" />
+                    <CompassIcon className="w-4 h-4" size={16} />
                     Analyze Next 30 Days ({unanalyzedCount})
                   </button>
                 ) : null;
               })()}
               
               {isAnalyzing && (
-                <div className="px-4 py-2 bg-cyan-500/20 border border-cyan-500/30 rounded-lg text-cyan-400 flex items-center gap-2">
+                <div className="px-4 py-2 bg-green-500/20 border border-green-500/30 rounded-lg text-green-400 flex items-center gap-2">
                   <div className="animate-spin rounded-full h-4 w-4 border-2 border-cyan-400 border-t-transparent"></div>
                   Analyzing...
                 </div>
@@ -561,7 +579,7 @@ function EventsPage() {
               </button>
               <button
                 onClick={() => setShowAddModal(true)}
-                className="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 rounded-lg text-white transition-all flex items-center gap-2"
+                className="px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-black font-bold transition-all flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
                 Add Event
@@ -580,15 +598,15 @@ function EventsPage() {
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4">
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-4">
-              <div className="text-2xl font-bold text-cyan-400">{upcomingEvents.length}</div>
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
+              <div className="text-2xl font-bold text-green-400">{upcomingEvents.length}</div>
               <div className="text-sm text-slate-400">Upcoming Events</div>
             </div>
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-4">
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
               <div className="text-2xl font-bold text-blue-400">{events.length}</div>
               <div className="text-sm text-slate-400">Total Events</div>
             </div>
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-4">
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
               <div className="text-2xl font-bold text-purple-400">{pastEvents.length}</div>
               <div className="text-sm text-slate-400">Past Events</div>
             </div>
@@ -597,7 +615,7 @@ function EventsPage() {
 
         {/* Calendar View */}
         <div className="mb-8">
-          <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6">
             {/* Calendar Header */}
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-white">
@@ -606,7 +624,7 @@ function EventsPage() {
               <div className="flex gap-2">
                 <button
                   onClick={previousMonth}
-                  className="p-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white transition-all"
+                  className="p-2 bg-white/10 hover:bg-white/20 rounded-lg text-black font-bold transition-all"
                   aria-label="Previous month"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -615,13 +633,13 @@ function EventsPage() {
                 </button>
                 <button
                   onClick={() => setCurrentMonth(new Date())}
-                  className="px-4 py-2 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/30 rounded-lg text-cyan-400 transition-all"
+                  className="px-4 py-2 bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 rounded-lg text-green-400 transition-all"
                 >
                   Today
                 </button>
                 <button
                   onClick={nextMonth}
-                  className="p-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white transition-all"
+                  className="p-2 bg-white/10 hover:bg-white/20 rounded-lg text-black font-bold transition-all"
                   aria-label="Next month"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -662,10 +680,10 @@ function EventsPage() {
                       onMouseLeave={handleMouseLeave}
                       className={`w-full min-h-24 p-1.5 rounded-lg transition-all relative flex flex-col ${
                         isTodayDate
-                          ? 'bg-cyan-500/20 border-2 border-cyan-500 text-cyan-400 font-bold'
+                          ? 'bg-green-500/20 border-2 border-green-500 text-green-400 font-bold'
                           : hasEvents
-                          ? 'bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-white'
-                          : 'bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 text-slate-400'
+                          ? 'bg-white/10/50 hover:bg-white/10 border border-white/10 text-white'
+                          : 'bg-white/5/50 hover:bg-white/10 border border-white/10/50 text-slate-400'
                       }`}
                     >
                       <div className="text-sm font-semibold mb-1">{day}</div>
@@ -701,7 +719,7 @@ function EventsPage() {
 
                     {/* Hover popup for full details */}
                     {isHovered && hasEvents && (
-                      <div className="absolute z-50 top-full mt-2 left-1/2 transform -translate-x-1/2 w-64 bg-slate-800 border border-slate-600 rounded-lg shadow-xl p-3 pointer-events-none">
+                      <div className="absolute z-50 top-full mt-2 left-1/2 transform -translate-x-1/2 w-64 bg-white/5 border border-white/10 rounded-lg shadow-xl p-3 pointer-events-none">
                         <div className="text-xs font-semibold text-slate-400 mb-2">
                           {currentDate.toLocaleDateString('en-US', { 
                             weekday: 'short', 
@@ -747,7 +765,7 @@ function EventsPage() {
 
             {/* Selected Date Events */}
             {selectedDate && getEventsForDate(selectedDate).length > 0 && (
-              <div className="mt-6 pt-6 border-t border-slate-700">
+              <div className="mt-6 pt-6 border-t border-white/10">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-white">
                     Events on {selectedDate.toLocaleDateString('en-US', { 
@@ -768,7 +786,7 @@ function EventsPage() {
                   {getEventsForDate(selectedDate).map(event => (
                     <div
                       key={event.id}
-                      className="bg-slate-700/50 rounded-lg p-3 flex items-start justify-between"
+                      className="bg-white/10/50 rounded-lg p-3 flex items-start justify-between"
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
@@ -841,8 +859,8 @@ function EventsPage() {
             )}
           </div>
           {upcomingEvents.length === 0 ? (
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-8 text-center">
-              <Calendar className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-8 text-center">
+              <TentIcon className="w-12 h-12 text-slate-600 mx-auto mb-3" size={48} />
               <p className="text-slate-400">No upcoming events. Add one or import from ICS file!</p>
             </div>
           ) : (
@@ -870,7 +888,7 @@ function EventsPage() {
       {/* Add Event Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-          <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-md w-full">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 max-w-md w-full">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-white">Add Event</h3>
               <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-white">
@@ -885,7 +903,7 @@ function EventsPage() {
                   type="text"
                   value={newEvent.name}
                   onChange={(e) => setNewEvent({ ...newEvent, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-slate-900 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                   placeholder="Troop Meeting, Campout, etc."
                 />
               </div>
@@ -896,7 +914,7 @@ function EventsPage() {
                   type="datetime-local"
                   value={newEvent.startTime}
                   onChange={(e) => setNewEvent({ ...newEvent, startTime: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-slate-900 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                 />
               </div>
 
@@ -906,7 +924,7 @@ function EventsPage() {
                   type="datetime-local"
                   value={newEvent.endTime}
                   onChange={(e) => setNewEvent({ ...newEvent, endTime: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-slate-900 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                 />
               </div>
 
@@ -916,7 +934,7 @@ function EventsPage() {
                   type="text"
                   value={newEvent.location}
                   onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-slate-900 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                   placeholder="Location or address"
                 />
               </div>
@@ -926,7 +944,7 @@ function EventsPage() {
                 <select
                   value={newEvent.type}
                   onChange={(e) => setNewEvent({ ...newEvent, type: e.target.value as Event['type'] })}
-                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-slate-900 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                 >
                   <option value="meeting">Meeting</option>
                   <option value="campout">Campout</option>
@@ -938,13 +956,13 @@ function EventsPage() {
               <div className="flex gap-3 pt-4">
                 <button
                   onClick={() => setShowAddModal(false)}
-                  className="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white transition-all"
+                  className="flex-1 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-black font-bold transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleAddEvent}
-                  className="flex-1 px-4 py-2 bg-cyan-500 hover:bg-cyan-600 rounded-lg text-white transition-all"
+                  className="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-black font-bold transition-all"
                 >
                   Add Event
                 </button>
@@ -957,7 +975,7 @@ function EventsPage() {
       {/* Upload ICS Modal */}
       {showUploadModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-          <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-md w-full">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 max-w-md w-full">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-white">Import Calendar</h3>
               <button onClick={() => setShowUploadModal(false)} className="text-slate-400 hover:text-white">
@@ -970,7 +988,7 @@ function EventsPage() {
                 Upload an ICS (iCalendar) file to import events from your troop calendar, Google Calendar, or other calendar apps.
               </p>
 
-              <div className="border-2 border-dashed border-slate-700 rounded-xl p-8 text-center hover:border-cyan-500 transition-colors">
+              <div className="border-2 border-dashed border-white/10 rounded-xl p-8 text-center hover:border-green-500 transition-colors">
                 <input
                   type="file"
                   accept=".ics,.ical"
@@ -979,7 +997,7 @@ function EventsPage() {
                   id="ics-upload"
                 />
                 <label htmlFor="ics-upload" className="cursor-pointer">
-                  <Upload className="w-12 h-12 text-cyan-400 mx-auto mb-3" />
+                  <Upload className="w-12 h-12 text-green-400 mx-auto mb-3" />
                   <p className="text-white font-medium mb-1">Click to upload</p>
                   <p className="text-sm text-slate-400">or drag and drop ICS file</p>
                 </label>
@@ -987,7 +1005,7 @@ function EventsPage() {
 
               <button
                 onClick={() => setShowUploadModal(false)}
-                className="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white transition-all"
+                className="w-full px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-black font-bold transition-all"
               >
                 Cancel
               </button>
@@ -1043,57 +1061,50 @@ function EventCard({
 
   const hasAnalysis = analysis && (
     (analysis.opportunities && analysis.opportunities.length > 0) ||
-    (analysis.meritBadges && analysis.meritBadges.length > 0) ||
     (analysis.requirements && analysis.requirements.length > 0) ||
     (analysis.signoffs && analysis.signoffs.length > 0)
   );
   
   // Priority badge color
-  const getPriorityColor = (priority: number) => {
-    if (priority >= 9) return 'bg-red-500/20 text-red-400 border-red-500/40';
-    if (priority >= 7) return 'bg-orange-500/20 text-orange-400 border-orange-500/40';
-    if (priority >= 5) return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40';
+  const getPriorityColor = (priority: string) => {
+    if (priority === 'high') return 'bg-red-500/20 text-red-400 border-red-500/40';
+    if (priority === 'medium') return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40';
     return 'bg-slate-500/20 text-slate-400 border-slate-500/40';
   };
 
   return (
     <div 
-      className={`relative bg-slate-800/50 backdrop-blur-sm border rounded-xl p-4 transition-all ${
-        isPast ? 'opacity-60 border-slate-700' : hasAnalysis && analysis.priority >= 8 ? 'border-orange-500/50 shadow-lg shadow-orange-500/10' : 'border-slate-700 hover:border-cyan-500/50'
+      className={`relative bg-white/5 backdrop-blur-xl border rounded-xl p-4 transition-all ${
+        isPast ? 'opacity-60 border-white/10' : hasAnalysis && analysis.priority === 'high' ? 'border-orange-500/50 shadow-lg shadow-orange-500/10' : 'border-white/10 hover:border-green-500/50'
       }`}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
       {/* Quick Tooltip on Hover */}
       {!isPast && hasAnalysis && showTooltip && !showDetails && (
-        <div className="absolute z-50 left-0 right-0 top-full mt-2 p-3 bg-slate-900 border border-cyan-500/50 rounded-lg shadow-xl animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute z-50 left-0 right-0 top-full mt-2 p-3 bg-black border border-green-500/50 rounded-lg shadow-xl animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="text-xs text-slate-300 space-y-2">
-            {/* Quick Summary Headline */}
-            {analysis.quickSummary?.headline && (
-              <div className="font-semibold text-cyan-400">{analysis.quickSummary.headline}</div>
-            )}
-            
-            {/* Key Actions */}
-            {analysis.quickSummary?.keyActions && analysis.quickSummary.keyActions.length > 0 && (
+            {/* Opportunities */}
+            {analysis.opportunities && analysis.opportunities.length > 0 && (
               <div className="space-y-1">
-                {analysis.quickSummary.keyActions.slice(0, 3).map((action, i) => (
+                {analysis.opportunities.slice(0, 3).map((opp: string, i: number) => (
                   <div key={i} className="flex items-start gap-2">
-                    <Target className="w-3 h-3 text-cyan-400 mt-0.5 shrink-0" />
-                    <span>{action}</span>
+                    <CompassIcon className="w-3 h-3 text-green-400 mt-0.5 shrink-0" size={12} />
+                    <span>{opp}</span>
                   </div>
                 ))}
               </div>
             )}
             
-            {/* Merit Badges */}
-            {analysis.meritBadges && analysis.meritBadges.length > 0 && (
-              <div className="flex items-start gap-2 pt-1 border-t border-slate-700">
-                <Award className="w-3 h-3 text-yellow-400 mt-0.5 shrink-0" />
-                <span><strong>Badges:</strong> {analysis.meritBadges.slice(0, 3).join(', ')}{analysis.meritBadges.length > 3 ? '...' : ''}</span>
+            {/* Requirements */}
+            {analysis.requirements && analysis.requirements.length > 0 && (
+              <div className="flex items-start gap-2 pt-1 border-t border-white/10">
+                <MeritBadgeIcon className="w-3 h-3 text-yellow-400 mt-0.5 shrink-0" size={12} />
+                <span><strong>Reqs:</strong> {analysis.requirements.slice(0, 2).map((r: any) => r.name).join(', ')}</span>
               </div>
             )}
             
-            <div className="text-cyan-400 font-medium pt-1 border-t border-slate-700">→ Click to see full analysis</div>
+            <div className="text-green-400 font-medium pt-1 border-t border-white/10">→ Click to see full analysis</div>
           </div>
         </div>
       )}
@@ -1108,7 +1119,7 @@ function EventCard({
             {/* Priority Badge */}
             {!isPast && hasAnalysis && analysis.priority && (
               <span className={`px-2 py-1 rounded text-xs font-bold border ${getPriorityColor(analysis.priority)}`}>
-                Priority {analysis.priority}/10
+                {analysis.priority.toUpperCase()}
               </span>
             )}
             
@@ -1140,18 +1151,11 @@ function EventCard({
             )}
           </div>
 
-          {/* Priority Reason - Always visible */}
-          {!isPast && hasAnalysis && analysis.priorityReason && (
-            <div className="mt-3 p-2 bg-purple-500/10 border border-purple-500/30 rounded text-sm text-purple-300">
-              <strong>Why this matters:</strong> {analysis.priorityReason}
-            </div>
-          )}
-
           {/* See More Button */}
           {!isPast && hasAnalysis && (
             <button
               onClick={() => setShowDetails(!showDetails)}
-              className="mt-3 w-full py-2 px-4 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 hover:border-cyan-500/50 rounded-lg text-sm font-medium text-cyan-400 transition-all flex items-center justify-center gap-2"
+              className="mt-3 w-full py-2 px-4 bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 hover:border-green-500/50 rounded-lg text-sm font-medium text-green-400 transition-all flex items-center justify-center gap-2"
             >
               {showDetails ? (
                 <>
@@ -1169,65 +1173,18 @@ function EventCard({
 
           {/* AI Analysis Section - Show when button clicked */}
           {!isPast && hasAnalysis && showDetails && (
-            <div className="mt-4 pt-4 border-t border-slate-700 animate-in fade-in duration-200">
+            <div className="mt-4 pt-4 border-t border-white/10 animate-in fade-in duration-200">
               <div className="grid gap-4">
-                {/* Rank Focus - NEW! */}
-                {analysis.rankFocus && Object.values(analysis.rankFocus).some(arr => arr.length > 0) && (
-                  <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3">
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <Target className="w-4 h-4 text-purple-400" />
-                      <h5 className="text-sm font-bold text-purple-400">Rank-Specific Tips</h5>
-                    </div>
-                    <div className="space-y-2">
-                      {(['scout', 'tenderfoot', 'second_class', 'first_class'] as const).map(rank => {
-                        const tips = analysis.rankFocus[rank];
-                        if (!tips || tips.length === 0) return null;
-                        return (
-                          <div key={rank} className="text-xs">
-                            <div className="text-purple-300 font-semibold mb-1 capitalize">
-                              {rank.replace('_', ' ')}:
-                            </div>
-                            <ul className="space-y-0.5">
-                              {tips.map((tip, i) => (
-                                <li key={i} className="text-slate-300 pl-3 before:content-['→'] before:mr-2 before:text-purple-400">
-                                  {tip}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {/* Next Rank Outlook - NEW! */}
-                {analysis.nextRankOutlook && analysis.nextRankOutlook.length > 0 && (
-                  <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-3">
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <CheckCircle className="w-4 h-4 text-cyan-400" />
-                      <h5 className="text-sm font-bold text-cyan-400">After This Event</h5>
-                    </div>
-                    <ul className="space-y-1">
-                      {analysis.nextRankOutlook.map((item, i) => (
-                        <li key={i} className="text-xs text-slate-300 pl-3 before:content-['✓'] before:mr-2 before:text-cyan-400">
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
                 {/* Opportunities */}
                 {analysis.opportunities && analysis.opportunities.length > 0 && (
                   <div>
                     <div className="flex items-center gap-1.5 mb-1.5">
-                      <Target className="w-3.5 h-3.5 text-cyan-400" />
-                      <h5 className="text-xs font-semibold text-cyan-400">What To Do</h5>
+                      <CompassIcon className="w-3.5 h-3.5 text-green-400" size={14} />
+                      <h5 className="text-xs font-semibold text-green-400">What To Do</h5>
                     </div>
                     <ul className="space-y-1">
-                      {analysis.opportunities.map((opp, i) => (
-                        <li key={i} className="text-xs text-slate-300 pl-4 before:content-['•'] before:mr-2 before:text-cyan-400">
+                      {analysis.opportunities.map((opp: string, i: number) => (
+                        <li key={i} className="text-xs text-slate-300 pl-4 before:content-['•'] before:mr-2 before:text-green-400">
                           {convertBadgeNamesToLinks(opp)}
                         </li>
                       ))}
@@ -1243,9 +1200,9 @@ function EventCard({
                       <h5 className="text-xs font-semibold text-green-400">Requirements</h5>
                     </div>
                     <ul className="space-y-1">
-                      {analysis.requirements.map((req, i) => (
+                      {analysis.requirements.map((req: any, i: number) => (
                         <li key={i} className="text-xs text-slate-300 pl-4 before:content-['•'] before:mr-2 before:text-green-400">
-                          {convertBadgeNamesToLinks(req)}
+                          <strong>{req.name}</strong> - {req.requirement}
                         </li>
                       ))}
                     </ul>
@@ -1260,26 +1217,9 @@ function EventCard({
                       <h5 className="text-xs font-semibold text-blue-400">Signoffs Available</h5>
                     </div>
                     <ul className="space-y-1">
-                      {analysis.signoffs.map((signoff, i) => (
+                      {analysis.signoffs.map((signoff: any, i: number) => (
                         <li key={i} className="text-xs text-slate-300 pl-4 before:content-['•'] before:mr-2 before:text-blue-400">
-                          {convertBadgeNamesToLinks(signoff)}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Merit Badges */}
-                {analysis.meritBadges && analysis.meritBadges.length > 0 && (
-                  <div>
-                    <div className="flex items-center gap-1.5 mb-1.5">
-                      <Award className="w-3.5 h-3.5 text-yellow-400" />
-                      <h5 className="text-xs font-semibold text-yellow-400">Merit Badges</h5>
-                    </div>
-                    <ul className="space-y-1">
-                      {analysis.meritBadges.map((badge, i) => (
-                        <li key={i} className="text-xs text-slate-300 pl-4 before:content-['•'] before:mr-2 before:text-yellow-400">
-                          {convertBadgeNamesToLinks(badge)}
+                          {signoff.name}
                         </li>
                       ))}
                     </ul>

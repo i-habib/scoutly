@@ -5,12 +5,9 @@ import {
   Home,
   Menu,
   X,
-  Award,
-  Sparkles,
-  Calendar,
   User,
-  Trophy,
 } from 'lucide-react'
+import { ScoutFleurDeLis, EagleIcon, MeritBadgeIcon, TentIcon } from './ScoutIcons'
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -29,7 +26,7 @@ export default function Header() {
           <h1 className="text-xl font-semibold">
             <Link to="/" className="text-white hover:text-cyan-400 transition-colors flex items-center gap-2">
               <div className="w-8 h-8 bg-linear-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
+                <ScoutFleurDeLis className="w-5 h-5 text-white" />
               </div>
               Scoutly
             </Link>
@@ -38,6 +35,17 @@ export default function Header() {
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-2">
+          <Link
+            to="/landing"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium"
+            activeProps={{
+              className: 'flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors text-sm font-medium',
+            }}
+          >
+            <ScoutFleurDeLis size={18} />
+            <span>Home</span>
+          </Link>
+
           <Link
             to="/"
             className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium"
@@ -56,7 +64,7 @@ export default function Header() {
               className: 'flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors text-sm font-medium',
             }}
           >
-            <Sparkles size={18} />
+            <ScoutFleurDeLis size={18} />
             <span>AI Coach</span>
           </Link>
 
@@ -67,7 +75,7 @@ export default function Header() {
               className: 'flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors text-sm font-medium',
             }}
           >
-            <Trophy size={18} />
+            <EagleIcon size={18} />
             <span>Advancement</span>
           </Link>
 
@@ -78,7 +86,7 @@ export default function Header() {
               className: 'flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors text-sm font-medium',
             }}
           >
-            <Award size={18} />
+            <MeritBadgeIcon size={18} />
             <span>Merit Badges</span>
           </Link>
 
@@ -89,7 +97,7 @@ export default function Header() {
               className: 'flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors text-sm font-medium',
             }}
           >
-            <Calendar size={18} />
+            <TentIcon size={18} />
             <span>Events</span>
           </Link>
 
@@ -124,6 +132,19 @@ export default function Header() {
 
         <nav className="flex-1 p-4 overflow-y-auto">
           <Link
+            to="/landing"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors mb-2"
+            activeProps={{
+              className:
+                'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
+            }}
+          >
+            <ScoutFleurDeLis size={20} />
+            <span className="font-medium">Home</span>
+          </Link>
+
+          <Link
             to="/"
             onClick={() => setIsOpen(false)}
             className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors mb-2"
@@ -145,7 +166,7 @@ export default function Header() {
                 'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
             }}
           >
-            <Sparkles size={20} />
+            <ScoutFleurDeLis size={20} />
             <span className="font-medium">AI Eagle Coach</span>
           </Link>
 
@@ -158,7 +179,7 @@ export default function Header() {
                 'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
             }}
           >
-            <Trophy size={20} />
+            <EagleIcon size={20} />
             <span className="font-medium">Advancement</span>
           </Link>
 
@@ -171,7 +192,7 @@ export default function Header() {
                 'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
             }}
           >
-            <Award size={20} />
+            <MeritBadgeIcon size={20} />
             <span className="font-medium">Merit Badges</span>
           </Link>
 
@@ -183,7 +204,7 @@ export default function Header() {
               className: 'flex items-center gap-3 p-3 rounded-lg transition-colors mb-2 bg-cyan-500 text-white'
             }}
           >
-            <Calendar size={20} />
+            <TentIcon size={20} />
             <span className="font-medium">Events</span>
           </Link>
 

@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as LandingRouteImport } from './routes/landing'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as AiCoachRouteImport } from './routes/ai-coach'
 import { Route as AdvancementRouteImport } from './routes/advancement'
@@ -26,6 +28,16 @@ const ProfileRoute = ProfileRouteImport.update({
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandingRoute = LandingRouteImport.update({
+  id: '/landing',
+  path: '/landing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EventsRoute = EventsRouteImport.update({
@@ -64,6 +76,8 @@ export interface FileRoutesByFullPath {
   '/advancement': typeof AdvancementRoute
   '/ai-coach': typeof AiCoachRoute
   '/events': typeof EventsRoute
+  '/landing': typeof LandingRoute
+  '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/profile': typeof ProfileRoute
   '/merit-badges/$badgeId': typeof MeritBadgesBadgeIdRoute
@@ -74,6 +88,8 @@ export interface FileRoutesByTo {
   '/advancement': typeof AdvancementRoute
   '/ai-coach': typeof AiCoachRoute
   '/events': typeof EventsRoute
+  '/landing': typeof LandingRoute
+  '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/profile': typeof ProfileRoute
   '/merit-badges/$badgeId': typeof MeritBadgesBadgeIdRoute
@@ -85,6 +101,8 @@ export interface FileRoutesById {
   '/advancement': typeof AdvancementRoute
   '/ai-coach': typeof AiCoachRoute
   '/events': typeof EventsRoute
+  '/landing': typeof LandingRoute
+  '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/profile': typeof ProfileRoute
   '/merit-badges/$badgeId': typeof MeritBadgesBadgeIdRoute
@@ -97,6 +115,8 @@ export interface FileRouteTypes {
     | '/advancement'
     | '/ai-coach'
     | '/events'
+    | '/landing'
+    | '/login'
     | '/onboarding'
     | '/profile'
     | '/merit-badges/$badgeId'
@@ -107,6 +127,8 @@ export interface FileRouteTypes {
     | '/advancement'
     | '/ai-coach'
     | '/events'
+    | '/landing'
+    | '/login'
     | '/onboarding'
     | '/profile'
     | '/merit-badges/$badgeId'
@@ -117,6 +139,8 @@ export interface FileRouteTypes {
     | '/advancement'
     | '/ai-coach'
     | '/events'
+    | '/landing'
+    | '/login'
     | '/onboarding'
     | '/profile'
     | '/merit-badges/$badgeId'
@@ -128,6 +152,8 @@ export interface RootRouteChildren {
   AdvancementRoute: typeof AdvancementRoute
   AiCoachRoute: typeof AiCoachRoute
   EventsRoute: typeof EventsRoute
+  LandingRoute: typeof LandingRoute
+  LoginRoute: typeof LoginRoute
   OnboardingRoute: typeof OnboardingRoute
   ProfileRoute: typeof ProfileRoute
   MeritBadgesBadgeIdRoute: typeof MeritBadgesBadgeIdRoute
@@ -148,6 +174,20 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landing': {
+      id: '/landing'
+      path: '/landing'
+      fullPath: '/landing'
+      preLoaderRoute: typeof LandingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/events': {
@@ -200,6 +240,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdvancementRoute: AdvancementRoute,
   AiCoachRoute: AiCoachRoute,
   EventsRoute: EventsRoute,
+  LandingRoute: LandingRoute,
+  LoginRoute: LoginRoute,
   OnboardingRoute: OnboardingRoute,
   ProfileRoute: ProfileRoute,
   MeritBadgesBadgeIdRoute: MeritBadgesBadgeIdRoute,
