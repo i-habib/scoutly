@@ -1,9 +1,32 @@
 // Server functions for AI operations - TanStack Start native pattern
 import { createServerFn } from '@tanstack/react-start'
+import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai'
 import type { UserData } from '../data/userData'
 import meritBadgesJSON from '../data/merit-badges.json'
 
 const meritBadgesData = meritBadgesJSON.meritBadges
+
+// Initialize Google AI
+const getGeminiModel = (useJsonMode = false) => {
+  const apiKey = process.env.GEMINI_API_KEY
+  if (!apiKey) {
+    throw new Error('GEMINI_API_KEY not configured on server')
+  }
+  
+  const genAI = new GoogleGenerativeAI(apiKey)
+  const modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash-latest'
+  
+  if (useJsonMode) {
+    return genAI.getGenerativeModel({
+      model: modelName,
+      generationConfig: {
+        responseMimeType: 'application/json',
+      },
+    })
+  }
+  
+  return genAI.getGenerativeModel({ model: modelName })
+}
 
 // ============= RATE LIMITING =============
 const rateLimitMap = new Map<string, number>()
@@ -44,42 +67,32 @@ async function callGemini(
   temperature: number = 0.5,
   schema?: any
 ): Promise<string> {
-  const apiKey = process.env.GEMINI_API_KEY
-  const model = process.env.GEMINI_MODEL || 'gemini-flash-latest'
-
-  if (!apiKey) {
-    throw new Error('GEMINI_API_KEY not configured on server')
-  }
-
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`
-
+  const model = schema ? getGeminiModel(true) : getGeminiModel(false)
+  
   const generationConfig: any = {
     temperature,
     maxOutputTokens: 4000,
   }
-
-  // If schema provided, use JSON schema mode for strict JSON
+  
+  // Add schema if provided
   if (schema) {
-    generationConfig.responseMimeType = 'application/json'
     generationConfig.responseSchema = schema
   }
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
+  
+  try {
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
       generationConfig,
-    }),
-  })
-
-  if (!response.ok) {
-    const text = await response.text()
-    throw new Error(`Gemini API error: ${response.status} - ${text}`)
+    })
+    
+    const response = result.response
+    return response.text()
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Gemini API error: ${error.message}`)
+    }
+    throw new Error('Gemini API error: Unknown error occurred')
   }
-
-  const data = await response.json()
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || ''
 }
 
 function buildPlanContext(userData: UserData): string {
@@ -148,29 +161,38 @@ export const analyzeCalendarEvents = createServerFn({
     .filter((mb: any) => mb.eagleRequired)
     .map((mb: any) => mb.name)
 
-  // Define strict JSON schema for Gemini
+  // Define strict JSON schema for Gemini using the SDK's SchemaType
   const responseSchema = {
-    type: 'array',
+    type: SchemaType.ARRAY,
     items: {
-      type: 'object',
+      type: SchemaType.OBJECT,
       properties: {
-        eventId: { type: 'string' },
+        eventId: { 
+          type: SchemaType.STRING,
+          description: 'The unique ID of the event'
+        },
         opportunities: {
-          type: 'array',
-          items: { type: 'string' }
+          type: SchemaType.ARRAY,
+          items: { type: SchemaType.STRING },
+          description: 'List of specific actionable opportunities at this event'
         },
         signoffs: {
-          type: 'array',
+          type: SchemaType.ARRAY,
           items: {
-            type: 'object',
+            type: SchemaType.OBJECT,
             properties: {
-              id: { type: 'string' },
-              name: { type: 'string' }
+              id: { type: SchemaType.STRING },
+              name: { type: SchemaType.STRING }
             },
             required: ['id', 'name']
-          }
+          },
+          description: 'List of requirements that can be signed off'
         },
-        priority: { type: 'string', enum: ['high', 'medium', 'low'] }
+        priority: { 
+          type: SchemaType.STRING,
+          enum: ['high', 'medium', 'low'],
+          description: 'Priority level based on advancement opportunities'
+        }
       },
       required: ['eventId', 'opportunities', 'signoffs', 'priority']
     }
@@ -314,6 +336,8 @@ export const sendChatMessage = createServerFn({
   checkRateLimit(`chat-${userData.profile.name || 'anonymous'}`)
   
   const context = buildPlanContext(userData)
+  
+  const model = getGeminiModel(false)
 
   const systemPrompt = `You are an experienced Eagle Scout advisor and mentor. You provide DETAILED, specific, and actionable advice.
 
@@ -332,14 +356,34 @@ When answering questions:
 
 If asked about a merit badge, explain the specific requirements, what materials are needed, estimated time to complete, and tips for success.`
 
-  const fullPrompt = history.length > 0
-    ? `${systemPrompt}\n\nConversation:\n${history.map((h) => `${h.role}: ${h.parts[0].text}`).join('\n')}\nuser: ${message}`
-    : `${systemPrompt}\n\nuser: ${message}`
+  try {
+    // Build chat history for the SDK
+    const chatHistory = history.map((h) => ({
+      role: h.role,
+      parts: [{ text: h.parts[0].text }],
+    }))
 
-  const response = await callGemini(fullPrompt, 0.7)
-  
-  return {
-    role: 'model' as const,
-    parts: response,
+    // Start a chat session with history
+    const chat = model.startChat({
+      history: chatHistory,
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 4000,
+      },
+      systemInstruction: systemPrompt,
+    })
+
+    const result = await chat.sendMessage(message)
+    const response = result.response.text()
+    
+    return {
+      role: 'model' as const,
+      parts: response,
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Chat error: ${error.message}`)
+    }
+    throw new Error('Chat error: Unknown error occurred')
   }
 })
