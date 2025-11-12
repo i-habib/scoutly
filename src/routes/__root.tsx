@@ -4,6 +4,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { inject } from "@vercel/analytics"
 import Header from '../components/Header'
+import { Analytics } from "@vercel/analytics/react"
 
 import appCss from '../styles.css?url'
 
@@ -66,6 +67,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         </QueryClientProvider>
         <Scripts />
         inject()
+        <Analytics />
       </body>
     </html>
   )

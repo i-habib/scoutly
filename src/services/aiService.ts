@@ -11,7 +11,7 @@ import {
 
 export interface GeminiHistoryMessage {
   role: 'user' | 'model';
-  parts: string;
+  parts: Array<{ text: string }>;
 }
 
 export const EVENT_ANALYSIS_SCHEMA_VERSION = 2;
@@ -55,7 +55,7 @@ export const sendChatMessage = async (
   userMessage: string,
   userData: UserData,
   history: GeminiHistoryMessage[]
-): Promise<{ response: string }> => {
+): Promise<{ response: string; updatedPlan?: string }> => {
   const result = await sendChatMessageServer({
     data: { 
       message: userMessage,
@@ -65,7 +65,8 @@ export const sendChatMessage = async (
   })
   
   return {
-    response: result.parts,
+    response: result.parts || '',
+    updatedPlan: undefined, // No plan updates in chat for now
   };
 };
 
