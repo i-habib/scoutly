@@ -4,7 +4,7 @@ import { Upload, Trash2, MapPin, Clock, Plus, X, CheckCircle, ChevronDown, Chevr
 import { useUserData } from '../hooks/useUserData';
 import { analyzeCalendarEvents, needsEventReanalysis, type EventAnalysis } from '../services/aiService';
 import type { Event } from '../data/userData';
-import { TentIcon, MeritBadgeIcon, CompassIcon } from '../components/ScoutIcons';
+import { TentIcon, CompassIcon } from '../components/ScoutIcons';
 import meritBadgesData from '../data/merit-badges.json';
 
 export const Route = createFileRoute('/events')({
@@ -1061,7 +1061,6 @@ function EventCard({
 
   const hasAnalysis = analysis && (
     (analysis.opportunities && analysis.opportunities.length > 0) ||
-    (analysis.requirements && analysis.requirements.length > 0) ||
     (analysis.signoffs && analysis.signoffs.length > 0)
   );
   
@@ -1093,14 +1092,6 @@ function EventCard({
                     <span>{opp}</span>
                   </div>
                 ))}
-              </div>
-            )}
-            
-            {/* Requirements */}
-            {analysis.requirements && analysis.requirements.length > 0 && (
-              <div className="flex items-start gap-2 pt-1 border-t border-white/10">
-                <MeritBadgeIcon className="w-3 h-3 text-yellow-400 mt-0.5 shrink-0" size={12} />
-                <span><strong>Reqs:</strong> {analysis.requirements.slice(0, 2).map((r: any) => r.name).join(', ')}</span>
               </div>
             )}
             
@@ -1186,23 +1177,6 @@ function EventCard({
                       {analysis.opportunities.map((opp: string, i: number) => (
                         <li key={i} className="text-xs text-slate-300 pl-4 before:content-['•'] before:mr-2 before:text-green-400">
                           {convertBadgeNamesToLinks(opp)}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Requirements */}
-                {analysis.requirements && analysis.requirements.length > 0 && (
-                  <div>
-                    <div className="flex items-center gap-1.5 mb-1.5">
-                      <CheckCircle className="w-3.5 h-3.5 text-green-400" />
-                      <h5 className="text-xs font-semibold text-green-400">Requirements</h5>
-                    </div>
-                    <ul className="space-y-1">
-                      {analysis.requirements.map((req: any, i: number) => (
-                        <li key={i} className="text-xs text-slate-300 pl-4 before:content-['•'] before:mr-2 before:text-green-400">
-                          <strong>{req.name}</strong> - {req.requirement}
                         </li>
                       ))}
                     </ul>

@@ -19,12 +19,6 @@ export const EVENT_ANALYSIS_SCHEMA_VERSION = 2;
 export interface EventAnalysis {
   eventId: string;
   opportunities: string[];
-  requirements: Array<{
-    id: string
-    name: string
-    type: 'merit_badge' | 'rank'
-    requirement: string
-  }>;
   signoffs: Array<{
     id: string
     name: string

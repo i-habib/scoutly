@@ -7,7 +7,7 @@ const meritBadgesData = meritBadgesJSON.meritBadges
 
 // ============= RATE LIMITING =============
 const rateLimitMap = new Map<string, number>()
-const RATE_LIMIT_MS = 10000 // 10 seconds
+const RATE_LIMIT_MS = 30000 // 30 seconds
 
 function checkRateLimit(key: string): void {
   const now = Date.now()
@@ -26,12 +26,6 @@ function checkRateLimit(key: string): void {
 interface EventAnalysis {
   eventId: string
   opportunities: string[]
-  requirements: Array<{
-    id: string
-    name: string
-    type: 'merit_badge' | 'rank'
-    requirement: string
-  }>
   signoffs: Array<{
     id: string
     name: string
@@ -165,19 +159,6 @@ export const analyzeCalendarEvents = createServerFn({
           type: 'array',
           items: { type: 'string' }
         },
-        requirements: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              id: { type: 'string' },
-              name: { type: 'string' },
-              type: { type: 'string', enum: ['merit_badge', 'rank'] },
-              requirement: { type: 'string' }
-            },
-            required: ['id', 'name', 'type', 'requirement']
-          }
-        },
         signoffs: {
           type: 'array',
           items: {
@@ -191,24 +172,42 @@ export const analyzeCalendarEvents = createServerFn({
         },
         priority: { type: 'string', enum: ['high', 'medium', 'low'] }
       },
-      required: ['eventId', 'opportunities', 'requirements', 'signoffs', 'priority']
+      required: ['eventId', 'opportunities', 'signoffs', 'priority']
     }
   }
 
-  const prompt = `Analyze these Scout events and identify Eagle advancement opportunities.
+  const prompt = `You are an experienced Eagle Scout advisor helping a Scout maximize their advancement at upcoming events.
 
-EVENTS:
-${eventsNeedingAnalysis.map((e: any) => `- ID: ${e.id}, Name: ${e.name}, Date: ${e.startTime || e.start}`).join('\n')}
+EVENTS TO ANALYZE:
+${eventsNeedingAnalysis.map((e: any) => `- ID: ${e.id}, Name: ${e.name}, Type: ${e.type || 'other'}, Date: ${e.startTime || e.start}, Location: ${e.location || 'TBD'}`).join('\n')}
 
-EAGLE-REQUIRED BADGES: ${requiredBadges.slice(0, 10).join(', ')}...
+EAGLE-REQUIRED MERIT BADGES: ${requiredBadges.slice(0, 10).join(', ')}... and ${requiredBadges.length - 10} more
 
-For each event, identify:
-1. Advancement opportunities (skills, leadership, service)
-2. Specific requirements that can be completed
-3. Which merit badges/ranks can be signed off
-4. Priority level (high/medium/low)
+For EACH event, provide:
 
-Return analysis for each event.`
+1. **opportunities** (array of strings): 5-8 EXTREMELY DETAILED, actionable opportunities. Each should be a complete sentence explaining:
+   - Exactly what the Scout can do at this event
+   - Which specific merit badge requirement or rank advancement it fulfills
+   - Practical tips for success
+   - What to bring or prepare
+   
+   Examples:
+   - "Complete Camping merit badge requirement 9a by demonstrating proper meal planning - bring your menu plan showing breakfast, lunch, dinner with serving sizes and have your patrol leader review it"
+   - "Work on Leadership position for Star rank by leading a patrol activity during the campout - coordinate with your SPL to plan and execute a 30-minute team-building game"
+   - "Knock out First Aid merit badge requirement 5b by showing proper treatment for a second-degree burn - have a leader observe and sign off, bring your blue card"
+
+2. **signoffs** (array): List ALL merit badge requirements and rank requirements that can be signed off at this event. Include:
+   - id: badge/rank id (e.g., "camping_9a", "star_leadership")
+   - name: Human-readable name (e.g., "Camping 9a - Meal Planning", "Star Rank - Leadership Position")
+
+3. **priority**: 
+   - 'high' if the event offers 3+ Eagle-required merit badge opportunities OR critical rank advancement
+   - 'medium' if 1-2 opportunities
+   - 'low' otherwise
+
+Be SPECIFIC and DETAILED. Don't say "work on First Aid" - say exactly which requirement and how to complete it.
+
+Return valid JSON only.`
 
   try {
     const response = await callGemini(prompt, 0.3, responseSchema)
@@ -244,21 +243,41 @@ export const generateInitialPlan = createServerFn({
   
   const context = buildPlanContext(userData)
 
-  const prompt = `You are an Eagle Scout advancement coach. Create a 4-week action plan.
+  const prompt = `You are an experienced Eagle Scout advisor creating a personalized 4-week advancement plan.
 
 SCOUT PROFILE:
 - Target Eagle Date: ${userData.profile.targetEagleDate || 'Not set'}
 - Current Progress: ${context}
 
-Create a markdown plan with:
-## Week 1: [Title]
-- Specific tasks
-- Merit badge work
-- Deadlines
+Create a DETAILED, actionable 4-week plan in markdown format. For each week:
 
-(Continue for 4 weeks)
+## Week [Number]: [Compelling Title]
 
-Be specific, actionable, and realistic.`
+### Priority Goals
+- List 2-3 main objectives for the week with specific completion criteria
+
+### Merit Badge Work
+- Name each badge being worked on
+- List SPECIFIC requirements to complete (e.g., "Camping 9a - Plan and cook 3 trail meals")
+- Include materials needed and who to contact for sign-offs
+- Estimate time required for each task
+
+### Rank Advancement
+- Specific position of responsibility hours to complete
+- Leadership opportunities to pursue
+- Service hours and project ideas
+
+### Action Items with Deadlines
+- Break down each goal into concrete steps
+- Assign realistic dates within the week
+- Include preparation tasks (e.g., "Tuesday: Email merit badge counselor", "Thursday: Gather camping gear")
+
+### Success Checklist
+- 4-5 checkboxes for the week's must-complete items
+
+Be EXTREMELY specific. Instead of "Work on First Aid", say "Complete First Aid requirements 5a-5c by practicing CPR on training dummy at troop meeting, get leader sign-off". Include practical tips, common pitfalls to avoid, and pro tips from experienced Scouts.
+
+Make the plan inspiring yet achievable!`
 
   const plan = await callGemini(prompt, 0.35)
   return { plan }
@@ -280,7 +299,22 @@ export const sendChatMessage = createServerFn({
   
   const context = buildPlanContext(userData)
 
-  const systemPrompt = `You are an Eagle Scout advancement coach. Current progress: ${context}`
+  const systemPrompt = `You are an experienced Eagle Scout advisor and mentor. You provide DETAILED, specific, and actionable advice.
+
+SCOUT'S CURRENT PROGRESS: ${context}
+
+When answering questions:
+- Be extremely specific with step-by-step instructions
+- Reference exact merit badge requirement numbers when relevant
+- Provide practical tips and real-world examples
+- Suggest specific resources (BSA handbook pages, YouTube tutorials, local contacts)
+- Break down complex tasks into manageable steps
+- Include time estimates and difficulty ratings
+- Warn about common mistakes and how to avoid them
+- Give encouraging, motivational feedback
+- Use Scout terminology correctly
+
+If asked about a merit badge, explain the specific requirements, what materials are needed, estimated time to complete, and tips for success.`
 
   const fullPrompt = history.length > 0
     ? `${systemPrompt}\n\nConversation:\n${history.map((h: any) => `${h.role}: ${h.parts}`).join('\n')}\nuser: ${message}`
