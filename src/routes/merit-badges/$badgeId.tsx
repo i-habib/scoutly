@@ -91,7 +91,7 @@ function MeritBadgeDetail() {
       const reqText = requirement.text.toLowerCase();
       
       // If this requirement doesn't specify a number (ONE, TWO, THREE, etc.), auto-check all
-      const hasNumberWord = /\b(one|two|three|four|five|six|seven|eight|nine|ten)\b/i.test(reqText);
+      const hasNumberWord = /\b(one|two|three|four|five)\b/i.test(reqText);
       
       if (hasSubReqs && !hasNumberWord) {
         // Update all sub-requirements

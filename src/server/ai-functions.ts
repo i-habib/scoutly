@@ -35,7 +35,7 @@ interface EventAnalysis {
 
 interface GeminiHistoryMessage {
   role: 'user' | 'model'
-  parts: string
+  parts: Array<{ text: string }>
 }
 
 // ============= HELPERS =============
@@ -45,7 +45,7 @@ async function callGemini(
   schema?: any
 ): Promise<string> {
   const apiKey = process.env.GEMINI_API_KEY
-  const model = process.env.GEMINI_MODEL || 'gemini-1.5-flash'
+  const model = process.env.GEMINI_MODEL || 'gemini-flash-latest'
 
   if (!apiKey) {
     throw new Error('GEMINI_API_KEY not configured on server')
@@ -333,7 +333,7 @@ When answering questions:
 If asked about a merit badge, explain the specific requirements, what materials are needed, estimated time to complete, and tips for success.`
 
   const fullPrompt = history.length > 0
-    ? `${systemPrompt}\n\nConversation:\n${history.map((h: any) => `${h.role}: ${h.parts}`).join('\n')}\nuser: ${message}`
+    ? `${systemPrompt}\n\nConversation:\n${history.map((h) => `${h.role}: ${h.parts[0].text}`).join('\n')}\nuser: ${message}`
     : `${systemPrompt}\n\nuser: ${message}`
 
   const response = await callGemini(fullPrompt, 0.7)
