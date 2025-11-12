@@ -14,6 +14,7 @@ const getGeminiModel = (useJsonMode = false) => {
   }
   
   const genAI = new GoogleGenerativeAI(apiKey)
+  // Fix: Read GEMINI_MODEL correctly without the "GEMINI_MODEL=" prefix
   const modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash-latest'
   
   if (useJsonMode) {
@@ -341,8 +342,6 @@ export const sendChatMessage = createServerFn({
 
   const systemPrompt = `You are an experienced Eagle Scout advisor and mentor. You provide DETAILED, specific, and actionable advice.
 
-SCOUT'S CURRENT PROGRESS: ${context}
-
 When answering questions:
 - Be extremely specific with step-by-step instructions
 - Reference exact merit badge requirement numbers when relevant
@@ -370,7 +369,10 @@ If asked about a merit badge, explain the specific requirements, what materials 
         temperature: 0.7,
         maxOutputTokens: 4000,
       },
-      systemInstruction: systemPrompt,
+      systemInstruction: {
+        role: 'system',
+        parts: [{ text: `${systemPrompt}\n\nSCOUT'S CURRENT PROGRESS: ${context}` }]
+      },
     })
 
     const result = await chat.sendMessage(message)
