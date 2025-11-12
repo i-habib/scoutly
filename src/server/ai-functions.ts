@@ -11,7 +11,7 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 })
 
-const getModelName = () => process.env.GEMINI_MODEL || 'gemini-2.0-flash-exp'
+const getModelName = () => process.env.GEMINI_MODEL || 'gemini-1.5-flash-latest'
 
 // ============= RATE LIMITING =============
 const rateLimitMap = new Map<string, number>()
