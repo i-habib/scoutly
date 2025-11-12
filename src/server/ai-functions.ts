@@ -6,13 +6,26 @@ import meritBadgesJSON from '../data/merit-badges.json'
 
 const meritBadgesData = meritBadgesJSON.meritBadges
 
-// Initialize Google AI
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-})
+// Helper to get API key at runtime
+const getApiKey = () => {
+  const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY
+  if (!apiKey) {
+    throw new Error('GEMINI_API_KEY not configured. Please set it in your environment variables.')
+  }
+  return apiKey
+}
 
-const getModelName = () => process.env.GEMINI_MODEL || 'gemini-1.5-flash-latest'
+// Helper to get model name at runtime
+const getModelName = () => {
+  return process.env.GEMINI_MODEL || process.env.VITE_GEMINI_MODEL || 'gemini-1.5-flash-latest'
+}
 
+// Initialize Google AI - this will be called at runtime, not at build time
+const getAI = () => {
+  return new GoogleGenAI({
+    apiKey: getApiKey(),
+  })
+}
 // ============= RATE LIMITING =============
 const rateLimitMap = new Map<string, number>()
 const RATE_LIMIT_MS = 30000 // 30 seconds
@@ -53,6 +66,7 @@ async function callGemini(
   schema?: any
 ): Promise<string> {
   try {
+    const ai = getAI() // Get AI instance at runtime
     const config: any = {
       model: getModelName(),
       contents: prompt,
@@ -343,6 +357,7 @@ If asked about a merit badge, explain the specific requirements, what materials 
       ? `${systemPrompt}\n\nConversation:\n${history.map((h) => `${h.role}: ${h.parts[0].text}`).join('\n')}\nuser: ${message}`
       : `${systemPrompt}\n\nuser: ${message}`
 
+    const ai = getAI() // Get AI instance at runtime
     const response = await ai.models.generateContent({
       model: getModelName(),
       contents: fullPrompt,

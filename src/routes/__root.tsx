@@ -66,7 +66,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           />*/}
         </QueryClientProvider>
         <Scripts />
-        inject()
         <Analytics />
       </body>
     </html>
