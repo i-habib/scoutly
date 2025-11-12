@@ -3,8 +3,10 @@ import { createServerFn } from '@tanstack/react-start'
 import { GoogleGenAI } from '@google/genai'
 import type { UserData } from '../data/userData'
 import meritBadgesJSON from '../data/merit-badges.json'
+import rankRequirementsJSON from '../data/rank-reqs.json'
 
 const meritBadgesData = meritBadgesJSON.meritBadges
+const rankRequirementsData = rankRequirementsJSON
 
 // Helper to get API key at runtime
 const getApiKey = () => {
@@ -170,9 +172,31 @@ export const analyzeCalendarEvents = createServerFn({
     return { analyses: existingAnalysis, cached: Object.keys(existingAnalysis) }
   }
 
-  const requiredBadges = meritBadgesData
-    .filter((mb: any) => mb.eagleRequired)
-    .map((mb: any) => mb.name)
+  // Get Scout's current rank
+  const currentRank = userData.profile?.currentRank || 'rank_scout'
+  
+  // Get rank requirements from Scout through First Class
+  const rankOrder = ['rank_scout', 'rank_tenderfoot', 'rank_second_class', 'rank_first_class']
+  const currentRankIndex = rankOrder.indexOf(currentRank)
+  const relevantRanks = currentRankIndex >= 0 ? rankOrder.slice(currentRankIndex) : rankOrder
+  
+  // Build list of incomplete rank requirements
+  const rankRequirements: string[] = []
+  relevantRanks.forEach(rankId => {
+    const rankData = rankRequirementsData.find((r: any) => r.id === rankId)
+    if (rankData) {
+      rankData.requirements.forEach((req: any) => {
+        const progress = userData.rankProgress?.[rankId]?.[req.id]
+        const isComplete = typeof progress === 'string' || (progress && typeof progress === 'object' && 'completedAt' in progress)
+        if (!isComplete) {
+          rankRequirements.push(`${rankData.name} ${req.id}: ${req.text}`)
+        }
+      })
+    }
+  })
+
+  // Get all merit badge names
+  const allMeritBadges = meritBadgesData.map((mb: any) => mb.name).join(', ')
 
   // Define strict JSON schema for Gemini
   const responseSchema = {
@@ -187,7 +211,7 @@ export const analyzeCalendarEvents = createServerFn({
         opportunities: {
           type: 'array',
           items: { type: 'string' },
-          description: 'List of specific actionable opportunities at this event'
+          description: 'Short list of what can be done at this event'
         },
         signoffs: {
           type: 'array',
@@ -211,38 +235,39 @@ export const analyzeCalendarEvents = createServerFn({
     }
   }
 
-  const prompt = `You are an experienced Eagle Scout advisor helping a Scout maximize their advancement at upcoming events.
+  const prompt = `You are an Eagle Scout advisor. Analyze events and provide concise, actionable guidance.
+
+SCOUT INFO:
+- Current Rank: ${currentRank.replace('rank_', '')}
+- Incomplete Rank Requirements (${currentRank} to First Class):
+${rankRequirements.slice(0, 15).join('\n')}
+${rankRequirements.length > 15 ? `... and ${rankRequirements.length - 15} more` : ''}
+
+ALL AVAILABLE MERIT BADGES: ${allMeritBadges}
 
 EVENTS TO ANALYZE:
-${eventsNeedingAnalysis.map((e: any) => `- ID: ${e.id}, Name: ${e.name}, Type: ${e.type || 'other'}, Date: ${e.startTime || e.start}, Location: ${e.location || 'TBD'}`).join('\n')}
+${eventsNeedingAnalysis.map((e: any) => `- ID: ${e.id}, Name: ${e.name}, Type: ${e.type || 'meeting'}, Date: ${e.startTime || e.start}, Location: ${e.location || 'TBD'}`).join('\n')}
 
-EAGLE-REQUIRED MERIT BADGES: ${requiredBadges.slice(0, 10).join(', ')}... and ${requiredBadges.length - 10} more
+For EACH event, provide analysis based on event type:
 
-For EACH event, provide:
+**MEETING**: Focus on rank signoffs
+- opportunities: List 2-4 rank requirements that can be completed/signed off
+- signoffs: Include ALL applicable rank requirements with ids (e.g., "tenderfoot_4a")
+- priority: 'high' if 3+ signoffs possible, 'medium' if 1-2, 'low' otherwise
 
-1. **opportunities** (array of strings): 5-8 EXTREMELY DETAILED, actionable opportunities. Each should be a complete sentence explaining:
-   - Exactly what the Scout can do at this event
-   - Which specific merit badge requirement or rank advancement it fulfills
-   - Practical tips for success
-   - What to bring or prepare
-   
-   Examples:
-   - "Complete Camping merit badge requirement 9a by demonstrating proper meal planning - bring your menu plan showing breakfast, lunch, dinner with serving sizes and have your patrol leader review it"
-   - "Work on Leadership position for Star rank by leading a patrol activity during the campout - coordinate with your SPL to plan and execute a 30-minute team-building game"
-   - "Knock out First Aid merit badge requirement 5b by showing proper treatment for a second-degree burn - have a leader observe and sign off, bring your blue card"
+**SERVICE PROJECT**: Brief overview
+- opportunities: Just list merit badge names that apply (e.g., "Citizenship in Community")
+- signoffs: Service hour requirements only
+- priority: 'high' if counts toward Eagle-required badges, 'medium' otherwise
 
-2. **signoffs** (array): List ALL merit badge requirements and rank requirements that can be signed off at this event. Include:
-   - id: badge/rank id (e.g., "camping_9a", "star_leadership")
-   - name: Human-readable name (e.g., "Camping 9a - Meal Planning", "Star Rank - Leadership Position")
+**CAMPOUT/HIKE**: Merit badge focus
+- opportunities: List 3-5 merit badge NAMES (not requirements) that are possible at this event
+- signoffs: Include specific merit badge requirements with ids (e.g., "camping_9a") and rank requirements
+- priority: 'high' if 3+ Eagle-required badges, 'medium' if 1-2, 'low' otherwise
 
-3. **priority**: 
-   - 'high' if the event offers 3+ Eagle-required merit badge opportunities OR critical rank advancement
-   - 'medium' if 1-2 opportunities
-   - 'low' otherwise
+KEEP IT BRIEF. No explanations of how to complete requirements. Just list what's possible.
 
-Be SPECIFIC and DETAILED. Don't say "work on First Aid" - say exactly which requirement and how to complete it.
-
-Return valid JSON only. Nothing else should be included. Just pure json`
+Return valid JSON only.`
 
   try {
     const response = await callGemini(prompt, 0.3, responseSchema)
