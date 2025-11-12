@@ -190,28 +190,50 @@ export const analyzeCalendarEvents = createServerFn({
 
   // Get Scout's current rank
   const currentRank = userData.profile?.currentRank || 'rank_scout'
+  const currentRankName = currentRank.replace('rank_', '').replace('_', ' ')
   
-  // Get rank requirements from Scout through First Class
-  const rankOrder = ['rank_scout', 'rank_tenderfoot', 'rank_second_class', 'rank_first_class']
+  // Determine if Scout should focus on rank advancement or merit badges
+  const rankOrder = ['rank_scout', 'rank_tenderfoot', 'rank_second_class', 'rank_first_class', 'rank_star', 'rank_life', 'rank_eagle']
   const currentRankIndex = rankOrder.indexOf(currentRank)
-  const relevantRanks = currentRankIndex >= 0 ? rankOrder.slice(currentRankIndex) : rankOrder
+  const isFirstClassOrAbove = currentRankIndex >= 3 // First Class, Star, Life, Eagle
   
-  // Build list of incomplete rank requirements
-  const rankRequirements: string[] = []
-  relevantRanks.forEach(rankId => {
-    const rankData = rankRequirementsData.find((r: any) => r.id === rankId)
-    if (rankData) {
-      rankData.requirements.forEach((req: any) => {
-        const progress = userData.rankProgress?.[rankId]?.[req.id]
-        const isComplete = typeof progress === 'string' || (progress && typeof progress === 'object' && 'completedAt' in progress)
-        if (!isComplete) {
-          rankRequirements.push(`${rankData.name} ${req.id}: ${req.text}`)
-        }
-      })
+  // Get NEXT rank requirements (what they're working toward)
+  const nextRankIndex = currentRankIndex + 1
+  const nextRank = nextRankIndex < rankOrder.length ? rankOrder[nextRankIndex] : null
+  const nextRankData = nextRank ? rankRequirementsData.find((r: any) => r.id === nextRank) : null
+  
+  const nextRankRequirements: string[] = []
+  if (nextRankData) {
+    nextRankData.requirements.forEach((req: any) => {
+      const progress = userData.rankProgress?.[nextRank]?.[req.id]
+      const isComplete = typeof progress === 'string' || (progress && typeof progress === 'object' && 'completedAt' in progress)
+      if (!isComplete) {
+        nextRankRequirements.push(`${nextRankData.name} ${req.id}: ${req.text}`)
+      }
+    })
+  }
+  
+  // Get in-progress and incomplete merit badges
+  const inProgressMeritBadges: string[] = []
+  const incompleteMeritBadges: string[] = []
+  
+  meritBadgesData.forEach((mb: any) => {
+    const mbProgress = userData.progress?.[mb.id] || {}
+    const totalReqs = mb.requirements?.length || 0
+    const completedReqs = Object.values(mbProgress).filter((val) => {
+      if (typeof val === 'string') return true
+      if (val && typeof val === 'object' && 'completedAt' in val) return true
+      return false
+    }).length
+    
+    if (completedReqs > 0 && completedReqs < totalReqs) {
+      inProgressMeritBadges.push(`${mb.name} (${completedReqs}/${totalReqs} complete)${mb.eagleRequired ? ' [EAGLE REQUIRED]' : ''}`)
+    } else if (completedReqs === 0 && mb.eagleRequired) {
+      incompleteMeritBadges.push(mb.name)
     }
   })
-
-  // Get all merit badge names
+  
+  // Get all merit badge names for reference
   const allMeritBadges = meritBadgesData.map((mb: any) => mb.name).join(', ')
 
   // Define strict JSON schema for Gemini
@@ -251,49 +273,78 @@ export const analyzeCalendarEvents = createServerFn({
     }
   }
 
-  const prompt = `Analyze ${eventsNeedingAnalysis.length} Scout events. Return JSON array ONLY.
+  const prompt = `Analyze ${eventsNeedingAnalysis.length} Scout events for advancement opportunities. Return JSON array ONLY.
 
-Scout Rank: ${currentRank.replace('rank_', '')}
-Available Merit Badges: ${allMeritBadges}
+=== SCOUT PROFILE ===
+Current Rank: ${currentRankName}
+Next Rank: ${nextRankData ? nextRankData.name : 'Eagle (completed ranks)'}
+Advancement Focus: ${isFirstClassOrAbove ? 'MERIT BADGES (rank advancement complete through First Class)' : 'RANK SIGNOFFS (priority for advancement)'}
 
-Events:
+=== NEXT RANK REQUIREMENTS (${nextRankData?.name || 'N/A'}) ===
+${nextRankRequirements.length > 0 ? nextRankRequirements.slice(0, 20).join('\n') : 'All requirements complete!'}
+${nextRankRequirements.length > 20 ? `\n... and ${nextRankRequirements.length - 20} more requirements` : ''}
+
+=== MERIT BADGE PROGRESS ===
+In Progress (${inProgressMeritBadges.length}):
+${inProgressMeritBadges.slice(0, 10).join('\n') || 'None started'}
+${inProgressMeritBadges.length > 10 ? `\n... and ${inProgressMeritBadges.length - 10} more in progress` : ''}
+
+Not Started Eagle-Required (${incompleteMeritBadges.length}):
+${incompleteMeritBadges.slice(0, 15).join(', ') || 'All Eagle badges complete!'}
+${incompleteMeritBadges.length > 15 ? `... and ${incompleteMeritBadges.length - 15} more` : ''}
+
+=== ALL AVAILABLE MERIT BADGES ===
+${allMeritBadges}
+
+=== EVENTS TO ANALYZE ===
 ${eventsNeedingAnalysis.map((e: any) => `${e.id}|${e.name}|${e.type || 'meeting'}`).join('\n')}
 
-Incomplete Rank Reqs (Scout-First Class):
-${rankRequirements.slice(0, 15).join('\n')}${rankRequirements.length > 15 ? `\n... +${rankRequirements.length - 15} more` : ''}
-
-For EACH event return:
+=== INSTRUCTIONS ===
+For EACH event, return:
 {
   "eventId": "exact_id",
-  "opportunities": ["Detailed item 1", "Detailed item 2", ...],
-  "signoffs": [{"id": "rank_reqId", "name": "Full requirement description"}, ...],
+  "opportunities": ["Detailed opportunity 1", "Detailed opportunity 2", ...],
+  "signoffs": [{"id": "requirement_id", "name": "Full requirement description"}, ...],
   "priority": "high|medium|low"
 }
 
-CRITICAL INSTRUCTIONS BY EVENT TYPE:
-
 **MEETINGS (type="meeting")**:
-- opportunities: 3-5 SPECIFIC rank requirements that can be completed/demonstrated (e.g., "Scout 2a: Describe troop leadership", "Scout 4a: Demonstrate square knot")
-- signoffs: 3-10 rank requirement signoffs with:
-  - id: requirement ID (e.g., "scout_2a")
-  - name: FULL requirement text from the list above (e.g., "Describe how the Scouts in the troop provide its leadership")
-- priority: 'high' if 5+ signoffs, 'medium' if 3-4, 'low' if 1-2
+${isFirstClassOrAbove ? `
+- Focus: Merit badge work and leadership
+- opportunities: 3-5 items mentioning merit badge work or leadership positions
+- signoffs: Merit badge requirements if applicable, otherwise leadership/service hour tracking
+- priority: 'medium' (meetings less critical after First Class)
+` : `
+- Focus: RANK ADVANCEMENT (critical for ${currentRankName} → ${nextRankData?.name})
+- opportunities: 3-5 SPECIFIC rank requirements from the list above that can be completed/demonstrated
+- signoffs: 3-10 rank requirements with full descriptions from the "NEXT RANK REQUIREMENTS" list
+- priority: 'high' if 5+ rank signoffs, 'medium' if 3-4, 'low' if 1-2
+`}
 
-**CAMPOUTS (type="campout" or "hike")**:
-- opportunities: 5-10 DETAILED merit badge activities possible (e.g., "Camping 9a: Plan trail meals", "First Aid 5b: Treat burns", "Orienteering: Use map and compass")
-- signoffs: 3-10 specific merit badge requirement signoffs with:
-  - id: requirement ID (e.g., "camping_9a")
-  - name: Brief description of the requirement (e.g., "Plan and cook trail meals")
-- priority: 'high' if 5+ Eagle-required badges possible, 'medium' if 2-4, 'low' if 0-1
+**CAMPOUTS/HIKES (type="campout" or "hike")**:
+${isFirstClassOrAbove ? `
+- Focus: MERIT BADGES (main advancement path after First Class)
+- opportunities: 5-10 DETAILED merit badge activities, prioritizing:
+  1. In-progress badges (help complete started badges)
+  2. Eagle-required badges not started
+  3. Other merit badges relevant to campout activities
+- signoffs: 5-10 specific merit badge requirements (format: {"id": "camping_9a", "name": "Plan and cook trail meals"})
+- priority: 'high' if 5+ Eagle-required badge opportunities, 'medium' if 2-4, 'low' if 0-1
+` : `
+- Focus: Both rank requirements AND merit badges
+- opportunities: 5-10 items mixing rank requirements and relevant merit badge work
+- signoffs: Both rank requirements and merit badge requirements (5-10 total)
+- priority: 'high' if 3+ rank signoffs OR 3+ Eagle badge opportunities, 'medium' if some of each, 'low' otherwise
+`}
 
 **SERVICE/OTHER (all other types)**:
 - opportunities: [] (empty array)
-- signoffs: [] (empty array)
-- priority: Rank based on service hours value: 'high' if 3+ hours, 'medium' if 1-2 hours, 'low' otherwise
+- signoffs: [] (empty array)  
+- priority: 'high' if 3+ hours, 'medium' if 1-2 hours, 'low' otherwise
 
-BE SPECIFIC AND DETAILED for meetings and campouts. Use the FULL requirement text for signoffs.name.
+CRITICAL: Use FULL requirement descriptions from the lists above for signoffs.name. Be specific and detailed.
 
-Return ONLY valid JSON array. No text before or after.`
+Return ONLY valid JSON array. No markdown, no explanations.`
 
   try {
     const response = await callGemini(prompt, 0.3, responseSchema)
