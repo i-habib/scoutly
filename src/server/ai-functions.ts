@@ -4,11 +4,13 @@ import { GoogleGenAI } from '@google/genai'
 import type { UserData } from '../data/userData'
 import meritBadgesJSON from '../data/merit-badges.json'
 import rankRequirementsJSON from '../data/rank-reqs.json'
+import timeConsumingBadgesJSON from '../data/time-consuming-badges.json'
 import { writeFileSync } from 'fs'
 import { join } from 'path'
 
 const meritBadgesData = meritBadgesJSON.meritBadges
 const rankRequirementsData = rankRequirementsJSON
+const timeConsumingBadgeNames = new Set(timeConsumingBadgesJSON.timeConsumingBadges)
 
 // Helper to get API key at runtime
 const getApiKey = () => {
@@ -203,7 +205,7 @@ export const analyzeCalendarEvents = createServerFn({
   const nextRankData = nextRank ? rankRequirementsData.find((r: any) => r.id === nextRank) : null
   
   const nextRankRequirements: string[] = []
-  if (nextRankData) {
+  if (nextRankData && nextRank) {
     nextRankData.requirements.forEach((req: any) => {
       const progress = userData.rankProgress?.[nextRank]?.[req.id]
       const isComplete = typeof progress === 'string' || (progress && typeof progress === 'object' && 'completedAt' in progress)
@@ -216,6 +218,7 @@ export const analyzeCalendarEvents = createServerFn({
   // Get in-progress and incomplete merit badges
   const inProgressMeritBadges: string[] = []
   const incompleteMeritBadges: string[] = []
+  const timeConsumingInProgress: string[] = []
   
   meritBadgesData.forEach((mb: any) => {
     const mbProgress = userData.progress?.[mb.id] || {}
@@ -226,10 +229,17 @@ export const analyzeCalendarEvents = createServerFn({
       return false
     }).length
     
+    const isTimeConsuming = timeConsumingBadgeNames.has(mb.name)
+    const badgeMarker = isTimeConsuming ? ' ⏰TIME-CONSUMING' : ''
+    
     if (completedReqs > 0 && completedReqs < totalReqs) {
-      inProgressMeritBadges.push(`${mb.name} (${completedReqs}/${totalReqs} complete)${mb.eagleRequired ? ' [EAGLE REQUIRED]' : ''}`)
+      const badgeInfo = `${mb.name} (${completedReqs}/${totalReqs} complete)${mb.eagleRequired ? ' [EAGLE REQUIRED]' : ''}${badgeMarker}`
+      inProgressMeritBadges.push(badgeInfo)
+      if (isTimeConsuming) {
+        timeConsumingInProgress.push(mb.name)
+      }
     } else if (completedReqs === 0 && mb.eagleRequired) {
-      incompleteMeritBadges.push(mb.name)
+      incompleteMeritBadges.push(mb.name + badgeMarker)
     }
   })
   
@@ -293,6 +303,11 @@ Not Started Eagle-Required (${incompleteMeritBadges.length}):
 ${incompleteMeritBadges.slice(0, 15).join(', ') || 'All Eagle badges complete!'}
 ${incompleteMeritBadges.length > 15 ? `... and ${incompleteMeritBadges.length - 15} more` : ''}
 
+⏰ TIME-CONSUMING BADGES NOTE:
+Badges marked with ⏰ take 3+ weeks due to time requirements (e.g., Personal Fitness: 12 weeks, Camping: multiple campouts).
+${timeConsumingInProgress.length > 0 ? `Currently in progress: ${timeConsumingInProgress.join(', ')}` : 'Start these early!'}
+Time-consuming Eagle badges: Personal Fitness, Personal Management, Family Life, Camping, Hiking/Cycling/Swimming, Environmental Science/Sustainability
+
 === ALL AVAILABLE MERIT BADGES ===
 ${allMeritBadges}
 
@@ -338,9 +353,12 @@ ${isFirstClassOrAbove ? `
 `}
 
 **SERVICE/OTHER (all other types)**:
-- opportunities: [] (empty array)
-- signoffs: [] (empty array)  
-- priority: 'high' if 3+ hours, 'medium' if 1-2 hours, 'low' otherwise
+- opportunities: [] (empty array - no detailed analysis needed)
+- signoffs: [] (empty array - service hours tracked elsewhere)  
+- priority: Based on event name/description, estimate service value:
+  * 'high' if likely 3+ service hours (major projects, full day events)
+  * 'medium' if likely 1-2 hours (smaller projects, short events)
+  * 'low' if minimal service hours (<1 hour) or unclear service value
 
 CRITICAL: Use FULL requirement descriptions from the lists above for signoffs.name. Be specific and detailed.
 
@@ -610,4 +628,144 @@ If asked about a merit badge, explain the specific requirements, what materials 
     }
     throw new Error('Chat error: Unknown error occurred')
   }
+})
+
+// ============= LONG-TERM DEADLINE PLANNER =============
+export const generateLongTermPlan = createServerFn({
+  method: 'POST',
+})
+  .inputValidator((data: { userData: UserData }) => data)
+  .handler(async ({ data }) => {
+    const { userData } = data
+  
+  // Rate limit check
+  checkRateLimit('generateLongTermPlan')
+  
+  const currentRank = userData.profile?.currentRank || 'rank_scout'
+  const targetEagleDate = userData.profile?.targetEagleDate
+  const rankOrder = ['rank_scout', 'rank_tenderfoot', 'rank_second_class', 'rank_first_class', 'rank_star', 'rank_life', 'rank_eagle']
+  const currentRankIndex = rankOrder.indexOf(currentRank)
+  
+  const prompt = `Create a CONCISE long-term Eagle Scout timeline (< 300 words). Work backwards from the target date.
+
+SCOUT INFO:
+- Current Rank: ${currentRank.replace('rank_', '')}
+- Target Eagle Date: ${targetEagleDate || 'Not set'}
+- Today: ${new Date().toISOString().split('T')[0]}
+
+MINIMUM TIME REQUIREMENTS:
+- Tenderfoot to Second Class: 1 month
+- Second Class to First Class: 2 months
+- First Class to Star: 4 months
+- Star to Life: 6 months
+- Life to Eagle: 6 months
+- Eagle Project: 3-4 months planning + execution
+
+Create a deadline-driven timeline with:
+1. **Critical Deadlines** - When each rank MUST be achieved (work backwards)
+2. **Red Flags** - Any timing conflicts or impossible deadlines
+3. **Buffer Time** - Recommended earlier completion dates
+4. **Key Milestones** - Major merit badge completions needed
+
+Format:
+## Eagle Timeline
+
+**Target: [Date]**
+
+### Rank Deadlines (Minimum Requirements)
+- Eagle: [Date] (need 6 months at Life)
+- Life: [Date] (need 6 months at Star)
+- Star: [Date] (need 4 months at First Class)
+- [Continue for all ranks]
+
+### ⚠️ Timing Analysis
+[Any red flags or concerns]
+
+### 📅 Recommended Accelerated Dates
+[Suggest earlier dates with buffer time]
+
+Keep it SHORT and ACTIONABLE. Focus on dates and deadlines only.`
+
+  const plan = await callGemini(prompt, 0.4)
+  return { plan }
+})
+
+// ============= SHORT-TERM TACTICAL PLANNER (2-4 months) =============
+export const generateShortTermPlan = createServerFn({
+  method: 'POST',
+})
+  .inputValidator((data: { userData: UserData }) => data)
+  .handler(async ({ data }) => {
+    const { userData } = data
+  
+  // Rate limit check
+  checkRateLimit('generateShortTermPlan')
+  
+  const currentRank = userData.profile?.currentRank || 'rank_scout'
+  
+  // Get time-consuming badge context
+  const inProgressTimeConsuming: string[] = []
+  const notStartedTimeConsuming: string[] = []
+  
+  meritBadgesData.forEach((mb: any) => {
+    if (!timeConsumingBadgeNames.has(mb.name)) return
+    
+    const mbProgress = userData.progress?.[mb.id] || {}
+    const totalReqs = mb.requirements?.length || 0
+    const completedReqs = Object.values(mbProgress).filter((val) => {
+      if (typeof val === 'string') return true
+      if (val && typeof val === 'object' && 'completedAt' in val) return true
+      return false
+    }).length
+    
+    if (completedReqs > 0 && completedReqs < totalReqs) {
+      inProgressTimeConsuming.push(`${mb.name} (${completedReqs}/${totalReqs})`)
+    } else if (completedReqs === 0 && mb.eagleRequired) {
+      notStartedTimeConsuming.push(mb.name)
+    }
+  })
+  
+  const context = buildPlanContext(userData)
+
+  const prompt = `Create a TACTICAL 2-4 month advancement plan focusing on time-consuming badges and weekly signoffs.
+
+SCOUT INFO:
+- Current Rank: ${currentRank.replace('rank_', '')}
+- Current Progress: ${context}
+
+⏰ TIME-CONSUMING BADGES:
+In Progress: ${inProgressTimeConsuming.join(', ') || 'None'}
+Not Started (Eagle-Required): ${notStartedTimeConsuming.join(', ') || 'None'}
+
+TIME-CONSUMING BADGES REQUIRE:
+- Personal Fitness: 12 weeks (daily logs)
+- Personal Management: 13 weeks (budget tracking)
+- Family Life: 3 months (family activities)
+- Camping: Multiple campouts over months
+- Hiking/Cycling/Swimming: Multiple sessions
+- Citizenship badges: Several weeks of meetings/research
+
+Create a plan with:
+
+## Priority 1: Start Time-Consuming Badges NOW
+[List which badges to start this week and WHY]
+
+## Weekly Signoff Goals (Next 8-12 weeks)
+Week 1-2: [X signoffs - specific requirements]
+Week 3-4: [X signoffs - specific requirements]
+Week 5-8: [X signoffs - specific requirements]
+Week 9-12: [X signoffs - specific requirements]
+
+## Quick-Win Badges (Can finish in 1-2 weeks)
+[List badges that can be knocked out quickly between slow ones]
+
+## Monthly Checkpoints
+Month 1: [What should be complete]
+Month 2: [What should be complete]
+Month 3: [What should be complete]
+
+Focus on PARALLEL PROGRESS - work on time-consuming badges while completing quick ones. Be specific about which requirements to target each week.`
+
+  const plan = await callGemini(prompt, 0.4)
+  return { plan }
 })
