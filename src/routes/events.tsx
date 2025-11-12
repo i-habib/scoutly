@@ -216,67 +216,7 @@ function EventsPage() {
 
   const eventAnalysisCount = Object.keys(eventAnalysis).length;
 
-  // Auto-analyze new events when events change or analysis becomes stale
-  useEffect(() => {
-    const analyzeNew = async () => {
-      if (!userData || events.length === 0 || isAnalyzing) return;
-      
-      const today = new Date();
-      const thirtyDaysFromNow = new Date(today);
-      thirtyDaysFromNow.setDate(today.getDate() + 30);
-      
-      // Only look at events in the next 30 days
-      const futureEvents = events
-        .filter(e => {
-          const eventDate = new Date(e.startTime);
-          return eventDate >= today && eventDate <= thirtyDaysFromNow;
-        })
-        .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
-      
-      const staleEvents = futureEvents.filter(e => needsEventReanalysis(eventAnalysis[e.id]));
-
-      // Auto-trigger if 5 or more stale events in next 30 days AND we haven't already triggered
-      if (staleEvents.length < 5) {
-        hasTriggeredAutoAnalysis.current = false; // Reset if below threshold
-        return;
-      }
-      
-      if (hasTriggeredAutoAnalysis.current) {
-        console.log('⏭️ Auto-analysis already triggered, skipping...');
-        return;
-      }
-
-      hasTriggeredAutoAnalysis.current = true;
-
-      // Prevent multiple simultaneous requests
-      console.log(`🤖 Auto-analyzing ${staleEvents.length} events needing fresh insights...`);
-      setIsAnalyzing(true);
-      try {
-        const analysis = await analyzeCalendarEvents(userData, eventAnalysis);
-        setEventAnalysis(prev => {
-          const updated = { ...prev, ...analysis };
-          localStorage.setItem('scoutly_event_analysis', JSON.stringify(updated));
-          return updated;
-        });
-        hasTriggeredAutoAnalysis.current = false; // Reset after successful analysis
-      } catch (error) {
-        console.error('❌ Failed to analyze calendar:', error);
-        hasTriggeredAutoAnalysis.current = false; // Reset on error so they can retry
-        if (error instanceof Error && error.message.includes('Rate limit')) {
-          alert('Too many requests. Please wait 10 seconds before analyzing again.');
-        }
-      } finally {
-        setIsAnalyzing(false);
-      }
-    };
-
-    // Debounce to prevent rapid-fire requests
-    const timer = setTimeout(() => {
-      analyzeNew();
-    }, 3000); // 3 second debounce
-
-    return () => clearTimeout(timer);
-  }, [userData, events.length, eventAnalysisCount, isAnalyzing]);
+  // Removed auto-analysis - users now click the button to analyze events manually
 
   const handleManualAnalysis = async () => {
     if (!userData) return;

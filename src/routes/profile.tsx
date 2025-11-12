@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import meritBadgesData from '../data/merit-badges.json';
 import rankRequirementsData from '../data/rank-reqs.json';
 import { ScoutFleurDeLis, EagleIcon } from '../components/ScoutIcons';
+import { Edit2, Save, X } from 'lucide-react';
 
 export const Route = createFileRoute('/profile')({ component: Profile });
 
@@ -13,6 +14,43 @@ const RANK_DISPLAY_NAMES = ['Scout', 'Tenderfoot', 'Second Class', 'First Class'
 function Profile() {
   const { userData, isLoading } = useUserData();
   const [aiPace, setAiPace] = useState<string>('Calculating...');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedName, setEditedName] = useState('');
+  const [editedTargetDate, setEditedTargetDate] = useState('');
+
+  useEffect(() => {
+    if (userData) {
+      calculatePace();
+      setEditedName(userData.profile.name || '');
+      setEditedTargetDate(userData.profile.targetEagleDate || '');
+    }
+  }, [userData]);
+
+  const handleSaveProfile = () => {
+    const currentUserData = JSON.parse(localStorage.getItem('scoutly_user_data') || '{}');
+    currentUserData.profile = {
+      ...currentUserData.profile,
+      name: editedName,
+      targetEagleDate: editedTargetDate,
+    };
+    localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
+    
+    // Trigger storage event to update UI
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'scoutly_user_data',
+      newValue: JSON.stringify(currentUserData),
+      url: window.location.href,
+      storageArea: localStorage
+    }));
+    
+    setIsEditing(false);
+  };
+
+  const handleCancelEdit = () => {
+    setEditedName(userData?.profile.name || '');
+    setEditedTargetDate(userData?.profile.targetEagleDate || '');
+    setIsEditing(false);
+  };
 
   useEffect(() => {
     if (userData) {
@@ -191,16 +229,92 @@ function Profile() {
       <div className="relative z-10 max-w-6xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-linear-to-br from-green-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/30">
-              <ScoutFleurDeLis className="text-white" size={28} />
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-linear-to-br from-green-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/30">
+                  <ScoutFleurDeLis className="text-white" size={28} />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold text-white">Scout Profile</h1>
+                  <p className="text-gray-400">Manage your scouting information</p>
+                </div>
+              </div>
+              
+              {!isEditing && (
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 rounded-lg text-green-400 transition-all"
+                >
+                  <Edit2 size={18} />
+                  Edit Profile
+                </button>
+              )}
             </div>
-            <div>
-              <h1 className="text-3xl font-bold text-white">
-                {userData?.profile.name}'s Profile
-              </h1>
-              <p className="text-gray-400">Track your scouting journey</p>
-            </div>
+
+            {isEditing ? (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Scout Name
+                  </label>
+                  <input
+                    type="text"
+                    value={editedName}
+                    onChange={(e) => setEditedName(e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="Your name"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Target Eagle Scout Date
+                  </label>
+                  <input
+                    type="date"
+                    value={editedTargetDate}
+                    onChange={(e) => setEditedTargetDate(e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  />
+                  <p className="text-xs text-slate-400 mt-2">
+                    Set your goal date to track your progress and pace
+                  </p>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    onClick={handleSaveProfile}
+                    className="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-black font-bold transition-all"
+                  >
+                    <Save size={18} />
+                    Save Changes
+                  </button>
+                  <button
+                    onClick={handleCancelEdit}
+                    className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all"
+                  >
+                    <X size={18} />
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <div className="text-sm text-slate-400 mb-1">Scout Name</div>
+                  <div className="text-xl font-semibold text-white">{userData?.profile.name || 'Not set'}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-slate-400 mb-1">Target Eagle Date</div>
+                  <div className="text-xl font-semibold text-white">
+                    {userData?.profile.targetEagleDate 
+                      ? new Date(userData.profile.targetEagleDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+                      : 'Not set'}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
