@@ -1,33 +1,17 @@
 // Server functions for AI operations - TanStack Start native pattern
 import { createServerFn } from '@tanstack/react-start'
-import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai'
+import { GoogleGenAI } from '@google/genai'
 import type { UserData } from '../data/userData'
 import meritBadgesJSON from '../data/merit-badges.json'
 
 const meritBadgesData = meritBadgesJSON.meritBadges
 
 // Initialize Google AI
-const getGeminiModel = (useJsonMode = false) => {
-  const apiKey = process.env.GEMINI_API_KEY
-  if (!apiKey) {
-    throw new Error('GEMINI_API_KEY not configured on server')
-  }
-  
-  const genAI = new GoogleGenerativeAI(apiKey)
-  // Fix: Read GEMINI_MODEL correctly without the "GEMINI_MODEL=" prefix
-  const modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash-latest'
-  
-  if (useJsonMode) {
-    return genAI.getGenerativeModel({
-      model: modelName,
-      generationConfig: {
-        responseMimeType: 'application/json',
-      },
-    })
-  }
-  
-  return genAI.getGenerativeModel({ model: modelName })
-}
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+})
+
+const getModelName = () => process.env.GEMINI_MODEL || 'gemini-2.0-flash-exp'
 
 // ============= RATE LIMITING =============
 const rateLimitMap = new Map<string, number>()
@@ -68,26 +52,24 @@ async function callGemini(
   temperature: number = 0.5,
   schema?: any
 ): Promise<string> {
-  const model = schema ? getGeminiModel(true) : getGeminiModel(false)
-  
-  const generationConfig: any = {
-    temperature,
-    maxOutputTokens: 4000,
-  }
-  
-  // Add schema if provided
-  if (schema) {
-    generationConfig.responseSchema = schema
-  }
-  
   try {
-    const result = await model.generateContent({
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      generationConfig,
-    })
+    const config: any = {
+      model: getModelName(),
+      contents: prompt,
+      config: {
+        temperature,
+        maxOutputTokens: 4000,
+      }
+    }
     
-    const response = result.response
-    return response.text()
+    // Add schema if provided for JSON mode
+    if (schema) {
+      config.config.responseMimeType = 'application/json'
+      config.config.responseSchema = schema
+    }
+    
+    const response = await ai.models.generateContent(config)
+    return response.text || ''
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Gemini API error: ${error.message}`)
@@ -162,35 +144,35 @@ export const analyzeCalendarEvents = createServerFn({
     .filter((mb: any) => mb.eagleRequired)
     .map((mb: any) => mb.name)
 
-  // Define strict JSON schema for Gemini using the SDK's SchemaType
+  // Define strict JSON schema for Gemini
   const responseSchema = {
-    type: SchemaType.ARRAY,
+    type: 'array',
     items: {
-      type: SchemaType.OBJECT,
+      type: 'object',
       properties: {
         eventId: { 
-          type: SchemaType.STRING,
+          type: 'string',
           description: 'The unique ID of the event'
         },
         opportunities: {
-          type: SchemaType.ARRAY,
-          items: { type: SchemaType.STRING },
+          type: 'array',
+          items: { type: 'string' },
           description: 'List of specific actionable opportunities at this event'
         },
         signoffs: {
-          type: SchemaType.ARRAY,
+          type: 'array',
           items: {
-            type: SchemaType.OBJECT,
+            type: 'object',
             properties: {
-              id: { type: SchemaType.STRING },
-              name: { type: SchemaType.STRING }
+              id: { type: 'string' },
+              name: { type: 'string' }
             },
             required: ['id', 'name']
           },
           description: 'List of requirements that can be signed off'
         },
         priority: { 
-          type: SchemaType.STRING,
+          type: 'string',
           enum: ['high', 'medium', 'low'],
           description: 'Priority level based on advancement opportunities'
         }
@@ -337,10 +319,10 @@ export const sendChatMessage = createServerFn({
   checkRateLimit(`chat-${userData.profile.name || 'anonymous'}`)
   
   const context = buildPlanContext(userData)
-  
-  const model = getGeminiModel(false)
 
   const systemPrompt = `You are an experienced Eagle Scout advisor and mentor. You provide DETAILED, specific, and actionable advice.
+
+SCOUT'S CURRENT PROGRESS: ${context}
 
 When answering questions:
 - Be extremely specific with step-by-step instructions
@@ -356,31 +338,23 @@ When answering questions:
 If asked about a merit badge, explain the specific requirements, what materials are needed, estimated time to complete, and tips for success.`
 
   try {
-    // Build chat history for the SDK
-    const chatHistory = history.map((h) => ({
-      role: h.role,
-      parts: [{ text: h.parts[0].text }],
-    }))
+    // Build the full conversation with system prompt
+    const fullPrompt = history.length > 0
+      ? `${systemPrompt}\n\nConversation:\n${history.map((h) => `${h.role}: ${h.parts[0].text}`).join('\n')}\nuser: ${message}`
+      : `${systemPrompt}\n\nuser: ${message}`
 
-    // Start a chat session with history
-    const chat = model.startChat({
-      history: chatHistory,
-      generationConfig: {
+    const response = await ai.models.generateContent({
+      model: getModelName(),
+      contents: fullPrompt,
+      config: {
         temperature: 0.7,
         maxOutputTokens: 4000,
       },
-      systemInstruction: {
-        role: 'system',
-        parts: [{ text: `${systemPrompt}\n\nSCOUT'S CURRENT PROGRESS: ${context}` }]
-      },
     })
-
-    const result = await chat.sendMessage(message)
-    const response = result.response.text()
     
     return {
       role: 'model' as const,
-      parts: response,
+      parts: response.text || '',
     }
   } catch (error) {
     if (error instanceof Error) {
