@@ -4,6 +4,8 @@ import { GoogleGenAI } from '@google/genai'
 import type { UserData } from '../data/userData'
 import meritBadgesJSON from '../data/merit-badges.json'
 import rankRequirementsJSON from '../data/rank-reqs.json'
+import { writeFileSync } from 'fs'
+import { join } from 'path'
 
 const meritBadgesData = meritBadgesJSON.meritBadges
 const rankRequirementsData = rankRequirementsJSON
@@ -162,11 +164,25 @@ export const analyzeCalendarEvents = createServerFn({
     return { analyses: {}, cached: [] }
   }
 
-  const eventsNeedingAnalysis = userData.events.filter((event: any) => {
-    if (options.forceAnalyze?.includes(event.id)) return true
-    if (options.skipCache) return true
-    return !existingAnalysis[event.id]
+  // Filter to only future events
+  const now = new Date()
+  const futureEvents = userData.events.filter((event: any) => {
+    const eventDate = new Date(event.startTime || event.start)
+    return eventDate > now
   })
+
+  if (futureEvents.length === 0) {
+    return { analyses: existingAnalysis, cached: [] }
+  }
+
+  // Limit to 50 events max and filter those needing analysis
+  const eventsNeedingAnalysis = futureEvents
+    .filter((event: any) => {
+      if (options.forceAnalyze?.includes(event.id)) return true
+      if (options.skipCache) return true
+      return !existingAnalysis[event.id]
+    })
+    .slice(0, 50) // Max 50 events
 
   if (eventsNeedingAnalysis.length === 0) {
     return { analyses: existingAnalysis, cached: Object.keys(existingAnalysis) }
@@ -244,22 +260,38 @@ Events:
 ${eventsNeedingAnalysis.map((e: any) => `${e.id}|${e.name}|${e.type || 'meeting'}`).join('\n')}
 
 Incomplete Rank Reqs (Scout-First Class):
-${rankRequirements.slice(0, 10).map(r => r.split(': ')[0]).join(', ')}${rankRequirements.length > 10 ? `... +${rankRequirements.length - 10}` : ''}
+${rankRequirements.slice(0, 15).join('\n')}${rankRequirements.length > 15 ? `\n... +${rankRequirements.length - 15} more` : ''}
 
 For EACH event return:
 {
   "eventId": "exact_id",
-  "opportunities": ["Short item 1", "Short item 2"],
-  "signoffs": [{"id": "rank_reqId", "name": "Rank Req#"}],
+  "opportunities": ["Detailed item 1", "Detailed item 2", ...],
+  "signoffs": [{"id": "rank_reqId", "name": "Full requirement description"}, ...],
   "priority": "high|medium|low"
 }
 
-MEETINGS: List 2-4 rank req IDs only (e.g., "Scout 2a")
-SERVICE: List merit badge NAMES only (e.g., "Citizenship in Community")  
-CAMPOUTS: List 3-5 merit badge NAMES only (e.g., "Camping", "First Aid")
+CRITICAL INSTRUCTIONS BY EVENT TYPE:
 
-signoffs.name = Just "Rank Req#" - NO DESCRIPTIONS
-Keep opportunities to 2-4 words each
+**MEETINGS (type="meeting")**:
+- opportunities: 3-5 SPECIFIC rank requirements that can be completed/demonstrated (e.g., "Scout 2a: Describe troop leadership", "Scout 4a: Demonstrate square knot")
+- signoffs: 3-10 rank requirement signoffs with:
+  - id: requirement ID (e.g., "scout_2a")
+  - name: FULL requirement text from the list above (e.g., "Describe how the Scouts in the troop provide its leadership")
+- priority: 'high' if 5+ signoffs, 'medium' if 3-4, 'low' if 1-2
+
+**CAMPOUTS (type="campout" or "hike")**:
+- opportunities: 5-10 DETAILED merit badge activities possible (e.g., "Camping 9a: Plan trail meals", "First Aid 5b: Treat burns", "Orienteering: Use map and compass")
+- signoffs: 3-10 specific merit badge requirement signoffs with:
+  - id: requirement ID (e.g., "camping_9a")
+  - name: Brief description of the requirement (e.g., "Plan and cook trail meals")
+- priority: 'high' if 5+ Eagle-required badges possible, 'medium' if 2-4, 'low' if 0-1
+
+**SERVICE/OTHER (all other types)**:
+- opportunities: [] (empty array)
+- signoffs: [] (empty array)
+- priority: Rank based on service hours value: 'high' if 3+ hours, 'medium' if 1-2 hours, 'low' otherwise
+
+BE SPECIFIC AND DETAILED for meetings and campouts. Use the FULL requirement text for signoffs.name.
 
 Return ONLY valid JSON array. No text before or after.`
 
@@ -273,6 +305,16 @@ Return ONLY valid JSON array. No text before or after.`
     console.log('Last 200 chars:', response?.substring(Math.max(0, response?.length - 200)))
     console.log('Full response:', response)
     console.log('=== END RESPONSE ===')
+    
+    // DEBUG: Save raw response to file
+    try {
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+      const debugPath = join(process.cwd(), `debug-response-${timestamp}.json`)
+      writeFileSync(debugPath, response, 'utf-8')
+      console.log('✅ DEBUG: Raw response saved to:', debugPath)
+    } catch (fsError) {
+      console.error('⚠️ Could not save debug file:', fsError)
+    }
     
     // Clean the response - remove markdown code blocks and extra text
     let cleanedResponse = response.trim()
@@ -337,6 +379,16 @@ Return ONLY valid JSON array. No text before or after.`
     }
     
     console.log('=== END CLEANED ===')
+    
+    // DEBUG: Save cleaned response to file
+    try {
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+      const debugPath = join(process.cwd(), `debug-cleaned-${timestamp}.json`)
+      writeFileSync(debugPath, cleanedResponse, 'utf-8')
+      console.log('✅ DEBUG: Cleaned response saved to:', debugPath)
+    } catch (fsError) {
+      console.error('⚠️ Could not save debug file:', fsError)
+    }
     
     const analyses = JSON.parse(cleanedResponse) as EventAnalysis[]
     
@@ -483,7 +535,7 @@ If asked about a merit badge, explain the specific requirements, what materials 
       contents: fullPrompt,
       config: {
         temperature: 0.7,
-        maxOutputTokens: 8000, // Increased from 4000 to handle longer responses
+        maxOutputTokens: 15000, // Increased from 4000 to handle longer responses
       },
     })
     
