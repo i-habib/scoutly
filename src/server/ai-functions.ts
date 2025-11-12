@@ -79,7 +79,7 @@ async function callGemini(
       contents: prompt,
       config: {
         temperature,
-        maxOutputTokens: 4000,
+        maxOutputTokens: 8000, // Increased from 4000 to handle longer responses
       }
     }
     
@@ -276,6 +276,47 @@ Return valid JSON only. Nothing else should be included. Just pure json`
     console.log('=== CLEANED RESPONSE ===')
     console.log('Cleaned length:', cleanedResponse.length)
     console.log('Cleaned response:', cleanedResponse)
+    
+    // Check if JSON is incomplete (doesn't end with ] or })
+    const lastChar = cleanedResponse.trim().slice(-1)
+    if (lastChar !== ']' && lastChar !== '}') {
+      console.warn('⚠️ WARNING: Response appears incomplete! Last char:', lastChar)
+      console.log('Attempting to fix incomplete JSON...')
+      
+      // Try to complete the JSON by finding the last complete object
+      // Count opening/closing brackets to determine what's missing
+      const openBrackets = (cleanedResponse.match(/\[/g) || []).length
+      const closeBrackets = (cleanedResponse.match(/\]/g) || []).length
+      const openBraces = (cleanedResponse.match(/\{/g) || []).length
+      const closeBraces = (cleanedResponse.match(/\}/g) || []).length
+      
+      console.log('Open [:', openBrackets, 'Close ]:', closeBrackets)
+      console.log('Open {:', openBraces, 'Close }:', closeBraces)
+      
+      // Add missing closing brackets/braces
+      let fixed = cleanedResponse
+      
+      // Close incomplete strings if needed
+      const quotes = (fixed.match(/"/g) || []).length
+      if (quotes % 2 !== 0) {
+        console.log('Closing incomplete string')
+        fixed += '"'
+      }
+      
+      // Close objects
+      for (let i = 0; i < openBraces - closeBraces; i++) {
+        fixed += '}'
+      }
+      
+      // Close arrays
+      for (let i = 0; i < openBrackets - closeBrackets; i++) {
+        fixed += ']'
+      }
+      
+      cleanedResponse = fixed
+      console.log('Fixed response:', cleanedResponse)
+    }
+    
     console.log('=== END CLEANED ===')
     
     const analyses = JSON.parse(cleanedResponse) as EventAnalysis[]
@@ -423,7 +464,7 @@ If asked about a merit badge, explain the specific requirements, what materials 
       contents: fullPrompt,
       config: {
         temperature: 0.7,
-        maxOutputTokens: 4000,
+        maxOutputTokens: 8000, // Increased from 4000 to handle longer responses
       },
     })
     
