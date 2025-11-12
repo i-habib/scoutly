@@ -178,7 +178,12 @@ function EventsPage() {
   const events = userData?.events || [];
   
   // Sort events by priority score (highest first), then by date
-  const priorityValue = (p: string) => p === 'high' ? 3 : p === 'medium' ? 2 : 1;
+  const priorityValue = (p: string | undefined): number => {
+    if (!p || typeof p !== 'string') return 1;
+    if (p === 'high') return 3;
+    if (p === 'medium') return 2;
+    return 1;
+  };
   
   const upcomingEvents = events
     .filter(e => new Date(e.startTime) >= new Date())
@@ -1005,7 +1010,8 @@ function EventCard({
   );
   
   // Priority badge color
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = (priority: string | undefined) => {
+    if (!priority || typeof priority !== 'string') return 'bg-slate-500/20 text-slate-400 border-slate-500/40';
     if (priority === 'high') return 'bg-red-500/20 text-red-400 border-red-500/40';
     if (priority === 'medium') return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40';
     return 'bg-slate-500/20 text-slate-400 border-slate-500/40';
@@ -1048,7 +1054,7 @@ function EventCard({
             </span>
             
             {/* Priority Badge */}
-            {!isPast && hasAnalysis && analysis.priority && (
+            {!isPast && hasAnalysis && analysis.priority && typeof analysis.priority === 'string' && (
               <span className={`px-2 py-1 rounded text-xs font-bold border ${getPriorityColor(analysis.priority)}`}>
                 {analysis.priority.toUpperCase()}
               </span>

@@ -64,8 +64,10 @@ export const sendChatMessage = async (
     },
   })
   
+  // Server returns { role: 'model', parts: string }
+  // We need to extract the parts string as the response
   return {
-    response: result.parts || '',
+    response: typeof result.parts === 'string' ? result.parts : '',
     updatedPlan: undefined, // No plan updates in chat for now
   };
 };
