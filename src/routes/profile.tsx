@@ -94,6 +94,48 @@ function Profile() {
 
     const badgesNeeded = 21 - completedBadges;
     
+    // Calculate remaining requirements and sign-offs needed
+    const incompleteBadges = eagleRequiredBadges.filter(badge => {
+      const badgeProgress = userData.progress[badge.id] || {};
+      const totalReqs = badge.requirements.reduce((acc, req) => acc + (req.requiredCount || 1), 0);
+      let completed = 0;
+
+      badge.requirements.forEach((req, reqIndex) => {
+        if (req.sub_requirements && req.sub_requirements.length > 0) {
+          let completedSubReqs = 0;
+          req.sub_requirements.forEach((_, subIndex) => {
+            if (badgeProgress[`req_${reqIndex}_${subIndex}`]) completedSubReqs++;
+          });
+          completed += Math.min(completedSubReqs, req.requiredCount || req.sub_requirements.length);
+        } else {
+          if (badgeProgress[`req_${reqIndex}`]) completed++;
+        }
+      });
+
+      return completed < totalReqs;
+    });
+
+    // Calculate total requirements remaining
+    let totalRequirementsRemaining = 0;
+    incompleteBadges.forEach(badge => {
+      const badgeProgress = userData.progress[badge.id] || {};
+      badge.requirements.forEach((req, reqIndex) => {
+        if (req.sub_requirements && req.sub_requirements.length > 0) {
+          let completedSubReqs = 0;
+          req.sub_requirements.forEach((_, subIndex) => {
+            if (badgeProgress[`req_${reqIndex}_${subIndex}`]) completedSubReqs++;
+          });
+          const reqsNeeded = (req.requiredCount || req.sub_requirements.length) - completedSubReqs;
+          totalRequirementsRemaining += Math.max(0, reqsNeeded);
+        } else {
+          if (!badgeProgress[`req_${reqIndex}`]) totalRequirementsRemaining++;
+        }
+      });
+    });
+
+    const badgeNames = incompleteBadges.slice(0, 3).map(b => b.name).join(', ');
+    const moreBadges = incompleteBadges.length > 3 ? ` +${incompleteBadges.length - 3} more` : '';
+    
     if (daysRemaining <= 0) {
       setAiPace('⚠️ Past target date - Update your goal');
       return;
@@ -101,15 +143,16 @@ function Profile() {
 
     const badgesPerMonth = badgesNeeded / (daysRemaining / 30);
     const badgesPerMonthLabel = badgesPerMonth.toFixed(1);
+    const reqsPerWeek = (totalRequirementsRemaining / (daysRemaining / 7)).toFixed(1);
     
     if (badgesPerMonth < 0.5) {
-      setAiPace(`🟢 Ahead of schedule! ${badgesNeeded} badges in ${Math.floor(daysRemaining / 30)} months`);
+      setAiPace(`🟢 Ahead of schedule! ${badgesNeeded} badges remaining (${totalRequirementsRemaining} requirements, ~${reqsPerWeek} sign-offs/week). Focus on: ${badgeNames}${moreBadges}`);
     } else if (badgesPerMonth < 1) {
-      setAiPace(`🟡 On track - Complete ~1 badge per month`);
+      setAiPace(`🟡 On track - Complete ~1 badge per month (${totalRequirementsRemaining} requirements, ~${reqsPerWeek} sign-offs/week). Priority: ${badgeNames}${moreBadges}`);
     } else if (badgesPerMonth < 2) {
-      setAiPace(`🟠 Fast pace needed - ${badgesPerMonthLabel} badges/month`);
+      setAiPace(`🟠 Fast pace needed - ${badgesPerMonthLabel} badges/month (${totalRequirementsRemaining} requirements, ~${reqsPerWeek} sign-offs/week). Focus: ${badgeNames}${moreBadges}`);
     } else {
-      setAiPace(`🔴 Very aggressive pace - ${badgesPerMonthLabel} badges/month required`);
+      setAiPace(`🔴 Very aggressive pace - ${badgesPerMonthLabel} badges/month required (${totalRequirementsRemaining} requirements, ~${reqsPerWeek} sign-offs/week). Immediate action needed on: ${badgeNames}${moreBadges}`);
     }
   };
 
@@ -396,7 +439,15 @@ function Profile() {
                   className="group"
                 >
                   <div className="bg-emerald-500/20 border-2 border-emerald-500 rounded-lg p-3 text-center hover:bg-emerald-500/30 transition-all hover:scale-105 cursor-pointer">
-                    <div className="text-3xl mb-2">🏅</div>
+                    {badge.imageUrl ? (
+                      <img 
+                        src={badge.imageUrl} 
+                        alt={badge.name}
+                        className="w-16 h-16 mx-auto mb-2 object-contain"
+                      />
+                    ) : (
+                      <div className="text-3xl mb-2">🏅</div>
+                    )}
                     <div className="text-white font-semibold text-xs mb-1 line-clamp-2 min-h-8">
                       {badge.name}
                     </div>
@@ -426,7 +477,15 @@ function Profile() {
                   className="group"
                 >
                   <div className="bg-white/10/50 border-2 border-cyan-500/50 rounded-lg p-3 text-center hover:bg-white/10 hover:border-cyan-500 transition-all hover:scale-105 cursor-pointer">
-                    <div className="text-3xl mb-2">🏅</div>
+                    {badge.imageUrl ? (
+                      <img 
+                        src={badge.imageUrl} 
+                        alt={badge.name}
+                        className="w-16 h-16 mx-auto mb-2 object-contain"
+                      />
+                    ) : (
+                      <div className="text-3xl mb-2">🏅</div>
+                    )}
                     <div className="text-white font-semibold text-xs mb-2 line-clamp-2 min-h-8">
                       {badge.name}
                     </div>
@@ -455,20 +514,6 @@ function Profile() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {notStarted.map((badge) => {
-                // Generate a color based on badge name for visual variety
-                const colors = [
-                  { bg: 'bg-red-500/20', border: 'border-red-500', icon: 'text-red-400' },
-                  { bg: 'bg-blue-500/20', border: 'border-blue-500', icon: 'text-blue-400' },
-                  { bg: 'bg-green-500/20', border: 'border-green-500', icon: 'text-green-400' },
-                  { bg: 'bg-yellow-500/20', border: 'border-yellow-500', icon: 'text-yellow-400' },
-                  { bg: 'bg-purple-500/20', border: 'border-purple-500', icon: 'text-purple-400' },
-                  { bg: 'bg-pink-500/20', border: 'border-pink-500', icon: 'text-pink-400' },
-                  { bg: 'bg-orange-500/20', border: 'border-orange-500', icon: 'text-orange-400' },
-                  { bg: 'bg-teal-500/20', border: 'border-teal-500', icon: 'text-teal-400' },
-                ];
-                const colorIndex = badge.name.charCodeAt(0) % colors.length;
-                const color = colors[colorIndex];
-                
                 return (
                   <Link
                     key={badge.id}
@@ -476,10 +521,18 @@ function Profile() {
                     params={{ badgeId: badge.id }}
                     className="group"
                   >
-                    <div className={`${color.bg} border-2 ${color.border} border-opacity-30 rounded-lg p-3 text-center hover:border-opacity-60 transition-all hover:scale-105 cursor-pointer`}>
-                      <div className={`w-10 h-10 mx-auto mb-2 rounded-full ${color.bg} border ${color.border} border-opacity-50 flex items-center justify-center`}>
-                        <MeritBadgeIcon className={`w-6 h-6 ${color.icon}`} />
-                      </div>
+                    <div className="bg-slate-800/50 border-2 border-slate-600/50 rounded-lg p-3 text-center hover:bg-slate-700/50 hover:border-slate-500 transition-all hover:scale-105 cursor-pointer">
+                      {badge.imageUrl ? (
+                        <img 
+                          src={badge.imageUrl} 
+                          alt={badge.name}
+                          className="w-16 h-16 mx-auto mb-2 object-contain opacity-40 group-hover:opacity-60 transition-opacity"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-slate-700/50 border border-slate-600/50 flex items-center justify-center opacity-40 group-hover:opacity-60 transition-opacity">
+                          <MeritBadgeIcon className="w-6 h-6 text-slate-400" />
+                        </div>
+                      )}
                       <div className="text-gray-300 font-semibold text-xs mb-1 line-clamp-2 min-h-8">
                         {badge.name}
                       </div>
