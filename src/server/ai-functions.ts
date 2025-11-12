@@ -81,7 +81,7 @@ async function callGemini(
       contents: prompt,
       config: {
         temperature,
-        maxOutputTokens: 8000, // Increased from 4000 to handle longer responses
+        maxOutputTokens: 8000, // Reduced from 25000 - we want concise responses
       }
     }
     
@@ -235,39 +235,33 @@ export const analyzeCalendarEvents = createServerFn({
     }
   }
 
-  const prompt = `You are an Eagle Scout advisor. Analyze events and provide concise, actionable guidance.
+  const prompt = `Analyze ${eventsNeedingAnalysis.length} Scout events. Return JSON array ONLY.
 
-SCOUT INFO:
-- Current Rank: ${currentRank.replace('rank_', '')}
-- Incomplete Rank Requirements (${currentRank} to First Class):
-${rankRequirements.slice(0, 15).join('\n')}
-${rankRequirements.length > 15 ? `... and ${rankRequirements.length - 15} more` : ''}
+Scout Rank: ${currentRank.replace('rank_', '')}
+Available Merit Badges: ${allMeritBadges}
 
-ALL AVAILABLE MERIT BADGES: ${allMeritBadges}
+Events:
+${eventsNeedingAnalysis.map((e: any) => `${e.id}|${e.name}|${e.type || 'meeting'}`).join('\n')}
 
-EVENTS TO ANALYZE:
-${eventsNeedingAnalysis.map((e: any) => `- ID: ${e.id}, Name: ${e.name}, Type: ${e.type || 'meeting'}, Date: ${e.startTime || e.start}, Location: ${e.location || 'TBD'}`).join('\n')}
+Incomplete Rank Reqs (Scout-First Class):
+${rankRequirements.slice(0, 10).map(r => r.split(': ')[0]).join(', ')}${rankRequirements.length > 10 ? `... +${rankRequirements.length - 10}` : ''}
 
-For EACH event, provide analysis based on event type:
+For EACH event return:
+{
+  "eventId": "exact_id",
+  "opportunities": ["Short item 1", "Short item 2"],
+  "signoffs": [{"id": "rank_reqId", "name": "Rank Req#"}],
+  "priority": "high|medium|low"
+}
 
-**MEETING**: Focus on rank signoffs
-- opportunities: List 2-4 rank requirements that can be completed/signed off
-- signoffs: Include ALL applicable rank requirements with ids (e.g., "tenderfoot_4a")
-- priority: 'high' if 3+ signoffs possible, 'medium' if 1-2, 'low' otherwise
+MEETINGS: List 2-4 rank req IDs only (e.g., "Scout 2a")
+SERVICE: List merit badge NAMES only (e.g., "Citizenship in Community")  
+CAMPOUTS: List 3-5 merit badge NAMES only (e.g., "Camping", "First Aid")
 
-**SERVICE PROJECT**: Brief overview
-- opportunities: Just list merit badge names that apply (e.g., "Citizenship in Community")
-- signoffs: Service hour requirements only
-- priority: 'high' if counts toward Eagle-required badges, 'medium' otherwise
+signoffs.name = Just "Rank Req#" - NO DESCRIPTIONS
+Keep opportunities to 2-4 words each
 
-**CAMPOUT/HIKE**: Merit badge focus
-- opportunities: List 3-5 merit badge NAMES (not requirements) that are possible at this event
-- signoffs: Include specific merit badge requirements with ids (e.g., "camping_9a") and rank requirements
-- priority: 'high' if 3+ Eagle-required badges, 'medium' if 1-2, 'low' otherwise
-
-KEEP IT BRIEF. No explanations of how to complete requirements. Just list what's possible.
-
-Return valid JSON only.`
+Return ONLY valid JSON array. No text before or after.`
 
   try {
     const response = await callGemini(prompt, 0.3, responseSchema)
