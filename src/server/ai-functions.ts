@@ -17,8 +17,9 @@ const getApiKey = () => {
 
 // Helper to get model name at runtime
 const getModelName = () => {
-  return process.env.GEMINI_MODEL || process.env.VITE_GEMINI_MODEL || 'gemini-1.5-flash-latest'
+  return process.env.GEMINI_MODEL || import.meta.env.VITE_GEMINI_MODEL || 'gemini-2.5-flash-latest'
 }
+console.log('Using Gemini Model:', import.meta.env.VITE_GEMINI_MODEL)
 
 // Initialize Google AI - this will be called at runtime, not at build time
 const getAI = () => {
@@ -66,6 +67,12 @@ async function callGemini(
   schema?: any
 ): Promise<string> {
   try {
+    console.log('=== CALL GEMINI START ===')
+    console.log('Model:', getModelName())
+    console.log('Temperature:', temperature)
+    console.log('Has schema:', !!schema)
+    console.log('Prompt length:', prompt.length)
+    
     const ai = getAI() // Get AI instance at runtime
     const config: any = {
       model: getModelName(),
@@ -78,13 +85,22 @@ async function callGemini(
     
     // Add schema if provided for JSON mode
     if (schema) {
+      console.log('Using JSON mode with schema')
       config.config.responseMimeType = 'application/json'
       config.config.responseSchema = schema
     }
     
     const response = await ai.models.generateContent(config)
+    
+    console.log('=== CALL GEMINI RESPONSE ===')
+    console.log('Response received, type:', typeof response.text)
+    console.log('Response length:', response.text?.length || 0)
+    
     return response.text || ''
   } catch (error) {
+    console.error('=== CALL GEMINI ERROR ===')
+    console.error('Error:', error)
+    
     if (error instanceof Error) {
       throw new Error(`Gemini API error: ${error.message}`)
     }
@@ -226,11 +242,24 @@ For EACH event, provide:
 
 Be SPECIFIC and DETAILED. Don't say "work on First Aid" - say exactly which requirement and how to complete it.
 
-Return valid JSON only.`
+Return valid JSON only. Nothing else should be included. Just pure json`
 
   try {
     const response = await callGemini(prompt, 0.3, responseSchema)
+    
+    console.log('=== GEMINI API RESPONSE ===')
+    console.log('Response type:', typeof response)
+    console.log('Response length:', response?.length)
+    console.log('First 500 chars:', response?.substring(0, 500))
+    console.log('Last 200 chars:', response?.substring(Math.max(0, response?.length - 200)))
+    console.log('=== END RESPONSE ===')
+    
     const analyses = JSON.parse(response) as EventAnalysis[]
+    
+    console.log('=== PARSED ANALYSES ===')
+    console.log('Number of analyses:', analyses?.length)
+    console.log('Analyses:', JSON.stringify(analyses, null, 2))
+    console.log('=== END PARSED ===')
     
     const result: Record<string, EventAnalysis> = { ...existingAnalysis }
 
@@ -245,7 +274,9 @@ Return valid JSON only.`
       cached: Object.keys(existingAnalysis).filter((id) => !options.forceAnalyze?.includes(id)),
     }
   } catch (error) {
-    console.error('Failed to parse AI response:', error)
+    console.error('=== ERROR PARSING AI RESPONSE ===')
+    console.error('Error:', error)
+    console.error('Error message:', error instanceof Error ? error.message : 'Unknown error')
     throw new Error(`AI analysis failed: ${error instanceof Error ? error.message : 'Invalid JSON response'}`)
   }
 })
@@ -357,6 +388,11 @@ If asked about a merit badge, explain the specific requirements, what materials 
       ? `${systemPrompt}\n\nConversation:\n${history.map((h) => `${h.role}: ${h.parts[0].text}`).join('\n')}\nuser: ${message}`
       : `${systemPrompt}\n\nuser: ${message}`
 
+    console.log('=== CHAT REQUEST ===')
+    console.log('Model:', getModelName())
+    console.log('Message:', message)
+    console.log('History length:', history.length)
+    
     const ai = getAI() // Get AI instance at runtime
     const response = await ai.models.generateContent({
       model: getModelName(),
@@ -367,11 +403,21 @@ If asked about a merit badge, explain the specific requirements, what materials 
       },
     })
     
+    console.log('=== CHAT RESPONSE ===')
+    console.log('Response type:', typeof response.text)
+    console.log('Response length:', response.text?.length)
+    console.log('Response preview:', response.text?.substring(0, 200))
+    console.log('=== END CHAT ===')
+    
     return {
       role: 'model' as const,
       parts: response.text || '',
     }
   } catch (error) {
+    console.error('=== CHAT ERROR ===')
+    console.error('Error:', error)
+    console.error('Error message:', error instanceof Error ? error.message : 'Unknown')
+    
     if (error instanceof Error) {
       throw new Error(`Chat error: ${error.message}`)
     }
