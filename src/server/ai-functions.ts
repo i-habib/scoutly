@@ -252,9 +252,33 @@ Return valid JSON only. Nothing else should be included. Just pure json`
     console.log('Response length:', response?.length)
     console.log('First 500 chars:', response?.substring(0, 500))
     console.log('Last 200 chars:', response?.substring(Math.max(0, response?.length - 200)))
+    console.log('Full response:', response)
     console.log('=== END RESPONSE ===')
     
-    const analyses = JSON.parse(response) as EventAnalysis[]
+    // Clean the response - remove markdown code blocks and extra text
+    let cleanedResponse = response.trim()
+    
+    // Remove markdown code blocks if present
+    if (cleanedResponse.startsWith('```json')) {
+      cleanedResponse = cleanedResponse.replace(/^```json\s*/i, '').replace(/```\s*$/, '')
+    } else if (cleanedResponse.startsWith('```')) {
+      cleanedResponse = cleanedResponse.replace(/^```\s*/, '').replace(/```\s*$/, '')
+    }
+    
+    // Try to find JSON array boundaries if response has extra text
+    const arrayStart = cleanedResponse.indexOf('[')
+    const arrayEnd = cleanedResponse.lastIndexOf(']')
+    
+    if (arrayStart !== -1 && arrayEnd !== -1 && arrayEnd > arrayStart) {
+      cleanedResponse = cleanedResponse.substring(arrayStart, arrayEnd + 1)
+    }
+    
+    console.log('=== CLEANED RESPONSE ===')
+    console.log('Cleaned length:', cleanedResponse.length)
+    console.log('Cleaned response:', cleanedResponse)
+    console.log('=== END CLEANED ===')
+    
+    const analyses = JSON.parse(cleanedResponse) as EventAnalysis[]
     
     console.log('=== PARSED ANALYSES ===')
     console.log('Number of analyses:', analyses?.length)
