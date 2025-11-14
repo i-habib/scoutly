@@ -6,6 +6,7 @@ import {
   Menu,
   X,
   User,
+  TrendingUp,
 } from 'lucide-react'
 import { ScoutFleurDeLis, EagleIcon, MeritBadgeIcon, TentIcon } from './ScoutIcons'
 
@@ -66,6 +67,17 @@ export default function Header() {
           >
             <ScoutFleurDeLis size={18} />
             <span>AI Coach</span>
+          </Link>
+
+          <Link
+            to="/timeline"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-green-500/20 transition-colors text-sm font-medium"
+            activeProps={{
+              className: 'flex items-center gap-2 px-4 py-2 rounded-lg bg-green-500/30 border border-green-500/50 hover:bg-green-500/40 transition-colors text-sm font-medium',
+            }}
+          >
+            <TrendingUp size={18} />
+            <span>Timeline</span>
           </Link>
 
           <Link
@@ -168,6 +180,19 @@ export default function Header() {
           >
             <ScoutFleurDeLis size={20} />
             <span className="font-medium">AI Eagle Coach</span>
+          </Link>
+
+          <Link
+            to="/timeline"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-green-500/20 transition-colors mb-2"
+            activeProps={{
+              className:
+                'flex items-center gap-3 p-3 rounded-lg bg-green-500/30 border border-green-500/50 hover:bg-green-500/40 transition-colors mb-2',
+            }}
+          >
+            <TrendingUp size={20} />
+            <span className="font-medium">Timeline Planner</span>
           </Link>
 
           <Link

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TimelineRouteImport } from './routes/timeline'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as LoginRouteImport } from './routes/login'
@@ -20,6 +21,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as MeritBadgesIndexRouteImport } from './routes/merit-badges/index'
 import { Route as MeritBadgesBadgeIdRouteImport } from './routes/merit-badges/$badgeId'
 
+const TimelineRoute = TimelineRouteImport.update({
+  id: '/timeline',
+  path: '/timeline',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/profile': typeof ProfileRoute
+  '/timeline': typeof TimelineRoute
   '/merit-badges/$badgeId': typeof MeritBadgesBadgeIdRoute
   '/merit-badges': typeof MeritBadgesIndexRoute
 }
@@ -92,6 +99,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/profile': typeof ProfileRoute
+  '/timeline': typeof TimelineRoute
   '/merit-badges/$badgeId': typeof MeritBadgesBadgeIdRoute
   '/merit-badges': typeof MeritBadgesIndexRoute
 }
@@ -105,6 +113,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/profile': typeof ProfileRoute
+  '/timeline': typeof TimelineRoute
   '/merit-badges/$badgeId': typeof MeritBadgesBadgeIdRoute
   '/merit-badges/': typeof MeritBadgesIndexRoute
 }
@@ -119,6 +128,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/onboarding'
     | '/profile'
+    | '/timeline'
     | '/merit-badges/$badgeId'
     | '/merit-badges'
   fileRoutesByTo: FileRoutesByTo
@@ -131,6 +141,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/onboarding'
     | '/profile'
+    | '/timeline'
     | '/merit-badges/$badgeId'
     | '/merit-badges'
   id:
@@ -143,6 +154,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/onboarding'
     | '/profile'
+    | '/timeline'
     | '/merit-badges/$badgeId'
     | '/merit-badges/'
   fileRoutesById: FileRoutesById
@@ -156,12 +168,20 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   OnboardingRoute: typeof OnboardingRoute
   ProfileRoute: typeof ProfileRoute
+  TimelineRoute: typeof TimelineRoute
   MeritBadgesBadgeIdRoute: typeof MeritBadgesBadgeIdRoute
   MeritBadgesIndexRoute: typeof MeritBadgesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/timeline': {
+      id: '/timeline'
+      path: '/timeline'
+      fullPath: '/timeline'
+      preLoaderRoute: typeof TimelineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile': {
       id: '/profile'
       path: '/profile'
@@ -244,6 +264,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   OnboardingRoute: OnboardingRoute,
   ProfileRoute: ProfileRoute,
+  TimelineRoute: TimelineRoute,
   MeritBadgesBadgeIdRoute: MeritBadgesBadgeIdRoute,
   MeritBadgesIndexRoute: MeritBadgesIndexRoute,
 }

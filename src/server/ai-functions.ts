@@ -325,15 +325,17 @@ For EACH event, return:
 
 **MEETINGS (type="meeting")**:
 ${isFirstClassOrAbove ? `
-- Focus: Merit badge work and leadership
+- Focus: Merit badge work and leadership (rank advancement complete through First Class)
 - opportunities: 3-5 items mentioning merit badge work or leadership positions
 - signoffs: Merit badge requirements if applicable, otherwise leadership/service hour tracking
 - priority: 'medium' (meetings less critical after First Class)
 ` : `
-- Focus: RANK ADVANCEMENT (critical for ${currentRankName} → ${nextRankData?.name})
-- opportunities: 3-5 SPECIFIC rank requirements from the list above that can be completed/demonstrated
-- signoffs: 3-10 rank requirements with full descriptions from the "NEXT RANK REQUIREMENTS" list
+- Focus: RANK ADVANCEMENT ONLY (critical for ${currentRankName} → ${nextRankData?.name})
+- ⚠️ DO NOT SUGGEST MERIT BADGES - Scout must focus on rank requirements first
+- opportunities: 3-5 SPECIFIC rank requirements from the "NEXT RANK REQUIREMENTS" list
+- signoffs: 3-10 rank requirements with full descriptions (NO merit badge signoffs)
 - priority: 'high' if 5+ rank signoffs, 'medium' if 3-4, 'low' if 1-2
+- EXCEPTION: Can mention time-consuming Eagle badges to START (Personal Fitness, Personal Management) but don't prioritize them
 `}
 
 **CAMPOUTS/HIKES (type="campout" or "hike")**:
@@ -346,10 +348,12 @@ ${isFirstClassOrAbove ? `
 - signoffs: 5-10 specific merit badge requirements (format: {"id": "camping_9a", "name": "Plan and cook trail meals"})
 - priority: 'high' if 5+ Eagle-required badge opportunities, 'medium' if 2-4, 'low' if 0-1
 ` : `
-- Focus: Both rank requirements AND merit badges
-- opportunities: 5-10 items mixing rank requirements and relevant merit badge work
-- signoffs: Both rank requirements and merit badge requirements (5-10 total)
-- priority: 'high' if 3+ rank signoffs OR 3+ Eagle badge opportunities, 'medium' if some of each, 'low' otherwise
+- Focus: RANK ADVANCEMENT FIRST, merit badges secondary
+- ⚠️ PRIORITIZE RANK REQUIREMENTS - Merit badges only as bonus opportunities
+- opportunities: 5-10 items with rank requirements FIRST, then relevant merit badge activities
+- signoffs: MAJORITY should be rank requirements (60%+), some merit badge requirements (40%)
+- priority: 'high' if 3+ rank signoffs available, 'medium' if 1-2 rank signoffs, 'low' if only merit badges
+- Order opportunities by priority: Rank reqs → Time-consuming badges → Other badges
 `}
 
 **SERVICE/OTHER (all other types)**:
@@ -554,7 +558,7 @@ Make the plan inspiring yet achievable!`
   return { plan }
 })
 
-export const sendChatMessage = createServerFn({
+export const sendLongTermChatMessage = createServerFn({
   method: 'POST',
 })
   .inputValidator((data: {
@@ -566,26 +570,32 @@ export const sendChatMessage = createServerFn({
     const { message, history, userData } = data
   
   // Rate limit check (more lenient for chat)
-  checkRateLimit(`chat-${userData.profile.name || 'anonymous'}`)
+  checkRateLimit(`longTermChat-${userData.profile.name || 'anonymous'}`)
   
+  const currentRank = userData.profile?.currentRank || 'rank_scout'
+  const targetEagleDate = userData.profile?.targetEagleDate
   const context = buildPlanContext(userData)
 
-  const systemPrompt = `You are an experienced Eagle Scout advisor and mentor. You provide DETAILED, specific, and actionable advice.
+  const systemPrompt = `You are an experienced Eagle Scout advisor focused on LONG-TERM strategic planning (6+ months to Eagle).
 
-SCOUT'S CURRENT PROGRESS: ${context}
+SCOUT'S PROFILE:
+- Current Rank: ${currentRank.replace('rank_', '')}
+- Target Eagle Date: ${targetEagleDate || 'Not set'}
+- Current Progress: ${context}
+
+YOUR FOCUS: Big picture strategy, timeline management, major milestones
 
 When answering questions:
-- Be extremely specific with step-by-step instructions
-- Reference exact merit badge requirement numbers when relevant
-- Provide practical tips and real-world examples
-- Suggest specific resources (BSA handbook pages, YouTube tutorials, local contacts)
-- Break down complex tasks into manageable steps
-- Include time estimates and difficulty ratings
-- Warn about common mistakes and how to avoid them
-- Give encouraging, motivational feedback
-- Use Scout terminology correctly
+- Think in terms of months and years, not weeks
+- Focus on rank progression timelines and minimum time requirements
+- Emphasize time-consuming badges (Personal Fitness: 12 weeks, Personal Management: 13 weeks, Family Life: 3 months)
+- Discuss which badges to START EARLY (even if First Class isn't reached yet)
+- Help plan around school year, summer camps, major life events
+- Provide deadline-driven milestone planning
+- Warn about timing bottlenecks (waiting for rank tenure, project approval)
+- Keep responses strategic and high-level
 
-If asked about a merit badge, explain the specific requirements, what materials are needed, estimated time to complete, and tips for success.`
+CRITICAL: Be concise (300-500 words max). Scouts have short attention spans. Use bullet points.`
 
   try {
     // Build the full conversation with system prompt
@@ -593,40 +603,112 @@ If asked about a merit badge, explain the specific requirements, what materials 
       ? `${systemPrompt}\n\nConversation:\n${history.map((h) => `${h.role}: ${h.parts[0].text}`).join('\n')}\nuser: ${message}`
       : `${systemPrompt}\n\nuser: ${message}`
 
-    console.log('=== CHAT REQUEST ===')
+    console.log('=== LONG-TERM CHAT REQUEST ===')
     console.log('Model:', getModelName())
     console.log('Message:', message)
     console.log('History length:', history.length)
     
-    const ai = getAI() // Get AI instance at runtime
+    const ai = getAI()
     const response = await ai.models.generateContent({
       model: getModelName(),
       contents: fullPrompt,
       config: {
-        temperature: 0.7,
-        maxOutputTokens: 15000, // Increased from 4000 to handle longer responses
+        temperature: 0.6,
+        maxOutputTokens: 2000, // Shorter for concise responses
       },
     })
     
-    console.log('=== CHAT RESPONSE ===')
-    console.log('Response type:', typeof response.text)
+    console.log('=== LONG-TERM CHAT RESPONSE ===')
     console.log('Response length:', response.text?.length)
-    console.log('Response preview:', response.text?.substring(0, 200))
-    console.log('=== END CHAT ===')
     
     return {
       role: 'model' as const,
       parts: response.text || '',
     }
   } catch (error) {
-    console.error('=== CHAT ERROR ===')
-    console.error('Error:', error)
-    console.error('Error message:', error instanceof Error ? error.message : 'Unknown')
-    
+    console.error('=== LONG-TERM CHAT ERROR ===', error)
     if (error instanceof Error) {
-      throw new Error(`Chat error: ${error.message}`)
+      throw new Error(`Long-term chat error: ${error.message}`)
     }
-    throw new Error('Chat error: Unknown error occurred')
+    throw new Error('Long-term chat error: Unknown error occurred')
+  }
+})
+
+export const sendShortTermChatMessage = createServerFn({
+  method: 'POST',
+})
+  .inputValidator((data: {
+    message: string
+    history: GeminiHistoryMessage[]
+    userData: UserData
+  }) => data)
+  .handler(async ({ data }) => {
+    const { message, history, userData } = data
+  
+  // Rate limit check (more lenient for chat)
+  checkRateLimit(`shortTermChat-${userData.profile.name || 'anonymous'}`)
+  
+  const currentRank = userData.profile?.currentRank || 'rank_scout'
+  const context = buildPlanContext(userData)
+
+  const systemPrompt = `You are an experienced Eagle Scout advisor focused on SHORT-TERM tactical execution (next 2-4 weeks).
+
+SCOUT'S PROFILE:
+- Current Rank: ${currentRank.replace('rank_', '')}
+- Current Progress: ${context}
+
+YOUR FOCUS: Immediate actionable steps, this week's signoffs, upcoming meetings/campouts
+
+When answering questions:
+- Think in terms of days and weeks, not months
+- Be EXTREMELY specific with step-by-step instructions
+- Reference exact merit badge requirement numbers (e.g., "Camping 9a")
+- Focus on what can be done THIS WEEK at the next meeting or campout
+- Provide practical tips and real-world examples
+- Suggest specific resources (BSA handbook pages, YouTube tutorials)
+- Include materials needed and who to contact for sign-offs
+- Break down complex tasks into manageable daily/weekly steps
+- Give time estimates for each task
+- Warn about common mistakes and how to avoid them
+- Use encouraging, motivational feedback
+- Use proper Scout terminology
+
+DETAILED and ACTIONABLE. Include checklists, preparation steps, and follow-up actions.`
+
+  try {
+    // Build the full conversation with system prompt
+    const fullPrompt = history.length > 0
+      ? `${systemPrompt}\n\nConversation:\n${history.map((h) => `${h.role}: ${h.parts[0].text}`).join('\n')}\nuser: ${message}`
+      : `${systemPrompt}\n\nuser: ${message}`
+
+    console.log('=== SHORT-TERM CHAT REQUEST ===')
+    console.log('Model:', getModelName())
+    console.log('Message:', message)
+    console.log('History length:', history.length)
+    
+    const ai = getAI()
+    const response = await ai.models.generateContent({
+      model: getModelName(),
+      contents: fullPrompt,
+      config: {
+        temperature: 0.7,
+        maxOutputTokens: 3000, // Longer for detailed instructions
+      },
+    })
+    
+    console.log('=== SHORT-TERM CHAT RESPONSE ===')
+    console.log('Response length:', response.text?.length)
+    
+    return {
+      role: 'model' as const,
+      parts: response.text || '',
+    }
+  } catch (error) {
+    console.error('=== SHORT-TERM CHAT ERROR ===', error)
+    if (error instanceof Error) {
+      throw new Error(`Short-term chat error: ${error.message}`)
+    }
+    throw new Error('Short-term chat error: Unknown error occurred')
   }
 })
 
@@ -643,8 +725,6 @@ export const generateLongTermPlan = createServerFn({
   
   const currentRank = userData.profile?.currentRank || 'rank_scout'
   const targetEagleDate = userData.profile?.targetEagleDate
-  const rankOrder = ['rank_scout', 'rank_tenderfoot', 'rank_second_class', 'rank_first_class', 'rank_star', 'rank_life', 'rank_eagle']
-  const currentRankIndex = rankOrder.indexOf(currentRank)
   
   const prompt = `Create a CONCISE long-term Eagle Scout timeline (< 300 words). Work backwards from the target date.
 

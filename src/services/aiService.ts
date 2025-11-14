@@ -3,7 +3,10 @@ import type { UserData } from '../data/userData';
 import {
   analyzeCalendarEvents as analyzeCalendarEventsServer,
   generateInitialPlan as generateInitialPlanServer,
-  sendChatMessage as sendChatMessageServer,
+  generateLongTermPlan as generateLongTermPlanServer,
+  generateShortTermPlan as generateShortTermPlanServer,
+  sendLongTermChatMessage as sendLongTermChatMessageServer,
+  sendShortTermChatMessage as sendShortTermChatMessageServer,
 } from '../server/ai-functions'
 
 // All AI calls go through secure server-side functions
@@ -51,12 +54,26 @@ export const generateInitialPlan = async (userData: UserData): Promise<string> =
   return result.plan;
 };
 
-export const sendChatMessage = async (
+export const generateLongTermPlan = async (userData: UserData): Promise<string> => {
+  const result = await generateLongTermPlanServer({
+    data: { userData },
+  })
+  return result.plan;
+};
+
+export const generateShortTermPlan = async (userData: UserData): Promise<string> => {
+  const result = await generateShortTermPlanServer({
+    data: { userData },
+  })
+  return result.plan;
+};
+
+export const sendLongTermChatMessage = async (
   userMessage: string,
   userData: UserData,
   history: GeminiHistoryMessage[]
 ): Promise<{ response: string; updatedPlan?: string }> => {
-  const result = await sendChatMessageServer({
+  const result = await sendLongTermChatMessageServer({
     data: { 
       message: userMessage,
       history,
@@ -64,12 +81,32 @@ export const sendChatMessage = async (
     },
   })
   
-  // Server returns { role: 'model', parts: string }
-  // We need to extract the parts string as the response
   return {
     response: typeof result.parts === 'string' ? result.parts : '',
-    updatedPlan: undefined, // No plan updates in chat for now
+    updatedPlan: undefined,
   };
 };
+
+export const sendShortTermChatMessage = async (
+  userMessage: string,
+  userData: UserData,
+  history: GeminiHistoryMessage[]
+): Promise<{ response: string; updatedPlan?: string }> => {
+  const result = await sendShortTermChatMessageServer({
+    data: { 
+      message: userMessage,
+      history,
+      userData
+    },
+  })
+  
+  return {
+    response: typeof result.parts === 'string' ? result.parts : '',
+    updatedPlan: undefined,
+  };
+};
+
+// Backward compatibility - defaults to short-term chat
+export const sendChatMessage = sendShortTermChatMessage;
 
 

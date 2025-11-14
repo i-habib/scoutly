@@ -12,6 +12,8 @@ import { useUserData } from '../hooks/useUserData';
 import { ScoutFleurDeLis } from '../components/ScoutIcons';
 import {
   sendChatMessage,
+  sendLongTermChatMessage,
+  sendShortTermChatMessage,
   generateInitialPlan,
   type EventAnalysis,
 } from '../services/aiService';
@@ -45,6 +47,7 @@ function AICoach() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
+  const [chatMode, setChatMode] = useState<'strategic' | 'tactical'>('tactical');
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const [eventAnalysis, setEventAnalysis] = useState<Record<string, EventAnalysis>>({});
   const [monthlySummary, setMonthlySummary] = useState<string | null>(null);
@@ -180,7 +183,8 @@ function AICoach() {
       }));
 
       // Get AI response
-      const { response, updatedPlan } = await sendChatMessage(
+      const chatFunction = chatMode === 'strategic' ? sendLongTermChatMessage : sendShortTermChatMessage;
+      const { response, updatedPlan } = await chatFunction(
         userMessage.content,
         userData,
         geminiHistory as any
@@ -359,14 +363,46 @@ function AICoach() {
             <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
               {/* Chat Header */}
               <div className="bg-green-500/10 border-b border-white/10 px-6 py-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-linear-to-br from-green-500 to-cyan-600 rounded-xl">
-                    <ScoutFleurDeLis className="w-6 h-6 text-black" size={24} />
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-linear-to-br from-green-500 to-cyan-600 rounded-xl">
+                      <ScoutFleurDeLis className="w-6 h-6 text-black" size={24} />
+                    </div>
+                    <div>
+                      <h1 className="text-xl font-bold text-white">AI Eagle Scout Coach</h1>
+                      <p className="text-sm text-green-300">Your personalized guide to Eagle</p>
+                    </div>
                   </div>
-                  <div>
-                    <h1 className="text-xl font-bold text-white">AI Eagle Scout Coach</h1>
-                    <p className="text-sm text-green-300">Your personalized guide to Eagle</p>
-                  </div>
+                </div>
+                
+                {/* Chat Mode Toggle */}
+                <div className="flex items-center gap-2 p-1 bg-black/30 rounded-lg border border-white/10">
+                  <button
+                    onClick={() => setChatMode('tactical')}
+                    className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                      chatMode === 'tactical'
+                        ? 'bg-linear-to-r from-green-500 to-cyan-600 text-black shadow-lg'
+                        : 'text-slate-300 hover:text-white'
+                    }`}
+                  >
+                    <div className="flex flex-col items-center gap-0.5">
+                      <span>Tactical</span>
+                      <span className="text-xs opacity-70">Next 2-4 weeks</span>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => setChatMode('strategic')}
+                    className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                      chatMode === 'strategic'
+                        ? 'bg-linear-to-r from-green-500 to-cyan-600 text-black shadow-lg'
+                        : 'text-slate-300 hover:text-white'
+                    }`}
+                  >
+                    <div className="flex flex-col items-center gap-0.5">
+                      <span>Strategic</span>
+                      <span className="text-xs opacity-70">6+ months</span>
+                    </div>
+                  </button>
                 </div>
               </div>
 
@@ -410,7 +446,116 @@ function AICoach() {
                           : 'bg-white/10 text-slate-100 border border-white/10'
                       }`}
                     >
-                      <p className="whitespace-pre-wrap">{message.content}</p>
+                      {message.role === 'user' ? (
+                        <p className="whitespace-pre-wrap">{message.content}</p>
+                      ) : (
+                        <div className="prose prose-invert prose-sm max-w-none">
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              h2: ({ children }) => (
+                                <h2 className="text-base font-bold text-white mb-2 mt-3">{children}</h2>
+                              ),
+                              h3: ({ children }) => (
+                                <h3 className="text-sm font-semibold text-green-400 mb-1 mt-2">{children}</h3>
+                              ),
+                              p: ({ children }) => (
+                                <p className="text-slate-300 text-sm mb-2 leading-relaxed">{children}</p>
+                              ),
+                              ul: ({ children }) => (
+                                <ul className="space-y-1 text-slate-300 mb-3 text-sm">{children}</ul>
+                              ),
+                              ol: ({ children }) => (
+                                <ol className="space-y-1 text-slate-300 mb-3 text-sm list-decimal list-inside">{children}</ol>
+                              ),
+                              li: ({ children }) => {
+                                const childText = flattenChildrenToText(children);
+                                if (childText.includes('[ ]') || childText.includes('[x]')) {
+                                  const isInitiallyChecked = childText.includes('[x]');
+                                  const text = childText.replace(/\[[ x]\]\s*/, '');
+                                  
+                                  // Create a unique ID for this checkbox based on text content
+                                  const checkboxId = `chat-${message.id}-${text.substring(0, 50).replace(/[^a-zA-Z0-9]/g, '-')}`;
+                                  const isChecked = checkedItems[checkboxId] ?? isInitiallyChecked;
+                                  
+                                  return (
+                                    <li className="flex items-start gap-1.5 text-slate-300 text-sm">
+                                      <input
+                                        type="checkbox"
+                                        checked={isChecked}
+                                        onChange={(e) => {
+                                          const newCheckedItems = {
+                                            ...checkedItems,
+                                            [checkboxId]: e.target.checked,
+                                          };
+                                          setCheckedItems(newCheckedItems);
+                                          localStorage.setItem('scoutly_plan_checkboxes', JSON.stringify(newCheckedItems));
+                                        }}
+                                        className="mt-0.5 w-3 h-3 rounded border-green-500 text-green-500 bg-black cursor-pointer"
+                                      />
+                                      <span className={`text-xs ${isChecked ? 'line-through text-slate-500' : ''}`}>{text}</span>
+                                    </li>
+                                  );
+                                }
+                                return <li className="text-slate-300 ml-4 text-sm">{children}</li>;
+                              },
+                              strong: ({ children }) => (
+                                <strong className="text-green-400 font-semibold">{children}</strong>
+                              ),
+                              em: ({ children }) => (
+                                <em className="text-cyan-400 italic">{children}</em>
+                              ),
+                              code: ({ children }) => (
+                                <code className="bg-black/40 text-green-300 px-1.5 py-0.5 rounded text-xs font-mono">{children}</code>
+                              ),
+                              pre: ({ children }) => (
+                                <pre className="bg-black/40 text-green-300 p-3 rounded-lg text-xs overflow-x-auto my-2">{children}</pre>
+                              ),
+                              blockquote: ({ children }) => (
+                                <blockquote className="border-l-4 border-green-500/50 pl-4 italic text-slate-400 my-2">{children}</blockquote>
+                              ),
+                              a: ({ href, children }) => {
+                                const linkText = flattenChildrenToText(children);
+                                return (
+                                  <a 
+                                    href={href} 
+                                    className="text-green-400 hover:text-green-300 underline text-sm"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {linkText}
+                                  </a>
+                                );
+                              },
+                              hr: () => (
+                                <hr className="border-white/10 my-3" />
+                              ),
+                              table: ({ children }) => (
+                                <div className="overflow-x-auto my-2">
+                                  <table className="w-full border-collapse border border-white/20 text-sm">{children}</table>
+                                </div>
+                              ),
+                              thead: ({ children }) => (
+                                <thead className="bg-green-500/20">{children}</thead>
+                              ),
+                              tbody: ({ children }) => (
+                                <tbody className="divide-y divide-white/10">{children}</tbody>
+                              ),
+                              tr: ({ children }) => (
+                                <tr className="border-b border-white/10">{children}</tr>
+                              ),
+                              th: ({ children }) => (
+                                <th className="px-2 py-1 text-left text-green-400 font-semibold border border-white/20 text-xs">{children}</th>
+                              ),
+                              td: ({ children }) => (
+                                <td className="px-2 py-1 text-slate-300 border border-white/20 text-xs">{children}</td>
+                              ),
+                            }}
+                          >
+                            {message.content}
+                          </ReactMarkdown>
+                        </div>
+                      )}
                       <p
                         className={`text-xs mt-2 ${
                           message.role === 'user' ? 'text-white/60' : 'text-slate-400'
@@ -435,13 +580,30 @@ function AICoach() {
 
               {/* Input */}
               <div className="border-t border-white/10 p-4 bg-white/5">
+                {/* Mode Description */}
+                <div className="mb-3 px-2 text-xs text-slate-400">
+                  {chatMode === 'tactical' ? (
+                    <p>
+                      💡 <span className="text-green-400 font-semibold">Tactical Mode:</span> Get detailed action plans for the next 2-4 weeks with specific steps.
+                    </p>
+                  ) : (
+                    <p>
+                      🎯 <span className="text-green-400 font-semibold">Strategic Mode:</span> Get high-level guidance for long-term planning (6+ months).
+                    </p>
+                  )}
+                </div>
+                
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    placeholder="Ask about merit badges, timeline, or next steps..."
+                    placeholder={
+                      chatMode === 'tactical'
+                        ? "Ask: What should I work on this month?"
+                        : "Ask: How do I reach Eagle by June 2026?"
+                    }
                     disabled={isLoading || !currentPlan}
                     className="flex-1 bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50"
                   />
