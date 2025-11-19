@@ -1,8 +1,8 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import React, { useState, useEffect } from 'react';
-import { Upload, Trash2, MapPin, Clock, Plus, X, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Upload, Trash2, MapPin, Clock, Plus, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { useUserData } from '../hooks/useUserData';
-import { analyzeCalendarEvents, needsEventReanalysis, type EventAnalysis } from '../services/aiService';
+import { analyzeCalendarEvents, type EventAnalysis, EVENT_ANALYSIS_SCHEMA_VERSION } from '../services/aiService';
 import type { Event } from '../data/userData';
 import { TentIcon, CompassIcon } from '../components/ScoutIcons';
 import meritBadgesData from '../data/merit-badges.json';
@@ -157,7 +157,8 @@ function parseICSDate(dateStr: string): string {
 }
 
 function EventsPage() {
-  const { userData, isLoading } = useUserData();
+  const navigate = useNavigate();
+  const { userData, isLoading, updateProfile } = useUserData();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -165,6 +166,7 @@ function EventsPage() {
   const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
   const [hoverTimer, setHoverTimer] = useState<NodeJS.Timeout | null>(null);
   const [eventAnalysis, setEventAnalysis] = useState<Record<string, EventAnalysis>>({});
+  const ANALYSIS_STORAGE_KEY = 'scoutly_event_analysis';
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const hasTriggeredAutoAnalysis = React.useRef(false);
   const [newEvent, setNewEvent] = useState({
@@ -174,8 +176,66 @@ function EventsPage() {
     location: '',
     type: 'other' as Event['type'],
   });
+  const [showMeetingsDetectedModal, setShowMeetingsDetectedModal] = useState<{ open: boolean; estimate: number }>(() => ({ open: false, estimate: 0 }));
 
   const events = userData?.events || [];
+  // Auto-estimate meetings/month: prefer last month exact-title 'Troop Meeting', else 90-day average
+  const computeAutoMeetingsPerMonth = () => {
+    const now = new Date();
+    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+    const lastMonthStart = new Date(lastMonthEnd.getFullYear(), lastMonthEnd.getMonth(), 1);
+    const troopMeetingsLastMonth = (events || [])
+      .filter(e => e.type === 'meeting' && typeof e.name === 'string' && e.name.trim() === 'Troop Meeting')
+      .filter(e => {
+        const d = new Date(e.startTime || (e as any).date);
+        return d >= lastMonthStart && d <= lastMonthEnd;
+      }).length;
+    if (troopMeetingsLastMonth > 0) return troopMeetingsLastMonth;
+
+    const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+    const byMonth: Record<string, number> = {};
+    (events || []).filter(e => e.type === 'meeting').forEach(e => {
+      const d = new Date(e.startTime || (e as any).date);
+      if (d >= ninetyDaysAgo && d <= now) {
+        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+        byMonth[key] = (byMonth[key] || 0) + 1;
+      }
+    });
+    const months = Object.keys(byMonth);
+    if (months.length === 0) return 4;
+    const avg = months.reduce((s,k)=>s+byMonth[k],0) / months.length;
+    return Math.max(1, Math.round(avg));
+  };
+
+  // Compute meetings/mo from a provided events array (used post-ICS-import before state refresh)
+  const computeMeetingsPerMonthFrom = (evs: Event[]) => {
+    const now = new Date();
+    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+    const lastMonthStart = new Date(lastMonthEnd.getFullYear(), lastMonthEnd.getMonth(), 1);
+    const troopMeetingsLastMonth = (evs || [])
+      .filter(e => e.type === 'meeting' && typeof e.name === 'string' && e.name.trim() === 'Troop Meeting')
+      .filter(e => {
+        const d = new Date(e.startTime || (e as any).date);
+        return d >= lastMonthStart && d <= lastMonthEnd;
+      }).length;
+    if (troopMeetingsLastMonth > 0) return troopMeetingsLastMonth;
+
+    const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+    const byMonth: Record<string, number> = {};
+    (evs || []).filter(e => e.type === 'meeting').forEach(e => {
+      const d = new Date(e.startTime || (e as any).date);
+      if (d >= ninetyDaysAgo && d <= now) {
+        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+        byMonth[key] = (byMonth[key] || 0) + 1;
+      }
+    });
+    const months = Object.keys(byMonth);
+    if (months.length === 0) return 4;
+    const avg = months.reduce((s,k)=>s+byMonth[k],0) / months.length;
+    return Math.max(1, Math.round(avg));
+  }
+  const autoMeetingsPerMonth = computeAutoMeetingsPerMonth();
+  const meetingsPerMonthOverride = userData?.profile?.meetingsPerMonthOverride ?? null;
   
   // Sort events by priority score (highest first), then by date
   const priorityValue = (p: string | undefined): number => {
@@ -207,19 +267,34 @@ function EventsPage() {
     .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
     .slice(0, 5); // Limit to 5 past events
 
-  // Load AI analysis from localStorage on mount
+  // Load AI analysis from localStorage on mount (with versioning & auto-purge)
   useEffect(() => {
-    const savedAnalysis = localStorage.getItem('scoutly_event_analysis');
-    if (savedAnalysis) {
-      try {
-        setEventAnalysis(JSON.parse(savedAnalysis));
-      } catch (e) {
-        console.error('Failed to parse saved analysis:', e);
+    const raw = localStorage.getItem(ANALYSIS_STORAGE_KEY);
+    if (!raw) return;
+    try {
+      const parsed = JSON.parse(raw);
+      // New shape: { version: number, analyses: Record<string, EventAnalysis> }
+      if (parsed && typeof parsed === 'object' && 'version' in parsed && 'analyses' in parsed) {
+        if (parsed.version === EVENT_ANALYSIS_SCHEMA_VERSION) {
+          setEventAnalysis(parsed.analyses || {});
+        } else {
+          // Version mismatch -> purge
+          localStorage.removeItem(ANALYSIS_STORAGE_KEY);
+          setEventAnalysis({});
+        }
+      } else {
+        // Old/unversioned cache -> purge it
+        localStorage.removeItem(ANALYSIS_STORAGE_KEY);
+        setEventAnalysis({});
       }
+    } catch (e) {
+      console.error('Failed to parse saved analysis, purging cache:', e);
+      localStorage.removeItem(ANALYSIS_STORAGE_KEY);
+      setEventAnalysis({});
     }
   }, []);
 
-  const eventAnalysisCount = Object.keys(eventAnalysis).length;
+  // Removed unused eventAnalysisCount after schema simplification
 
   // Removed auto-analysis - users now click the button to analyze events manually
 
@@ -229,10 +304,12 @@ function EventsPage() {
     setIsAnalyzing(true);
     try {
       console.log('🤖 Manually triggering AI analysis...');
-      const analysis = await analyzeCalendarEvents(userData, eventAnalysis, { skipCache: true });
-      setEventAnalysis(prev => {
-        const updated = { ...prev, ...analysis };
-        localStorage.setItem('scoutly_event_analysis', JSON.stringify(updated));
+      // Auto-purge any cached analyses before re-analyzing
+      localStorage.removeItem(ANALYSIS_STORAGE_KEY);
+      const analysis = await analyzeCalendarEvents(userData, {}, { skipCache: true });
+      setEventAnalysis(() => {
+        const updated = { ...analysis };
+        localStorage.setItem(ANALYSIS_STORAGE_KEY, JSON.stringify({ version: EVENT_ANALYSIS_SCHEMA_VERSION, analyses: updated }));
         return updated;
       });
     } catch (error) {
@@ -255,9 +332,9 @@ function EventsPage() {
     currentUserData.events = [];
     localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
     
-    // Clear analysis too
-    localStorage.removeItem('scoutly_event_analysis');
-    setEventAnalysis({});
+  // Clear analysis too
+  localStorage.removeItem(ANALYSIS_STORAGE_KEY);
+  setEventAnalysis({});
     
     // Trigger storage event to update UI
     window.dispatchEvent(new StorageEvent('storage', {
@@ -291,7 +368,7 @@ function EventsPage() {
         ...event,
       }));
 
-      currentUserData.events = [...existingEvents, ...newEvents];
+  currentUserData.events = [...existingEvents, ...newEvents];
       localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
       
       // Trigger storage event to update UI
@@ -304,11 +381,10 @@ function EventsPage() {
       
       setShowUploadModal(false);
       e.target.value = ''; // Reset file input
-      
-      // Show success message with delay so modal closes first
-      setTimeout(() => {
-        alert(`Successfully imported ${parsedEvents.length} event(s)!`);
-      }, 100);
+
+      // After importing, estimate meetings/month once and prompt the user to accept or edit
+      const estimated = computeMeetingsPerMonthFrom(currentUserData.events || []);
+      setShowMeetingsDetectedModal({ open: true, estimate: estimated });
     } catch (error) {
       console.error('Failed to parse ICS file:', error);
       alert('Failed to parse ICS file. Please make sure it\'s a valid calendar file.');
@@ -354,7 +430,7 @@ function EventsPage() {
     setEventAnalysis(prev => {
       const updated = { ...prev };
       delete updated[eventId];
-      localStorage.setItem('scoutly_event_analysis', JSON.stringify(updated));
+      localStorage.setItem(ANALYSIS_STORAGE_KEY, JSON.stringify({ version: EVENT_ANALYSIS_SCHEMA_VERSION, analyses: updated }));
       return updated;
     });
     
@@ -486,7 +562,17 @@ function EventsPage() {
               </div>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex gap-3 items-center">
+              {/* Read-only Meetings/Month display (editable only in Profile) */}
+              <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-2 py-1">
+                <span className="text-xs text-slate-400">Meetings/mo</span>
+                <span className="text-sm text-white">
+                  {(meetingsPerMonthOverride ?? autoMeetingsPerMonth).toString()}
+                </span>
+                <Link to="/profile" className="text-xs text-slate-300 underline hover:text-white">
+                  Edit in Profile
+                </Link>
+              </div>
               {!isAnalyzing && userData && (() => {
                 const today = new Date();
                 const thirtyDaysFromNow = new Date(today);
@@ -495,6 +581,11 @@ function EventsPage() {
                 const futureEventsInNext30Days = events.filter(e => {
                   const eventDate = new Date(e.startTime);
                   return eventDate >= today && eventDate <= thirtyDaysFromNow;
+                }).filter(e => {
+                  const isTroopMeeting = e.type === 'meeting' && typeof e.name === 'string' && e.name.trim() === 'Troop Meeting';
+                  const isService = e.type === 'service';
+                  const isCampout = e.type === 'campout';
+                  return isTroopMeeting || isService || isCampout;
                 });
                 const unanalyzedCount = futureEventsInNext30Days.filter(e => !eventAnalysis[e.id]).length;
                 return unanalyzedCount > 0 ? (
@@ -958,6 +1049,49 @@ function EventsPage() {
           </div>
         </div>
       )}
+
+      {/* Meetings Detected Modal */}
+      {showMeetingsDetectedModal.open && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 max-w-md w-full">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-white">Meetings per Month</h3>
+              <button onClick={() => setShowMeetingsDetectedModal({ open: false, estimate: 0 })} className="text-slate-400 hover:text-white">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <p className="text-slate-300 mb-4">
+              AI analyzed your imported calendar and estimates
+              {' '}<span className="text-green-300 font-semibold">{showMeetingsDetectedModal.estimate}</span>{' '}
+              Troop meeting(s) per month.
+            </p>
+            <p className="text-slate-400 text-sm mb-5">
+              You can proceed with this value or edit it anytime in your profile. Once set, we won’t auto-recalculate it.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  updateProfile({ meetingsPerMonthOverride: showMeetingsDetectedModal.estimate });
+                  setShowMeetingsDetectedModal({ open: false, estimate: 0 });
+                }}
+                className="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-black font-bold transition-all"
+              >
+                Use {showMeetingsDetectedModal.estimate}/mo
+              </button>
+              <button
+                onClick={() => {
+                  updateProfile({ meetingsPerMonthOverride: showMeetingsDetectedModal.estimate });
+                  setShowMeetingsDetectedModal({ open: false, estimate: 0 });
+                  navigate({ to: '/profile' });
+                }}
+                className="flex-1 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white font-medium transition-all"
+              >
+                Edit in Profile
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -1004,9 +1138,8 @@ function EventCard({
     timeZone: 'America/Los_Angeles'
   };
 
-  const hasAnalysis = analysis && (
-    (analysis.opportunities && analysis.opportunities.length > 0) ||
-    (analysis.signoffs && analysis.signoffs.length > 0)
+  const hasAnalysis = !!(
+    analysis && ((analysis.opportunities && analysis.opportunities.length > 0) || (analysis as any).signoffs?.length > 0)
   );
   
   // Priority badge color
@@ -1032,10 +1165,10 @@ function EventCard({
             {/* Opportunities */}
             {analysis.opportunities && analysis.opportunities.length > 0 && (
               <div className="space-y-1">
-                {analysis.opportunities.slice(0, 3).map((opp: string, i: number) => (
+                {analysis.opportunities.slice(0, 3).map((opp: any, i: number) => (
                   <div key={i} className="flex items-start gap-2">
                     <CompassIcon className="w-3 h-3 text-green-400 mt-0.5 shrink-0" size={12} />
-                    <span>{opp}</span>
+                    <span>{opp.title}</span>
                   </div>
                 ))}
               </div>
@@ -1120,28 +1253,49 @@ function EventCard({
                       <h5 className="text-xs font-semibold text-green-400">What To Do</h5>
                     </div>
                     <ul className="space-y-1">
-                      {analysis.opportunities.map((opp: string, i: number) => (
-                        <li key={i} className="text-xs text-slate-300 pl-4 before:content-['•'] before:mr-2 before:text-green-400">
-                          {convertBadgeNamesToLinks(opp)}
-                        </li>
-                      ))}
+                      {analysis.opportunities.map((opp: any, i: number) => {
+                        const content = opp.kind === 'rank' ? (
+                          <Link
+                            to="/advancement"
+                            className="underline decoration-green-400/40 hover:decoration-green-300 text-green-300"
+                          >
+                            {opp.title}
+                          </Link>
+                        ) : convertBadgeNamesToLinks(opp.title)
+                        return (
+                          <li key={i} className="text-xs text-slate-300 pl-4 before:content-['•'] before:mr-2 before:text-green-400">
+                            {content}
+                          </li>
+                        )
+                      })}
                     </ul>
                   </div>
                 )}
 
-                {/* Signoffs */}
+                {/* Signoffs: exact rank requirements to complete */}
                 {analysis.signoffs && analysis.signoffs.length > 0 && (
                   <div>
                     <div className="flex items-center gap-1.5 mb-1.5">
-                      <CheckCircle className="w-3.5 h-3.5 text-blue-400" />
-                      <h5 className="text-xs font-semibold text-blue-400">Signoffs Available</h5>
+                      <span className="w-3.5 h-3.5 rounded-full bg-blue-400 inline-block" />
+                      <h5 className="text-xs font-semibold text-blue-400">Exact Signoffs To Get</h5>
                     </div>
                     <ul className="space-y-1">
-                      {analysis.signoffs.map((signoff: any, i: number) => (
-                        <li key={i} className="text-xs text-slate-300 pl-4 before:content-['•'] before:mr-2 before:text-blue-400">
-                          {signoff.name}
-                        </li>
-                      ))}
+                      {analysis.signoffs.map((s: any, i: number) => {
+                        const rankId: string | undefined = s.rankId;
+                        // Try to extract requirement code like 2b from id or name
+                        const codeFromId = typeof s.id === 'string' ? (s.id.match(/(\d+[a-z]?)/i)?.[1] ?? null) : null;
+                        const codeFromName = typeof s.name === 'string' ? (s.name.match(/(\d+[a-z]?)/i)?.[1] ?? null) : null;
+                        const reqCode = codeFromId || codeFromName || '';
+                        const anchor = rankId && reqCode ? `${rankId}-${reqCode}` : null;
+                        const href = anchor ? `/advancement#${anchor}` : '/advancement';
+                        return (
+                          <li key={i} className="text-xs text-slate-300 pl-4 before:content-['•'] before:mr-2 before:text-blue-400">
+                            <a href={href} className="underline decoration-blue-400/40 hover:decoration-blue-300 text-blue-300">
+                              {s.name}
+                            </a>
+                          </li>
+                        )
+                      })}
                     </ul>
                   </div>
                 )}

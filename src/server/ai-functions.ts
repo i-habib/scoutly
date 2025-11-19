@@ -7,6 +7,8 @@ import rankRequirementsJSON from '../data/rank-reqs.json'
 import timeConsumingBadgesJSON from '../data/time-consuming-badges.json'
 import { writeFileSync } from 'fs'
 import { join } from 'path'
+import { EventAnalysesArraySchema } from '../lib/aiSchemas'
+import { buildTimelineState } from '../lib/buildTimeline'
 
 const meritBadgesData = meritBadgesJSON.meritBadges
 const rankRequirementsData = rankRequirementsJSON
@@ -53,10 +55,12 @@ function checkRateLimit(key: string): void {
 
 interface EventAnalysis {
   eventId: string
-  opportunities: string[]
-  signoffs: Array<{
+  opportunities: Array<{
     id: string
-    name: string
+    kind: 'rank' | 'meritBadge' | 'meta'
+    title: string
+    rankId?: string
+    badgeId?: string
   }>
   priority: 'high' | 'medium' | 'low'
 }
@@ -70,7 +74,8 @@ interface GeminiHistoryMessage {
 async function callGemini(
   prompt: string,
   temperature: number = 0.5,
-  schema?: any
+  schema?: any,
+  seed?: number
 ): Promise<string> {
   try {
     console.log('=== CALL GEMINI START ===')
@@ -87,6 +92,9 @@ async function callGemini(
         temperature,
         maxOutputTokens: 8000, // Reduced from 25000 - we want concise responses
       }
+    }
+    if (typeof seed === 'number') {
+      config.config.seed = seed
     }
     
     // Add schema if provided for JSON mode
@@ -168,10 +176,18 @@ export const analyzeCalendarEvents = createServerFn({
 
   // Filter to only future events
   const now = new Date()
-  const futureEvents = userData.events.filter((event: any) => {
-    const eventDate = new Date(event.startTime || event.start)
-    return eventDate > now
-  })
+  const futureEvents = userData.events
+    .filter((event: any) => {
+      const eventDate = new Date(event.startTime || event.start)
+      return eventDate > now
+    })
+    // Only analyze 'Troop Meeting' by exact title, or events tagged as 'service' or 'campout'
+    .filter((event: any) => {
+      const isTroopMeeting = event.type === 'meeting' && typeof event.name === 'string' && event.name.trim() === 'Troop Meeting'
+      const isService = event.type === 'service'
+      const isCampout = event.type === 'campout'
+      return isTroopMeeting || isService || isCampout
+    })
 
   if (futureEvents.length === 0) {
     return { analyses: existingAnalysis, cached: [] }
@@ -193,6 +209,61 @@ export const analyzeCalendarEvents = createServerFn({
   // Get Scout's current rank
   const currentRank = userData.profile?.currentRank || 'rank_scout'
   const currentRankName = currentRank.replace('rank_', '').replace('_', ' ')
+  // Estimate meetings/month from events and honor user override if present
+  const estimateMeetingsPerMonth = () => {
+    const evts = userData.events || []
+    const nowLocal = new Date()
+    // Prefer last calendar month exact title 'Troop Meeting'
+    const lastMonthEnd = new Date(nowLocal.getFullYear(), nowLocal.getMonth(), 0)
+    const lastMonthStart = new Date(lastMonthEnd.getFullYear(), lastMonthEnd.getMonth(), 1)
+    const troopMeetingCount = evts
+      .filter((e: any) => e.type === 'meeting' && typeof e.name === 'string' && e.name.trim() === 'Troop Meeting')
+      .filter((e: any) => {
+        const d = new Date(e.startTime || e.start)
+        return d >= lastMonthStart && d <= lastMonthEnd
+      }).length
+    if (troopMeetingCount > 0) return troopMeetingCount
+
+    // Fallback: 90-day month-average of meetings
+    const ninetyDaysAgo = new Date(nowLocal.getTime() - 90 * 24 * 60 * 60 * 1000)
+    const meetings = evts.filter((e: any) => e.type === 'meeting').filter((e: any) => {
+      const d = new Date(e.startTime || e.start)
+      return d >= ninetyDaysAgo && d <= nowLocal
+    })
+    const byMonth: Record<string, number> = {}
+    meetings.forEach((e: any) => {
+      const d = new Date(e.startTime || e.start)
+      const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`
+      byMonth[key] = (byMonth[key] || 0) + 1
+    })
+    const months = Object.keys(byMonth)
+    if (months.length > 0) {
+      const avg = months.reduce((sum, k) => sum + byMonth[k], 0) / months.length
+      return Math.max(1, Math.round(avg))
+    }
+    return 4
+  }
+  const meetingsPerMonthAI = estimateMeetingsPerMonth()
+  const meetingsPerMonthOverride = userData.profile?.meetingsPerMonthOverride || meetingsPerMonthAI
+  // Build pacing metrics via timeline builder with explicit meetings/month override
+  const timeline = buildTimelineState(userData, { meetingsPerMonthOverride })
+  const pacing = timeline.ok ? {
+    reqsPerMeeting: timeline.reqsPerMeeting,
+    adjustedReqsPerMeeting: timeline.adjustedReqsPerMeeting,
+    remainingMeetings: timeline.remainingMeetingsForCurrentRank,
+    currentRankName: timeline.currentRankName,
+    campoutPriority: timeline.campoutPriority,
+    estimatedCampoutSignoffs: timeline.estimatedCampoutSignoffs,
+    signoffsPerMeetingTarget: (timeline as any).signoffsPerMeetingTarget || 1,
+  } : {
+    reqsPerMeeting: 0,
+    adjustedReqsPerMeeting: 0,
+    remainingMeetings: 0,
+    currentRankName: currentRankName,
+    campoutPriority: 'low' as const,
+    estimatedCampoutSignoffs: 0,
+    signoffsPerMeetingTarget: 1,
+  }
   
   // Determine if Scout should focus on rank advancement or merit badges
   const rankOrder = ['rank_scout', 'rank_tenderfoot', 'rank_second_class', 'rank_first_class', 'rank_star', 'rank_life', 'rank_eagle']
@@ -246,53 +317,85 @@ export const analyzeCalendarEvents = createServerFn({
   // Get all merit badge names for reference
   const allMeritBadges = meritBadgesData.map((mb: any) => mb.name).join(', ')
 
-  // Define strict JSON schema for Gemini
+  // Define strict JSON schema for Gemini (Schema v3)
   const responseSchema = {
     type: 'array',
     items: {
       type: 'object',
       properties: {
-        eventId: { 
-          type: 'string',
-          description: 'The unique ID of the event'
-        },
+        eventId: { type: 'string', description: 'Unique event ID' },
         opportunities: {
           type: 'array',
-          items: { type: 'string' },
-          description: 'Short list of what can be done at this event'
+          description: 'Actionable advancement opportunities only',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string', description: 'Requirement or badge requirement ID' },
+              kind: { type: 'string', enum: ['rank', 'meritBadge', 'meta'] },
+              title: { type: 'string', description: 'Actionable short description' },
+              rankId: { type: 'string' },
+              badgeId: { type: 'string' }
+            },
+            required: ['id', 'kind', 'title']
+          }
         },
         signoffs: {
           type: 'array',
+          description: 'Exact rank requirements to complete at this event',
           items: {
             type: 'object',
             properties: {
               id: { type: 'string' },
-              name: { type: 'string' }
+              name: { type: 'string' },
+              rankId: { type: 'string' }
             },
             required: ['id', 'name']
-          },
-          description: 'List of requirements that can be signed off'
+          }
         },
-        priority: { 
-          type: 'string',
-          enum: ['high', 'medium', 'low'],
-          description: 'Priority level based on advancement opportunities'
-        }
+        priority: { type: 'string', enum: ['high', 'medium', 'low'] }
       },
       required: ['eventId', 'opportunities', 'signoffs', 'priority']
     }
   }
 
+  // ==== Rank progress full context (completed vs total per rank) ====
+  const rankProgressLines: string[] = []
+  rankOrder.forEach(rId => {
+    const rankData = rankRequirementsData.find((r: any) => r.id === rId)
+    if (!rankData) return
+    const reqs = rankData.requirements || []
+    let total = reqs.length
+    let completed = 0
+    reqs.forEach((req: any) => {
+      const progress = userData.rankProgress?.[rId]?.[req.id]
+      const done = typeof progress === 'string' || (progress && typeof progress === 'object' && 'completedAt' in progress)
+      if (done) completed++
+    })
+    const rankNameFull = rankData.name
+    rankProgressLines.push(`${rankNameFull}: ${completed}/${total} complete`)
+  })
+
   const prompt = `Analyze ${eventsNeedingAnalysis.length} Scout events for advancement opportunities. Return JSON array ONLY.
 
 === SCOUT PROFILE ===
 Current Rank: ${currentRankName}
-Next Rank: ${nextRankData ? nextRankData.name : 'Eagle (completed ranks)'}
+Next Rank: ${nextRankData ? nextRankData.name : 'Completed all ranks'}
+Rank Progress Summary:
+${rankProgressLines.join('\n')}
 Advancement Focus: ${isFirstClassOrAbove ? 'MERIT BADGES (rank advancement complete through First Class)' : 'RANK SIGNOFFS (priority for advancement)'}
 
-=== NEXT RANK REQUIREMENTS (${nextRankData?.name || 'N/A'}) ===
-${nextRankRequirements.length > 0 ? nextRankRequirements.slice(0, 20).join('\n') : 'All requirements complete!'}
-${nextRankRequirements.length > 20 ? `\n... and ${nextRankRequirements.length - 20} more requirements` : ''}
+=== PACING & CAMPOUT SIGNALS ===
+Meetings per month (estimated/override): ${meetingsPerMonthOverride}
+Reqs per meeting (raw): ${pacing.reqsPerMeeting.toFixed ? pacing.reqsPerMeeting.toFixed(2) : pacing.reqsPerMeeting}
+Reqs per meeting (adjusted for campouts): ${pacing.adjustedReqsPerMeeting.toFixed ? pacing.adjustedReqsPerMeeting.toFixed(2) : pacing.adjustedReqsPerMeeting}
+Target signoffs per meeting: ${pacing.signoffsPerMeetingTarget}
+Remaining meetings for current rank (${pacing.currentRankName}): ${pacing.remainingMeetings}
+Estimated rank signoffs at upcoming campouts: ${pacing.estimatedCampoutSignoffs}
+Campout Priority: ${pacing.campoutPriority.toUpperCase()}
+
+=== NEXT RANK REMAINING REQUIREMENTS (${nextRankData?.name || 'N/A'}) ===
+${nextRankRequirements.length > 0 ? nextRankRequirements.map(r => r).slice(0, 30).join('\n') : 'All requirements complete!'}
+${nextRankRequirements.length > 30 ? `\n... and ${nextRankRequirements.length - 30} more requirements` : ''}
 
 === MERIT BADGE PROGRESS ===
 In Progress (${inProgressMeritBadges.length}):
@@ -315,61 +418,62 @@ ${allMeritBadges}
 ${eventsNeedingAnalysis.map((e: any) => `${e.id}|${e.name}|${e.type || 'meeting'}`).join('\n')}
 
 === INSTRUCTIONS ===
-For EACH event, return:
+For EACH event, return an object:
 {
   "eventId": "exact_id",
-  "opportunities": ["Detailed opportunity 1", "Detailed opportunity 2", ...],
-  "signoffs": [{"id": "requirement_id", "name": "Full requirement description"}, ...],
+  "opportunities": [
+    {"id": "req_identifier", "kind": "rank", "title": "Start Second Class 2b - Demonstrate ...", "rankId": "rank_second_class"},
+    {"id": "mb_camping:9a", "kind": "meritBadge", "title": "Camping 9a - Plan trail meals", "badgeId": "mb_camping"}
+  ],
+  "signoffs": [
+    {"id": "req_2b", "name": "Second Class 2b — Demonstrate ...", "rankId": "rank_second_class"}
+  ],
   "priority": "high|medium|low"
 }
 
 **MEETINGS (type="meeting")**:
 ${isFirstClassOrAbove ? `
-- Focus: Merit badge work and leadership (rank advancement complete through First Class)
-- opportunities: 3-5 items mentioning merit badge work or leadership positions
-- signoffs: Merit badge requirements if applicable, otherwise leadership/service hour tracking
-- priority: 'medium' (meetings less critical after First Class)
+- Focus: Merit badge work & leadership
+- opportunities: 3-6 MERIT BADGE or leadership items ONLY (use kind=meritBadge or kind=meta)
+- priority: 'medium' generally unless exceptionally strategic (then 'high')
+- Pacing target: ~${pacing.adjustedReqsPerMeeting.toFixed ? pacing.adjustedReqsPerMeeting.toFixed(2) : pacing.adjustedReqsPerMeeting} reqs/meeting equivalent
 ` : `
 - Focus: RANK ADVANCEMENT ONLY (critical for ${currentRankName} → ${nextRankData?.name})
-- ⚠️ DO NOT SUGGEST MERIT BADGES - Scout must focus on rank requirements first
-- opportunities: 3-5 SPECIFIC rank requirements from the "NEXT RANK REQUIREMENTS" list
-- signoffs: 3-10 rank requirements with full descriptions (NO merit badge signoffs)
-- priority: 'high' if 5+ rank signoffs, 'medium' if 3-4, 'low' if 1-2
-- EXCEPTION: Can mention time-consuming Eagle badges to START (Personal Fitness, Personal Management) but don't prioritize them
+- ⚠️ Do NOT list meritBadge opportunities unless time-consuming badge kickoff (kind=meritBadge allowed for Personal Fitness / Management)
+- opportunities: 4-8 rank items (kind=rank) referencing NEXT RANK REMAINING REQUIREMENTS
+- signoffs: You MUST list EXACTLY ${pacing.signoffsPerMeetingTarget} rank requirements to complete at this meeting (full text in name, correct id). Choose the highest-impact ones.
+- priority: 'high' if enough solid rank opportunities and signoffs, else 'medium'/'low'
+- Use full rank names in titles.
 `}
 
 **CAMPOUTS/HIKES (type="campout" or "hike")**:
 ${isFirstClassOrAbove ? `
-- Focus: MERIT BADGES (main advancement path after First Class)
-- opportunities: 5-10 DETAILED merit badge activities, prioritizing:
-  1. In-progress badges (help complete started badges)
-  2. Eagle-required badges not started
-  3. Other merit badges relevant to campout activities
-- signoffs: 5-10 specific merit badge requirements (format: {"id": "camping_9a", "name": "Plan and cook trail meals"})
-- priority: 'high' if 5+ Eagle-required badge opportunities, 'medium' if 2-4, 'low' if 0-1
+- Focus: Merit badge progress acceleration (kind=meritBadge)
+- opportunities: 6-12 merit badge requirements (in-progress first, Eagle-required next)
+- Include camp-specific actions (e.g., outdoor cooking, nature observation) with correct requirement IDs
+- priority: 'high' if 5+ Eagle-required badge actions, 'medium' if 2-4, 'low' otherwise
+- Campout Priority Signal: ${pacing.campoutPriority.toUpperCase()} influences number of opportunities (HIGH -> add more)
 ` : `
-- Focus: RANK ADVANCEMENT FIRST, merit badges secondary
-- ⚠️ PRIORITIZE RANK REQUIREMENTS - Merit badges only as bonus opportunities
-- opportunities: 5-10 items with rank requirements FIRST, then relevant merit badge activities
-- signoffs: MAJORITY should be rank requirements (60%+), some merit badge requirements (40%)
-- priority: 'high' if 3+ rank signoffs available, 'medium' if 1-2 rank signoffs, 'low' if only merit badges
-- Order opportunities by priority: Rank reqs → Time-consuming badges → Other badges
+- Focus: Rank requirements (kind=rank) FIRST then optional meritBadge items
+- opportunities: 6-12 total, majority rank (>=60%)
+- signoffs: List up to ${pacing.signoffsPerMeetingTarget} rank signoffs if outdoor skills applicable at this campout
+- If campoutPriority HIGH, emphasize outdoor skills requirements
+- priority: 'high' if 3+ rank opportunities, 'medium' if 1-2, 'low' if none
 `}
 
 **SERVICE/OTHER (all other types)**:
-- opportunities: [] (empty array - no detailed analysis needed)
-- signoffs: [] (empty array - service hours tracked elsewhere)  
-- priority: Based on event name/description, estimate service value:
-  * 'high' if likely 3+ service hours (major projects, full day events)
-  * 'medium' if likely 1-2 hours (smaller projects, short events)
-  * 'low' if minimal service hours (<1 hour) or unclear service value
+- opportunities: Use kind=meta for 1-3 service planning actions (e.g., "Log 3 service hours - photograph work")
+- priority: High (>=3 hrs), Medium (1-2 hrs), Low (<1 hr or unclear)
 
-CRITICAL: Use FULL requirement descriptions from the lists above for signoffs.name. Be specific and detailed.
+CRITICAL:
+- Use full rank names in titles (e.g., "Second Class 2b - Discuss ...")
+- Titles MUST start with imperative verb (Plan / Practice / Complete / Review / Record / Start / Finish)
+- Each opportunity MUST include correct id & kind.
 
 Return ONLY valid JSON array. No markdown, no explanations.`
 
   try {
-    const response = await callGemini(prompt, 0.3, responseSchema)
+  const response = await callGemini(prompt, 0.25, responseSchema, 4242)
     
     console.log('=== GEMINI API RESPONSE ===')
     console.log('Response type:', typeof response)
@@ -380,14 +484,7 @@ Return ONLY valid JSON array. No markdown, no explanations.`
     console.log('=== END RESPONSE ===')
     
     // DEBUG: Save raw response to file
-    try {
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-      const debugPath = join(process.cwd(), `debug-response-${timestamp}.json`)
-      writeFileSync(debugPath, response, 'utf-8')
-      console.log('✅ DEBUG: Raw response saved to:', debugPath)
-    } catch (fsError) {
-      console.error('⚠️ Could not save debug file:', fsError)
-    }
+   
     
     // Clean the response - remove markdown code blocks and extra text
     let cleanedResponse = response.trim()
@@ -454,22 +551,43 @@ Return ONLY valid JSON array. No markdown, no explanations.`
     console.log('=== END CLEANED ===')
     
     // DEBUG: Save cleaned response to file
-    try {
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-      const debugPath = join(process.cwd(), `debug-cleaned-${timestamp}.json`)
-      writeFileSync(debugPath, cleanedResponse, 'utf-8')
-      console.log('✅ DEBUG: Cleaned response saved to:', debugPath)
-    } catch (fsError) {
-      console.error('⚠️ Could not save debug file:', fsError)
-    }
+   
     
-    const analyses = JSON.parse(cleanedResponse) as EventAnalysis[]
+    const parsed = JSON.parse(cleanedResponse)
+    const validation = EventAnalysesArraySchema.safeParse(parsed)
+    if (!validation.success) {
+      console.error('Zod validation errors:', validation.error.flatten())
+      throw new Error('AI response validation failed')
+    }
+  let analyses = validation.data as EventAnalysis[]
     
     console.log('=== PARSED ANALYSES ===')
     console.log('Number of analyses:', analyses?.length)
     console.log('Analyses:', JSON.stringify(analyses, null, 2))
     console.log('=== END PARSED ===')
     
+    // Enforce exact signoffs count for meeting events when focusing on rank advancement
+    try {
+      const targetSignoffs = (pacing as any).signoffsPerMeetingTarget || 1
+      analyses = analyses.map((a) => {
+        const ev = (userData.events || []).find((e: any) => e.id === a.eventId)
+        if (!ev) return a
+        if (ev.type === 'meeting' && !isFirstClassOrAbove) {
+          if (Array.isArray((a as any).signoffs)) {
+            const trimmed = (a as any).signoffs.slice(0, Math.max(1, targetSignoffs))
+            return { ...a, signoffs: trimmed }
+          } else {
+            return { ...a, signoffs: [] }
+          }
+        }
+        if (ev.type === 'campout' && Array.isArray((a as any).signoffs)) {
+          const trimmed = (a as any).signoffs.slice(0, Math.max(1, targetSignoffs))
+          return { ...a, signoffs: trimmed }
+        }
+        return a
+      })
+    } catch {}
+
     const result: Record<string, EventAnalysis> = { ...existingAnalysis }
 
     analyses.forEach((analysis) => {

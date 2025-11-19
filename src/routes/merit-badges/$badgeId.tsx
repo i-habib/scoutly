@@ -69,6 +69,45 @@ function MeritBadgeDetail() {
   const completionPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
   const isFullyCompleted = completionPercentage === 100;
 
+  // Gather all requirement IDs for this badge
+  function allRequirementIds(): string[] {
+    const ids: string[] = [];
+    badge!.requirements.forEach((req: any, ri: number) => {
+      const mainId = `req_${ri}`;
+      ids.push(mainId);
+      if (req.sub_requirements && req.sub_requirements.length > 0) {
+        req.sub_requirements.forEach((_: any, si: number) => {
+          ids.push(`req_${ri}_${si}`);
+        });
+      }
+    });
+    return ids;
+  }
+
+  const handleToggleAll = async () => {
+    const currentUserData = await storage.fetchUserData();
+    if (!currentUserData.progress[badgeId]) {
+      currentUserData.progress[badgeId] = {};
+    }
+    const mark = !isFullyCompleted;
+    const dateStr = new Date().toISOString().split('T')[0];
+    const ids = allRequirementIds();
+    ids.forEach(id => {
+      currentUserData.progress[badgeId][id] = mark ? dateStr : null;
+    });
+    // Ensure parent requirements reflect requiredCount logic when marking all
+    if (mark) {
+      badge!.requirements.forEach((req: any, ri: number) => {
+        const parentId = `req_${ri}`;
+        if (req.sub_requirements && req.sub_requirements.length > 0) {
+          currentUserData.progress[badgeId][parentId] = dateStr;
+        }
+      });
+    }
+    localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
+    queryClient.invalidateQueries({ queryKey: ['userData'] });
+  };
+
   const handleToggleRequirement = async (reqId: string, reqIndex?: number, isSubReq?: boolean) => {
     const isCompleted = progress[reqId];
     const newCompletedDate = isCompleted ? null : new Date().toISOString().split('T')[0];
@@ -201,6 +240,12 @@ function MeritBadgeDetail() {
                     style={{ width: `${completionPercentage}%` }}
                   />
                 </div>
+                <button
+                  onClick={handleToggleAll}
+                  className="mt-3 px-3 py-2 text-xs rounded-md bg-white/10 border border-white/20 text-slate-200 hover:bg-white/15 transition-colors"
+                >
+                  {isFullyCompleted ? 'Unmark All' : 'Mark All Complete'}
+                </button>
               </div>
 
               <div className="flex items-center gap-4 text-sm text-gray-400">

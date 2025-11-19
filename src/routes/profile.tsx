@@ -5,6 +5,7 @@ import meritBadgesData from '../data/merit-badges.json';
 import rankRequirementsData from '../data/rank-reqs.json';
 import { ScoutFleurDeLis, EagleIcon, MeritBadgeIcon } from '../components/ScoutIcons';
 import { Edit2, Save, X } from 'lucide-react';
+import { computeBadgeProgressByMeta, splitEagleRequiredByStatus } from '../lib/progress';
 
 export const Route = createFileRoute('/profile')({ component: Profile });
 
@@ -68,69 +69,27 @@ function Profile() {
     const targetDate = new Date(userData.profile.targetEagleDate);
     const daysRemaining = Math.ceil((targetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
-    // Calculate current progress
+    // Calculate current progress using shared utilities
     const eagleRequiredBadges = meritBadgesData.meritBadges.filter(b => b.eagleRequired);
     let completedBadges = 0;
-    
     eagleRequiredBadges.forEach(badge => {
-      const badgeProgress = userData.progress[badge.id] || {};
-      const totalReqs = badge.requirements.reduce((acc, req) => acc + (req.requiredCount || 1), 0);
-      let completed = 0;
-
-      badge.requirements.forEach((req, reqIndex) => {
-        if (req.sub_requirements && req.sub_requirements.length > 0) {
-          let completedSubReqs = 0;
-          req.sub_requirements.forEach((_, subIndex) => {
-            if (badgeProgress[`req_${reqIndex}_${subIndex}`]) completedSubReqs++;
-          });
-          completed += Math.min(completedSubReqs, req.requiredCount || req.sub_requirements.length);
-        } else {
-          if (badgeProgress[`req_${reqIndex}`]) completed++;
-        }
-      });
-
-      if (completed >= totalReqs) completedBadges++;
+      const { total, completed } = computeBadgeProgressByMeta(badge as any, userData.progress[badge.id]);
+      if (completed >= total && total > 0) completedBadges++;
     });
 
     const badgesNeeded = 21 - completedBadges;
     
     // Calculate remaining requirements and sign-offs needed
     const incompleteBadges = eagleRequiredBadges.filter(badge => {
-      const badgeProgress = userData.progress[badge.id] || {};
-      const totalReqs = badge.requirements.reduce((acc, req) => acc + (req.requiredCount || 1), 0);
-      let completed = 0;
-
-      badge.requirements.forEach((req, reqIndex) => {
-        if (req.sub_requirements && req.sub_requirements.length > 0) {
-          let completedSubReqs = 0;
-          req.sub_requirements.forEach((_, subIndex) => {
-            if (badgeProgress[`req_${reqIndex}_${subIndex}`]) completedSubReqs++;
-          });
-          completed += Math.min(completedSubReqs, req.requiredCount || req.sub_requirements.length);
-        } else {
-          if (badgeProgress[`req_${reqIndex}`]) completed++;
-        }
-      });
-
-      return completed < totalReqs;
+      const { total, completed } = computeBadgeProgressByMeta(badge as any, userData.progress[badge.id]);
+      return completed < total;
     });
 
     // Calculate total requirements remaining
     let totalRequirementsRemaining = 0;
     incompleteBadges.forEach(badge => {
-      const badgeProgress = userData.progress[badge.id] || {};
-      badge.requirements.forEach((req, reqIndex) => {
-        if (req.sub_requirements && req.sub_requirements.length > 0) {
-          let completedSubReqs = 0;
-          req.sub_requirements.forEach((_, subIndex) => {
-            if (badgeProgress[`req_${reqIndex}_${subIndex}`]) completedSubReqs++;
-          });
-          const reqsNeeded = (req.requiredCount || req.sub_requirements.length) - completedSubReqs;
-          totalRequirementsRemaining += Math.max(0, reqsNeeded);
-        } else {
-          if (!badgeProgress[`req_${reqIndex}`]) totalRequirementsRemaining++;
-        }
-      });
+      const { total, completed } = computeBadgeProgressByMeta(badge as any, userData.progress[badge.id]);
+      totalRequirementsRemaining += Math.max(0, total - completed);
     });
 
     const badgeNames = incompleteBadges.slice(0, 3).map(b => b.name).join(', ');
@@ -194,40 +153,7 @@ function Profile() {
 
   const getBadgeProgress = () => {
     if (!userData) return { completed: [], inProgress: [], notStarted: [] };
-
-    const completed: any[] = [];
-    const inProgress: any[] = [];
-    const notStarted: any[] = [];
-
-    meritBadgesData.meritBadges.filter(b => b.eagleRequired).forEach(badge => {
-      const badgeProgress = userData.progress[badge.id] || {};
-      const totalReqs = badge.requirements.reduce((acc, req) => acc + (req.requiredCount || 1), 0);
-      let completedReqs = 0;
-
-      badge.requirements.forEach((req, reqIndex) => {
-        if (req.sub_requirements && req.sub_requirements.length > 0) {
-          let completedSubReqs = 0;
-          req.sub_requirements.forEach((_, subIndex) => {
-            if (badgeProgress[`req_${reqIndex}_${subIndex}`]) completedSubReqs++;
-          });
-          completedReqs += Math.min(completedSubReqs, req.requiredCount || req.sub_requirements.length);
-        } else {
-          if (badgeProgress[`req_${reqIndex}`]) completedReqs++;
-        }
-      });
-
-      const percentage = Math.round((completedReqs / totalReqs) * 100);
-
-      if (percentage === 100) {
-        completed.push({ ...badge, percentage });
-      } else if (percentage > 0) {
-        inProgress.push({ ...badge, percentage });
-      } else {
-        notStarted.push({ ...badge, percentage });
-      }
-    });
-
-    return { completed, inProgress, notStarted };
+    return splitEagleRequiredByStatus(userData);
   };
 
   if (isLoading) {

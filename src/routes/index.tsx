@@ -5,7 +5,8 @@ import { useUserData } from '../hooks/useUserData';
 import { generateInitialPlan } from '../services/aiService';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import meritBadgesData from '../data/merit-badges.json';
+// Removed local merit badges import in favor of shared progress utilities
+import { countEagleRequiredCompleted } from '../lib/progress';
 import { RankAdvancement } from '../components/RankAdvancement';
 
 export const Route = createFileRoute('/')({ component: Dashboard });
@@ -159,28 +160,7 @@ function Dashboard() {
   const calculateStats = () => {
     if (!userData) return { completed: 0, total: 21, events: 0, daysToEagle: '--', percentage: 0 };
 
-    const eagleRequiredBadges = meritBadgesData.meritBadges.filter(b => b.eagleRequired);
-    let completedCount = 0;
-
-    eagleRequiredBadges.forEach(badge => {
-      const badgeProgress = userData.progress[badge.id] || {};
-      const totalReqs = badge.requirements.reduce((acc, req) => acc + (req.requiredCount || 1), 0);
-      let completed = 0;
-
-      badge.requirements.forEach((req, reqIndex) => {
-        if (req.sub_requirements && req.sub_requirements.length > 0) {
-          let completedSubReqs = 0;
-          req.sub_requirements.forEach((_, subIndex) => {
-            if (badgeProgress[`req_${reqIndex}_${subIndex}`]) completedSubReqs++;
-          });
-          completed += Math.min(completedSubReqs, req.requiredCount || req.sub_requirements.length);
-        } else {
-          if (badgeProgress[`req_${reqIndex}`]) completed++;
-        }
-      });
-
-      if (completed >= totalReqs) completedCount++;
-    });
+    const completedCount = countEagleRequiredCompleted(userData);
 
     let daysToEagle = '--';
     if (userData.profile.targetEagleDate) {
@@ -212,6 +192,28 @@ function Dashboard() {
   }
 
   const userName = userData?.profile?.name || 'Scout';
+  const currentRankId = userData?.profile?.currentRank || 'rank_scout';
+  const normalizedCurrentRank = currentRankId.startsWith('rank_')
+    ? currentRankId.replace('rank_', '').replace(/_/g, ' ')
+    : currentRankId;
+  
+  // In-progress rank is always the next rank after the current completed rank
+  const RANK_ORDER = [
+    'rank_scout',
+    'rank_tenderfoot',
+    'rank_second_class',
+    'rank_first_class',
+    'rank_star',
+    'rank_life',
+    'rank_eagle',
+  ];
+  const currentRankIndex = RANK_ORDER.indexOf(currentRankId.startsWith('rank_') ? currentRankId : `rank_${currentRankId}`);
+  const inProgressRankId = currentRankIndex >= 0 && currentRankIndex < RANK_ORDER.length - 1
+    ? RANK_ORDER[currentRankIndex + 1]
+    : null;
+  const inProgressRankLabel = inProgressRankId
+    ? inProgressRankId.replace('rank_', '').replace(/_/g, ' ')
+    : null;
   const stats = calculateStats();
   const currentPlan = userData?.aiPlan?.plan;
 
@@ -234,7 +236,7 @@ function Dashboard() {
         {/* Welcome Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-cyan-600 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-linear-to-br from-green-500 to-cyan-600 rounded-xl flex items-center justify-center">
               <span className="text-2xl">🧭</span>
             </div>
             <div>
@@ -260,6 +262,26 @@ function Dashboard() {
               <h3 className="text-slate-400 text-sm font-medium">Overall Progress</h3>
             </div>
           </Link>
+
+          {/*
+          <Link to="/advancement" className="block">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-cyan-500/50 transition-all backdrop-blur-sm">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-10 h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+                  <span className="text-xl">🦅</span>
+                </div>
+              </div>
+              <h3 className="text-slate-300 text-sm font-medium mb-1">Current rank</h3>
+              <p className="text-lg font-semibold text-white capitalize">
+                {normalizedCurrentRank}
+              </p>
+              {inProgressRankLabel && (
+                <p className="text-xs text-slate-400 mt-1">
+                  In progress: <span className="capitalize text-cyan-300">{inProgressRankLabel}</span>
+                </p>
+              )}
+            </div>
+          </Link> Rank status card */}
 
           {/* Merit Badges Card */}
           <Link to="/merit-badges" className="block">
@@ -307,7 +329,7 @@ function Dashboard() {
             <div className="bg-green-500/10 border-b border-white/10 px-6 py-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-gradient-to-br from-green-500 to-cyan-600 rounded-xl">
+                  <div className="p-2 bg-linear-to-br from-green-500 to-cyan-600 rounded-xl">
                     <span className="text-xl">🦅</span>
                   </div>
                   <div>

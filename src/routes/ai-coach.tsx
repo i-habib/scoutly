@@ -11,11 +11,11 @@ import { Send, FileText, Loader2, ArrowLeft } from 'lucide-react';
 import { useUserData } from '../hooks/useUserData';
 import { ScoutFleurDeLis } from '../components/ScoutIcons';
 import {
-  sendChatMessage,
   sendLongTermChatMessage,
   sendShortTermChatMessage,
   generateInitialPlan,
   type EventAnalysis,
+  EVENT_ANALYSIS_SCHEMA_VERSION,
 } from '../services/aiService';
 import type { ChatMessage } from '../data/userData';
 import ReactMarkdown from 'react-markdown';
@@ -71,10 +71,21 @@ function AICoach() {
   }, [currentPlan]); // Reload when plan changes
 
   useEffect(() => {
-    const savedAnalysis = localStorage.getItem('scoutly_event_analysis');
-    if (savedAnalysis) {
+    const saved = localStorage.getItem('scoutly_event_analysis');
+    if (saved) {
       try {
-        setEventAnalysis(JSON.parse(savedAnalysis));
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object' && 'version' in parsed && 'analyses' in parsed) {
+          if (parsed.version === EVENT_ANALYSIS_SCHEMA_VERSION) {
+            setEventAnalysis(parsed.analyses || {});
+          } else {
+            // Version mismatch -> ignore/purge handled by events page
+            setEventAnalysis({});
+          }
+        } else {
+          // Old cache shape; ignore
+          setEventAnalysis({});
+        }
       } catch (error) {
         console.error('Failed to parse saved event analysis:', error);
       }
@@ -90,8 +101,16 @@ function AICoach() {
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === 'scoutly_event_analysis') {
         try {
-          const parsed = event.newValue ? JSON.parse(event.newValue) : {};
-          setEventAnalysis(parsed);
+          const parsed = event.newValue ? JSON.parse(event.newValue) : null;
+          if (parsed && typeof parsed === 'object' && 'version' in parsed && 'analyses' in parsed) {
+            if (parsed.version === EVENT_ANALYSIS_SCHEMA_VERSION) {
+              setEventAnalysis(parsed.analyses || {});
+            } else {
+              setEventAnalysis({});
+            }
+          } else {
+            setEventAnalysis({});
+          }
         } catch (error) {
           console.error('Failed to parse updated event analysis:', error);
         }

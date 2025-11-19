@@ -55,7 +55,7 @@ function LandingPage() {
         </header>
 
         {/* Hero Section */}
-        <main className="flex-grow flex flex-col items-center justify-center text-center py-20">
+  <main className="grow flex flex-col items-center justify-center text-center py-20">
           <div className="bg-green-500/20 text-green-300 text-xs font-medium px-3 py-1 rounded-full mb-4 border border-green-500/50">
             Your AI-Powered Path to Eagle Scout
           </div>
@@ -89,7 +89,7 @@ function LandingPage() {
 
           <Link
             to={userData?.profile?.name ? '/' : '/onboarding'}
-            className="bg-gradient-to-r from-green-400 to-cyan-500 text-black font-bold text-lg px-8 py-4 rounded-xl shadow-[0_0_20px_rgba(45,212,191,0.5)] hover:shadow-[0_0_30px_rgba(45,212,191,0.7)] transition-shadow duration-300"
+            className="bg-linear-to-r from-green-400 to-cyan-500 text-black font-bold text-lg px-8 py-4 rounded-xl shadow-[0_0_20px_rgba(45,212,191,0.5)] hover:shadow-[0_0_30px_rgba(45,212,191,0.7)] transition-shadow duration-300"
           >
             Get Started Today
           </Link>

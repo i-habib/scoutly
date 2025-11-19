@@ -1,0 +1,71 @@
+{
+  "badgeWeeks": {
+    "First Aid": 8,
+    "Citizenship in the Community": 6,
+    "Citizenship in the Nation": 6,
+    "Citizenship in Society": 6,
+    "Citizenship in the World": 6,
+    "Communication": 6,
+    "Cooking": 8,
+    "Personal Fitness": 12,
+    "Personal Management": 12,
+    "Camping": 12,
+    "Family Life": 12,
+    "Emergency Preparedness": 8,
+    "Lifesaving": 8,
+    "Environmental Science": 6,
+    "Sustainability": 6,
+    "Swimming": 6,
+    "Hiking": 6,
+    "Cycling": 6,
+    "Elective Badge": 4
+  },
+  "phases": [
+    {
+      "key": "Tenderfoot",
+      "items": [
+        "First Aid",
+        { "type": "Elective" },
+        { "type": "Elective" }
+      ]
+    },
+    {
+      "key": "Second Class",
+      "items": [
+        { "type": "Long", "name": "Camping", "startPhase": "Second Class" },
+        { "type": "Long", "name": "Personal Fitness", "startPhase": "Second Class" },
+        "Citizenship in the Community",
+        "Communication",
+        { "type": "Elective" }
+      ]
+    },
+    {
+      "key": "First Class",
+      "items": [
+        "Cooking",
+        "Citizenship in the Nation",
+        { "type": "Choice", "group": "aquatic", "options": ["Swimming", "Hiking", "Cycling"] },
+        { "type": "Elective" }
+      ]
+    },
+    {
+      "key": "Star",
+      "items": [
+        { "type": "Long", "name": "Personal Management", "startPhase": "Star" },
+        { "type": "Choice", "group": "emergency", "options": ["Emergency Preparedness", "Lifesaving"] },
+        { "type": "Choice", "group": "environment", "options": ["Environmental Science", "Sustainability"] },
+        "Citizenship in Society",
+        { "type": "Elective" },
+        { "type": "Elective" }
+      ]
+    },
+    {
+      "key": "Life",
+      "items": [
+        "Citizenship in the World",
+        "Family Life",
+        { "type": "Elective" }
+      ]
+    }
+  ]
+}

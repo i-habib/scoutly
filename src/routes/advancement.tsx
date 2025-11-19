@@ -31,6 +31,8 @@ const RANK_COLORS: Record<string, string> = {
   rank_eagle: 'from-amber-500 to-yellow-600',
 };
 
+// Determine the highest rank for which ALL requirements are complete.
+// This represents the Scout's *current* rank; they are always working toward the NEXT rank.
 const determineActiveRank = (rankProgress: Record<string, Record<string, string | null>> | undefined) => {
   for (const rankId of RANK_ORDER) {
     const rankData = rankRequirementsData.find((rank) => rank.id === rankId);
@@ -54,10 +56,13 @@ const determineActiveRank = (rankProgress: Record<string, Record<string, string 
     });
 
     if (!isRankComplete) {
-      return rankId;
+      // As soon as we find an incomplete rank, the current rank is the previous one
+      const currentIndex = RANK_ORDER.indexOf(rankId);
+      const previousRankId = currentIndex > 0 ? RANK_ORDER[currentIndex - 1] : 'rank_scout';
+      return previousRankId;
     }
   }
-
+  // If all ranks are complete, the Scout is Eagle
   return 'rank_eagle';
 };
 
@@ -77,6 +82,15 @@ function AdvancementPage() {
   
   const [selectedRankIndex, setSelectedRankIndex] = useState(startIndex);
   
+   // In-progress rank is always the next rank after the current completed rank
+   const inProgressRankId = currentRankIndex >= 0 && currentRankIndex < RANK_ORDER.length - 1
+     ? RANK_ORDER[currentRankIndex + 1]
+     : null;
+   const normalizedCurrentRankLabel = currentRankId.replace('rank_', '').replace(/_/g, ' ');
+   const inProgressRankLabel = inProgressRankId
+     ? inProgressRankId.replace('rank_', '').replace(/_/g, ' ')
+     : null;
+
   const selectedRankId = RANK_ORDER[selectedRankIndex];
   const rankData = rankRequirementsData.find(r => r.id === selectedRankId);
   
@@ -246,7 +260,14 @@ function AdvancementPage() {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-white">Rank Advancement</h1>
-              <p className="text-slate-400">Track your progress toward Eagle</p>
+              <p className="text-slate-400">
+                Current rank: <span className="text-green-300 font-semibold capitalize">{normalizedCurrentRankLabel}</span>
+                {inProgressRankLabel && (
+                  <>
+                    {' '}• In progress: <span className="text-cyan-300 font-semibold capitalize">{inProgressRankLabel}</span>
+                  </>
+                )}
+              </p>
             </div>
           </div>
         </div>
@@ -378,6 +399,7 @@ function AdvancementPage() {
             return (
               <div
                 key={index}
+                id={`${selectedRankId}-${req.id}`}
                 className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all"
               >
                 <div className="space-y-4">
@@ -413,6 +435,7 @@ function AdvancementPage() {
                         return (
                           <div
                             key={subIndex}
+                            id={`${selectedRankId}-${req.id}-${subReq.id}`}
                             className="flex items-start gap-3 cursor-pointer group"
                             onClick={() => handleToggleRequirement(subReqId)}
                           >

@@ -4,6 +4,14 @@ export interface UserProfile {
   targetEagleDate: string | null;
   troopMeetingSchedule: string | null;
   currentRank: string | null;
+  // Optional manual override for meetings per month used by timeline & AI pacing
+  meetingsPerMonthOverride?: number | null;
+  badgeChoices?: {
+    aquatic?: 'Swimming' | 'Hiking' | 'Cycling';
+    emergency?: 'Emergency Preparedness' | 'Lifesaving';
+    environment?: 'Environmental Science' | 'Sustainability';
+  };
+  electiveBadges?: string[]; // list of elective badge IDs selected by the user
   notificationPreferences?: {
     meetingReminders: boolean;
     eventReminders: boolean;
@@ -69,6 +77,9 @@ export const initialUserData: UserData = {
     targetEagleDate: null,
     troopMeetingSchedule: 'weekly_tuesday',
     currentRank: null,
+    meetingsPerMonthOverride: null,
+    badgeChoices: {},
+    electiveBadges: [],
     notificationPreferences: {
       meetingReminders: true,
       eventReminders: true,
