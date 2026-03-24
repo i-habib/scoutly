@@ -88,7 +88,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/timeline': typeof TimelineRoute
   '/merit-badges/$badgeId': typeof MeritBadgesBadgeIdRoute
-  '/merit-badges': typeof MeritBadgesIndexRoute
+  '/merit-badges/': typeof MeritBadgesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -130,7 +130,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/timeline'
     | '/merit-badges/$badgeId'
-    | '/merit-badges'
+    | '/merit-badges/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -241,7 +241,7 @@ declare module '@tanstack/react-router' {
     '/merit-badges/': {
       id: '/merit-badges/'
       path: '/merit-badges'
-      fullPath: '/merit-badges'
+      fullPath: '/merit-badges/'
       preLoaderRoute: typeof MeritBadgesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
