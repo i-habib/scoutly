@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { CheckCircle2, Circle, ChevronLeft, Calendar, BookOpen, Lightbulb } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useUserData } from '../../hooks/useUserData';
@@ -189,13 +189,13 @@ function MeritBadgeDetail() {
       {/* Content */}
       <div className="relative z-10 max-w-4xl mx-auto px-6 py-8">
         {/* Back Button */}
-        <a
-          href="/merit-badges"
+        <Link
+          to="/merit-badges/"
           className="inline-flex items-center gap-2 text-green-400 hover:text-cyan-300 mb-6 transition-colors"
         >
           <ChevronLeft className="w-5 h-5" />
           Back to Merit Badges
-        </a>
+        </Link>
 
         {/* Badge Header */}
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 mb-6">

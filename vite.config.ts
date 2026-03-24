@@ -5,6 +5,17 @@ import viteTsConfigPaths from 'vite-tsconfig-paths'
 import tailwindcss from '@tailwindcss/vite'
 
 const config = defineConfig({
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('src/data/merit-badges.json')) {
+            return 'merit-badge-data'
+          }
+        },
+      },
+    },
+  },
   plugins: [
     tanstackStart(),
     react(),

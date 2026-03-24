@@ -92,7 +92,7 @@ export default function Header() {
           </Link>
 
           <Link
-            to="/merit-badges"
+            to="/merit-badges/"
             className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-green-500/20 transition-colors text-sm font-medium"
             activeProps={{
               className: 'flex items-center gap-2 px-4 py-2 rounded-lg bg-green-500/30 border border-green-500/50 hover:bg-green-500/40 transition-colors text-sm font-medium',
@@ -209,7 +209,7 @@ export default function Header() {
           </Link>
 
           <Link
-            to="/merit-badges"
+            to="/merit-badges/"
             onClick={() => setIsOpen(false)}
             className="flex items-center gap-3 p-3 rounded-lg hover:bg-green-500/20 transition-colors mb-2"
             activeProps={{

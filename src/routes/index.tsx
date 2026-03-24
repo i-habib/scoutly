@@ -1,13 +1,16 @@
 import { createFileRoute, useNavigate, Link } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Download, Loader2, FileDown } from 'lucide-react';
 import { useUserData } from '../hooks/useUserData';
 import { generateInitialPlan } from '../services/aiService';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-// Removed local merit badges import in favor of shared progress utilities
-import { countEagleRequiredCompleted } from '../lib/progress';
-import { RankAdvancement } from '../components/RankAdvancement';
+
+const RankAdvancement = lazy(() =>
+  import('../components/RankAdvancement').then((module) => ({
+    default: module.RankAdvancement,
+  })),
+);
 
 export const Route = createFileRoute('/')({ component: Dashboard });
 
@@ -15,6 +18,7 @@ function Dashboard() {
   const navigate = useNavigate();
   const { userData, isLoading, updateAIPlan } = useUserData();
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
+  const [completedEagleBadges, setCompletedEagleBadges] = useState(0);
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
 
   // Load checked state from localStorage on mount
@@ -35,6 +39,28 @@ function Dashboard() {
       navigate({ to: '/onboarding' });
     }
   }, [userData, isLoading, navigate]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (!userData) {
+      setCompletedEagleBadges(0);
+      return;
+    }
+
+    import('../lib/progress')
+      .then(({ countEagleRequiredCompleted }) => {
+        if (!isMounted) return;
+        setCompletedEagleBadges(countEagleRequiredCompleted(userData));
+      })
+      .catch((error) => {
+        console.error('Failed to load merit badge progress module:', error);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userData]);
 
   const handleGeneratePlan = async () => {
     if (!userData) return;
@@ -160,7 +186,7 @@ function Dashboard() {
   const calculateStats = () => {
     if (!userData) return { completed: 0, total: 21, events: 0, daysToEagle: '--', percentage: 0 };
 
-    const completedCount = countEagleRequiredCompleted(userData);
+    const completedCount = completedEagleBadges;
 
     let daysToEagle = '--';
     if (userData.profile.targetEagleDate) {
@@ -251,7 +277,7 @@ function Dashboard() {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Progress Card */}
-          <Link to="/merit-badges" className="block">
+          <Link to="/merit-badges/" className="block">
             <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-green-500/50 transition-all backdrop-blur-sm">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
@@ -284,7 +310,7 @@ function Dashboard() {
           </Link> Rank status card */}
 
           {/* Merit Badges Card */}
-          <Link to="/merit-badges" className="block">
+          <Link to="/merit-badges/" className="block">
             <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-green-500/50 transition-all backdrop-blur-sm">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
@@ -522,7 +548,17 @@ function Dashboard() {
             
 
             {/* Rank Advancement Checklist */}
-            {userData && <RankAdvancement userData={userData} />}
+            {userData && (
+              <Suspense
+                fallback={
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+                    <p className="text-sm text-slate-400">Loading rank advancement...</p>
+                  </div>
+                }
+              >
+                <RankAdvancement userData={userData} />
+              </Suspense>
+            )}
           </div>
         </div>
       </div>

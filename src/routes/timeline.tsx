@@ -849,7 +849,14 @@ function BadgesTab({
                       })()}
                       <button
                         type="button"
-                        onClick={() => { if (b.id && !b.placeholder) navigate({ to: `/merit-badges/${b.id}` }); }}
+                        onClick={() => {
+                          if (b.id && !b.placeholder) {
+                            navigate({
+                              to: '/merit-badges/$badgeId',
+                              params: { badgeId: b.id },
+                            });
+                          }
+                        }}
                         className="min-w-0 text-left group focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded"
                       >
                         <p className="text-sm text-slate-200 font-semibold truncate flex items-center gap-2">
