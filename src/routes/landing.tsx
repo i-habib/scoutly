@@ -20,56 +20,50 @@ function LandingPage() {
 
   // While loading, show a blank page to avoid flicker
   if (isLoading || (!isLoading && userData?.profile?.name)) {
-    return <div className="bg-black min-h-screen" />
+    return <div className="app-shell min-h-screen" />
   }
 
   return (
-    <div className="bg-black text-white min-h-screen overflow-hidden">
-      {/* Dotted Background */}
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
-          backgroundSize: '14px 14px',
-        }}
-      />
-      {/* Gradient Glow */}
-      <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse" />
-      <div className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-cyan-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s]" />
+    <div className="app-shell">
+      <div className="app-shell__grid" />
+      <div className="app-shell__glow app-shell__glow--top" />
+      <div className="app-shell__glow app-shell__glow--bottom" />
 
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-6">
+      <div className="app-shell__content flex min-h-screen flex-col items-center justify-center p-6">
         {/* Header */}
-        <header className="w-full max-w-6xl mx-auto flex justify-between items-center py-4">
+        <header className="mx-auto flex w-full max-w-6xl items-center justify-between py-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-linear-to-br from-green-500 to-cyan-600 rounded-lg flex items-center justify-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-emerald-500 to-sky-600 shadow-[0_12px_24px_rgba(14,165,233,0.22)]">
               <ScoutFleurDeLis className="w-5 h-5 text-white" size={20} />
             </div>
-            <h1 className="text-xl font-bold">Scoutly</h1>
+            <div>
+              <h1 className="text-xl font-bold text-slate-950">Scoutly</h1>
+              <p className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">AI planning for Scouts</p>
+            </div>
           </div>
           <Link
             to={userData?.profile?.name ? '/' : '/onboarding'}
-            className="px-4 py-2 text-sm font-semibold bg-white/10 border border-white/20 rounded-lg hover:bg-white/20 transition-colors"
+            className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:border-emerald-200 hover:text-emerald-700"
           >
             Get Started
           </Link>
         </header>
 
         {/* Hero Section */}
-  <main className="grow flex flex-col items-center justify-center text-center py-20">
-          <div className="bg-green-500/20 text-green-300 text-xs font-medium px-3 py-1 rounded-full mb-4 border border-green-500/50">
-            Your AI-Powered Path to Eagle Scout
+  <main className="flex grow flex-col items-center justify-center py-20 text-center">
+          <div className="mb-5 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
+            Professional planning for the road to Eagle
           </div>
-          <h2 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">Never Miss a Step</h2>
-          <p className="max-w-2xl text-lg text-slate-400 mb-8">
-            Scoutly is the ultimate planning tool for Scouts. It combines your
-            progress, troop schedule, and AI insights to create a personalized
-            roadmap to Eagle.
+          <h2 className="mb-6 max-w-4xl text-5xl font-bold tracking-tight text-slate-950 md:text-7xl">
+            Plan every badge, milestone, and deadline with confidence.
+          </h2>
+          <p className="mb-10 max-w-3xl text-lg leading-8 text-slate-600">
+            Scoutly brings progress tracking, troop events, and AI-guided recommendations into one polished workspace so Scouts and families can stay organized on the path to Eagle.
           </p>
 
-          {/* Simple inline SVG illustration to give the hero some personality */}
-          <div className="mb-8">
+          <div className="app-surface app-surface--soft mb-10 rounded-[2rem] p-4 sm:p-6">
             <svg width="540" height="220" viewBox="0 0 540 220" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto">
-              <rect x="0" y="0" width="540" height="220" rx="20" fill="url(#g)" opacity="0.06" />
+              <rect x="0" y="0" width="540" height="220" rx="20" fill="url(#g)" opacity="0.12" />
               <defs>
                 <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
                   <stop offset="0%" stopColor="#10B981" />
@@ -77,11 +71,11 @@ function LandingPage() {
                 </linearGradient>
               </defs>
               <g transform="translate(40,32)">
-                <circle cx="60" cy="60" r="40" fill="#052e19" stroke="#10B981" strokeWidth="3" />
-                <path d="M120 20 L200 20 L230 90 L180 140 L100 140 L60 90 Z" fill="#042f3a" stroke="#06B6D4" strokeWidth="3" opacity="0.9" />
+                <circle cx="60" cy="60" r="40" fill="#ecfdf5" stroke="#10B981" strokeWidth="3" />
+                <path d="M120 20 L200 20 L230 90 L180 140 L100 140 L60 90 Z" fill="#ecfeff" stroke="#06B6D4" strokeWidth="3" opacity="0.9" />
                 <g transform="translate(260,8)">
-                  <rect x="0" y="0" width="160" height="120" rx="12" fill="#07121a" stroke="#0ea5a5" strokeWidth="2" />
-                  <path d="M14 28h132M14 52h132M14 76h80" stroke="#34d399" strokeWidth="3" strokeLinecap="round" />
+                  <rect x="0" y="0" width="160" height="120" rx="12" fill="#ffffff" stroke="#0ea5a5" strokeWidth="2" />
+                  <path d="M14 28h132M14 52h132M14 76h80" stroke="#0f766e" strokeWidth="3" strokeLinecap="round" />
                 </g>
               </g>
             </svg>
@@ -89,34 +83,34 @@ function LandingPage() {
 
           <Link
             to={userData?.profile?.name ? '/' : '/onboarding'}
-            className="bg-linear-to-r from-green-400 to-cyan-500 text-black font-bold text-lg px-8 py-4 rounded-xl shadow-[0_0_20px_rgba(45,212,191,0.5)] hover:shadow-[0_0_30px_rgba(45,212,191,0.7)] transition-shadow duration-300"
+            className="rounded-2xl bg-linear-to-r from-emerald-600 to-sky-600 px-8 py-4 text-lg font-bold text-white shadow-[0_18px_40px_rgba(14,165,233,0.24)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_50px_rgba(14,165,233,0.28)]"
           >
             Get Started Today
           </Link>
         </main>
 
         {/* Features Section */}
-        <section className="w-full max-w-6xl mx-auto grid md:grid-cols-3 gap-8 text-left">
+        <section className="mx-auto grid w-full max-w-6xl gap-8 text-left md:grid-cols-3">
           <FeatureCard
-            icon={<CompassIcon className="w-6 h-6 text-green-400" size={24} />}
+            icon={<CompassIcon className="w-6 h-6 text-emerald-600" size={24} />}
             title="AI-Powered Planning"
             description="Our AI coach analyzes your progress and generates a weekly action plan to keep you on track for your Eagle goal."
           />
           <FeatureCard
-            icon={<TentIcon className="w-6 h-6 text-green-400" size={24} />}
+            icon={<TentIcon className="w-6 h-6 text-emerald-600" size={24} />}
             title="Smart Event Sync"
             description="Connect your troop calendar to get reminders and requirement suggestions tailored to upcoming campouts and meetings."
           />
           <FeatureCard
-            icon={<EagleIcon className="w-6 h-6 text-green-400" size={24} />}
+            icon={<EagleIcon className="w-6 h-6 text-emerald-600" size={24} />}
             title="Visual Progress Tracking"
             description="See your entire journey at a glance, from your next requirement to your final Eagle-required merit badge."
           />
         </section>
 
         {/* Footer */}
-        <footer className="w-full max-w-6xl mx-auto text-center py-10 mt-10 border-t border-white/10">
-          <p className="text-slate-500 text-sm">Built by Scouts, for Scouts.</p>
+        <footer className="mx-auto mt-10 w-full max-w-6xl border-t border-slate-200 py-10 text-center">
+          <p className="text-sm text-slate-500">Built by Scouts, for Scouts.</p>
         </footer>
       </div>
     </div>
@@ -133,13 +127,12 @@ function FeatureCard({
   description: string
 }) {
   return (
-    <div className="bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-sm">
+    <div className="app-surface rounded-2xl p-6">
       <div className="flex items-center gap-3 mb-3">
         {icon}
-        <h3 className="font-semibold text-white">{title}</h3>
+        <h3 className="font-semibold text-slate-900">{title}</h3>
       </div>
-      <p className="text-slate-400 text-sm">{description}</p>
+      <p className="text-sm leading-6 text-slate-600">{description}</p>
     </div>
   )
 }
-

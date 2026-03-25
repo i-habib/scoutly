@@ -158,21 +158,10 @@ function Profile() {
 
   if (isLoading) {
     return (
-      <div 
-        className="min-h-screen bg-black flex items-center justify-center"
-        style={{
-          backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
-          backgroundSize: '14px 14px',
-          backgroundPosition: '0 0, 14px 14px',
-        }}
-      >
-        {/* Gradient glows */}
-        <div className="fixed top-0 left-0 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
-        <div className="fixed -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-cyan-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s] pointer-events-none" />
-        
+      <div className="app-shell flex min-h-screen items-center justify-center">
         <div className="text-center relative z-10">
-          <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-400">Loading profile...</p>
+          <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent"></div>
+          <p className="text-slate-500">Loading profile...</p>
         </div>
       </div>
     );
@@ -182,38 +171,31 @@ function Profile() {
   const { completed, inProgress, notStarted } = getBadgeProgress();
 
   return (
-    <div 
-      className="min-h-screen bg-black"
-      style={{
-        backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
-        backgroundSize: '14px 14px',
-        backgroundPosition: '0 0, 14px 14px',
-      }}
-    >
-      {/* Gradient glows */}
-      <div className="fixed top-0 left-0 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
-      <div className="fixed -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-cyan-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s] pointer-events-none" />
+    <div className="app-shell">
+      <div className="app-shell__grid fixed inset-0" />
+      <div className="app-shell__glow app-shell__glow--top fixed" />
+      <div className="app-shell__glow app-shell__glow--bottom fixed" />
 
       {/* Main Content */}
       <div className="relative z-10 max-w-6xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6">
+          <div className="app-surface rounded-3xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-linear-to-br from-green-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/30">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-500 to-sky-600 shadow-[0_14px_30px_rgba(14,165,233,0.22)]">
                   <ScoutFleurDeLis className="text-white" size={28} />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold text-white">Scout Profile</h1>
-                  <p className="text-gray-400">Manage your scouting information</p>
+                  <h1 className="text-3xl font-bold text-slate-950">Scout Profile</h1>
+                  <p className="text-slate-600">Manage your scouting information</p>
                 </div>
               </div>
               
               {!isEditing && (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 rounded-lg text-green-400 transition-all"
+                  className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-emerald-700 transition-all hover:bg-emerald-100"
                 >
                   <Edit2 size={18} />
                   Edit Profile
@@ -224,29 +206,29 @@ function Profile() {
             {isEditing ? (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <label className="mb-2 block text-sm font-medium text-slate-700">
                     Scout Name
                   </label>
                   <input
                     type="text"
                     value={editedName}
                     onChange={(e) => setEditedName(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 focus:border-transparent focus:ring-4 focus:ring-emerald-100"
                     placeholder="Your name"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <label className="mb-2 block text-sm font-medium text-slate-700">
                     Target Eagle Scout Date
                   </label>
                   <input
                     type="date"
                     value={editedTargetDate}
                     onChange={(e) => setEditedTargetDate(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 focus:border-transparent focus:ring-4 focus:ring-emerald-100"
                   />
-                  <p className="text-xs text-slate-400 mt-2">
+                  <p className="mt-2 text-xs text-slate-500">
                     Set your goal date to track your progress and pace
                   </p>
                 </div>
@@ -254,14 +236,14 @@ function Profile() {
                 <div className="flex gap-3 pt-4">
                   <button
                     onClick={handleSaveProfile}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-black font-bold transition-all"
+                    className="flex items-center gap-2 rounded-xl bg-linear-to-r from-emerald-600 to-sky-600 px-4 py-2 font-bold text-white transition-all hover:from-emerald-500 hover:to-sky-500"
                   >
                     <Save size={18} />
                     Save Changes
                   </button>
                   <button
                     onClick={handleCancelEdit}
-                    className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all"
+                    className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-slate-700 transition-all hover:bg-slate-50"
                   >
                     <X size={18} />
                     Cancel
@@ -271,12 +253,12 @@ function Profile() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <div className="text-sm text-slate-400 mb-1">Scout Name</div>
-                  <div className="text-xl font-semibold text-white">{userData?.profile.name || 'Not set'}</div>
+                  <div className="mb-1 text-sm text-slate-500">Scout Name</div>
+                  <div className="text-xl font-semibold text-slate-950">{userData?.profile.name || 'Not set'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-slate-400 mb-1">Target Eagle Date</div>
-                  <div className="text-xl font-semibold text-white">
+                  <div className="mb-1 text-sm text-slate-500">Target Eagle Date</div>
+                  <div className="text-xl font-semibold text-slate-950">
                     {userData?.profile.targetEagleDate 
                       ? new Date(userData.profile.targetEagleDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
                       : 'Not set'}
@@ -288,45 +270,45 @@ function Profile() {
         </div>
 
         {/* Rank Progress Section */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 mb-6">
+        <div className="app-surface mb-6 rounded-3xl p-6">
           <div className="flex items-center gap-3 mb-4">
-            <EagleIcon className="text-green-400" size={28} />
-            <h2 className="text-xl font-bold text-white">Current Rank Progress</h2>
+            <EagleIcon className="text-emerald-600" size={28} />
+            <h2 className="text-xl font-bold text-slate-950">Current Rank Progress</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Current Rank */}
-            <div className="bg-white/10/50 rounded-lg p-4 text-center">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center">
               <div className="text-3xl mb-2">🏆</div>
-              <div className="text-green-400 font-semibold text-sm mb-1">Current Rank</div>
-              <div className="text-white font-bold text-xl">{rankInfo?.currentRankDisplay}</div>
+              <div className="mb-1 text-sm font-semibold text-emerald-700">Current Rank</div>
+              <div className="text-xl font-bold text-slate-950">{rankInfo?.currentRankDisplay}</div>
             </div>
 
             {/* Next Rank Progress */}
-            <div className="bg-white/10/50 rounded-lg p-4">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-2xl">🎯</span>
-                <span className="text-white font-bold text-2xl">{rankInfo?.progress}%</span>
+                <span className="text-2xl font-bold text-slate-950">{rankInfo?.progress}%</span>
               </div>
-              <div className="text-green-400 font-semibold text-sm mb-2">
+              <div className="mb-2 text-sm font-semibold text-sky-700">
                 Progress to {rankInfo?.nextRankDisplay}
               </div>
-              <div className="h-2 rounded-full bg-slate-600 overflow-hidden mb-2">
+              <div className="mb-2 h-2 overflow-hidden rounded-full bg-slate-100">
                 <div
-                  className="h-full bg-linear-to-r from-cyan-400 to-blue-500 transition-all duration-500"
+                  className="h-full bg-linear-to-r from-emerald-500 to-sky-600 transition-all duration-500"
                   style={{ width: `${rankInfo?.progress}%` }}
                 />
               </div>
-              <div className="text-xs text-gray-400">
+              <div className="text-xs text-slate-500">
                 {rankInfo?.completed}/{rankInfo?.total} requirements completed
               </div>
             </div>
 
             {/* Target Date */}
-            <div className="bg-white/10/50 rounded-lg p-4 text-center">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center">
               <div className="text-3xl mb-2">📅</div>
-              <div className="text-green-400 font-semibold text-sm mb-1">Eagle Target</div>
-              <div className="text-white font-bold text-xl">
+              <div className="mb-1 text-sm font-semibold text-emerald-700">Eagle Target</div>
+              <div className="text-xl font-bold text-slate-950">
                 {userData?.profile.targetEagleDate 
                   ? new Date(userData.profile.targetEagleDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
                   : 'Not set'}
@@ -336,23 +318,23 @@ function Profile() {
         </div>
 
         {/* AI Pace Analysis */}
-        <div className="bg-linear-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-xl p-6 mb-6">
+        <div className="mb-6 rounded-3xl border border-sky-200 bg-linear-to-r from-sky-50 via-white to-emerald-50 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
           <div className="flex items-center gap-3 mb-2">
             <span className="text-2xl">🤖</span>
-            <h2 className="text-xl font-bold text-white">AI Pace Analysis</h2>
+            <h2 className="text-xl font-bold text-slate-950">AI Pace Analysis</h2>
           </div>
-          <p className="text-white text-lg font-semibold">{aiPace}</p>
-          <p className="text-gray-300 text-sm mt-2">
+          <p className="text-lg font-semibold text-slate-900">{aiPace}</p>
+          <p className="mt-2 text-sm text-slate-600">
             Based on your target date and current progress
           </p>
         </div>
 
         {/* Completed Badges */}
         {completed.length > 0 && (
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 mb-6">
+          <div className="app-surface mb-6 rounded-3xl p-6">
             <div className="flex items-center gap-3 mb-4">
               <span className="text-2xl">✅</span>
-              <h2 className="text-xl font-bold text-white">
+              <h2 className="text-xl font-bold text-slate-950">
                 Completed Eagle-Required Badges ({completed.length}/21)
               </h2>
             </div>
@@ -364,7 +346,7 @@ function Profile() {
                   params={{ badgeId: badge.id }}
                   className="group"
                 >
-                  <div className="bg-emerald-500/20 border-2 border-emerald-500 rounded-lg p-3 text-center hover:bg-emerald-500/30 transition-all hover:scale-105 cursor-pointer">
+                  <div className="cursor-pointer rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-center transition-all hover:scale-105 hover:border-emerald-300">
                     {badge.imageUrl ? (
                       <img 
                         src={badge.imageUrl} 
@@ -374,10 +356,10 @@ function Profile() {
                     ) : (
                       <div className="text-3xl mb-2">🏅</div>
                     )}
-                    <div className="text-white font-semibold text-xs mb-1 line-clamp-2 min-h-8">
+                    <div className="mb-1 min-h-8 line-clamp-2 text-xs font-semibold text-slate-900">
                       {badge.name}
                     </div>
-                    <div className="text-emerald-400 font-bold text-sm">100%</div>
+                    <div className="text-sm font-bold text-emerald-700">100%</div>
                   </div>
                 </Link>
               ))}
@@ -387,10 +369,10 @@ function Profile() {
 
         {/* In Progress Badges */}
         {inProgress.length > 0 && (
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 mb-6">
+          <div className="app-surface mb-6 rounded-3xl p-6">
             <div className="flex items-center gap-3 mb-4">
               <span className="text-2xl">🔄</span>
-              <h2 className="text-xl font-bold text-white">
+              <h2 className="text-xl font-bold text-slate-950">
                 In Progress ({inProgress.length})
               </h2>
             </div>
@@ -402,7 +384,7 @@ function Profile() {
                   params={{ badgeId: badge.id }}
                   className="group"
                 >
-                  <div className="bg-white/10/50 border-2 border-cyan-500/50 rounded-lg p-3 text-center hover:bg-white/10 hover:border-cyan-500 transition-all hover:scale-105 cursor-pointer">
+                  <div className="cursor-pointer rounded-2xl border border-sky-200 bg-sky-50 p-3 text-center transition-all hover:scale-105 hover:border-sky-300">
                     {badge.imageUrl ? (
                       <img 
                         src={badge.imageUrl} 
@@ -412,16 +394,16 @@ function Profile() {
                     ) : (
                       <div className="text-3xl mb-2">🏅</div>
                     )}
-                    <div className="text-white font-semibold text-xs mb-2 line-clamp-2 min-h-8">
+                    <div className="mb-2 min-h-8 line-clamp-2 text-xs font-semibold text-slate-900">
                       {badge.name}
                     </div>
-                    <div className="h-1.5 rounded-full bg-slate-600 overflow-hidden mb-1">
+                    <div className="mb-1 h-1.5 overflow-hidden rounded-full bg-slate-200">
                       <div
-                        className="h-full bg-linear-to-r from-cyan-400 to-blue-500"
+                        className="h-full bg-linear-to-r from-emerald-500 to-sky-600"
                         style={{ width: `${badge.percentage}%` }}
                       />
                     </div>
-                    <div className="text-green-400 font-bold text-sm">{badge.percentage}%</div>
+                    <div className="text-sm font-bold text-sky-700">{badge.percentage}%</div>
                   </div>
                 </Link>
               ))}
@@ -431,10 +413,10 @@ function Profile() {
 
         {/* Not Started Badges */}
         {notStarted.length > 0 && (
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6">
+          <div className="app-surface rounded-3xl p-6">
             <div className="flex items-center gap-3 mb-4">
               <span className="text-2xl">⬜</span>
-              <h2 className="text-xl font-bold text-white">
+              <h2 className="text-xl font-bold text-slate-950">
                 Not Started ({notStarted.length})
               </h2>
             </div>
@@ -447,22 +429,22 @@ function Profile() {
                     params={{ badgeId: badge.id }}
                     className="group"
                   >
-                    <div className="bg-slate-800/50 border-2 border-slate-600/50 rounded-lg p-3 text-center hover:bg-slate-700/50 hover:border-slate-500 transition-all hover:scale-105 cursor-pointer">
+                    <div className="cursor-pointer rounded-2xl border border-slate-200 bg-slate-50 p-3 text-center transition-all hover:scale-105 hover:border-slate-300">
                       {badge.imageUrl ? (
                         <img 
                           src={badge.imageUrl} 
                           alt={badge.name}
-                          className="w-16 h-16 mx-auto mb-2 object-contain opacity-40 group-hover:opacity-60 transition-opacity"
+                          className="mx-auto mb-2 h-16 w-16 object-contain opacity-60 transition-opacity group-hover:opacity-80"
                         />
                       ) : (
-                        <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-slate-700/50 border border-slate-600/50 flex items-center justify-center opacity-40 group-hover:opacity-60 transition-opacity">
-                          <MeritBadgeIcon className="w-6 h-6 text-slate-400" />
+                        <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white opacity-70 transition-opacity group-hover:opacity-100">
+                          <MeritBadgeIcon className="w-6 h-6 text-slate-500" />
                         </div>
                       )}
-                      <div className="text-gray-300 font-semibold text-xs mb-1 line-clamp-2 min-h-8">
+                      <div className="mb-1 min-h-8 line-clamp-2 text-xs font-semibold text-slate-700">
                         {badge.name}
                       </div>
-                      <div className="text-gray-500 font-bold text-sm">0%</div>
+                      <div className="text-sm font-bold text-slate-400">0%</div>
                     </div>
                   </Link>
                 );

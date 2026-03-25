@@ -30,14 +30,14 @@ export function RankAdvancement({ userData }: RankAdvancementProps) {
   // If already Eagle, show celebration
   if (currentRankIndex === RANK_PROGRESSION.length - 1) {
     return (
-      <div className="rounded-2xl bg-linear-to-br from-purple-500/10 via-blue-500/10 to-cyan-500/10 backdrop-blur-xl border border-white/20 p-6 shadow-xl">
+      <div className="app-surface rounded-3xl p-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-linear-to-br from-yellow-400 to-amber-500 flex items-center justify-center shadow-lg">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-amber-400 to-yellow-500 shadow-lg">
             <span className="text-2xl">🦅</span>
           </div>
-          <h3 className="text-lg font-bold text-white">Eagle Scout!</h3>
+          <h3 className="text-lg font-bold text-slate-950">Eagle Scout!</h3>
         </div>
-        <p className="text-sm text-white/80 leading-relaxed">
+        <p className="text-sm leading-relaxed text-slate-600">
           Congratulations on reaching the pinnacle of Scouting! Continue your journey with lifelong service and leadership.
         </p>
       </div>
@@ -64,16 +64,16 @@ export function RankAdvancement({ userData }: RankAdvancementProps) {
   const progressPercent = (completedReqs / totalReqs) * 100;
 
   return (
-    <div className="rounded-2xl bg-linear-to-br from-purple-500/10 via-blue-500/10 to-cyan-500/10 backdrop-blur-xl border border-white/20 p-6 shadow-xl">
+    <div className="app-surface rounded-3xl p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-linear-to-br from-cyan-400 to-blue-500 flex items-center justify-center shadow-lg">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-emerald-500 to-sky-600 shadow-lg shadow-sky-100">
             <span className="text-xl">🎯</span>
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">Next Rank</h3>
-            <p className="text-sm text-cyan-400 font-semibold">{nextRank.name}</p>
+            <h3 className="text-lg font-bold text-slate-950">Next Rank</h3>
+            <p className="text-sm font-semibold text-sky-700">{nextRank.name}</p>
           </div>
         </div>
       </div>
@@ -81,21 +81,21 @@ export function RankAdvancement({ userData }: RankAdvancementProps) {
       {/* Progress Bar */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs text-white/60">Progress</span>
-          <span className="text-xs text-white/80 font-medium">
+          <span className="text-xs text-slate-500">Progress</span>
+          <span className="text-xs font-medium text-slate-700">
             {completedReqs}/{totalReqs}
           </span>
         </div>
-        <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+        <div className="h-2 overflow-hidden rounded-full bg-slate-100">
           <div
-            className="h-full bg-linear-to-r from-cyan-400 to-blue-500 transition-all duration-500"
+            className="h-full bg-linear-to-r from-emerald-500 to-sky-600 transition-all duration-500"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
       </div>
 
       {/* Requirements List - Scrollable */}
-      <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+      <div className="max-h-[300px] space-y-2 overflow-y-auto pr-2">
         {allRequirements.map((req) => {
           const isCompleted = rankProgress[req.id];
           const hasSubRequirements = 'sub_requirements' in req && Array.isArray((req as any).sub_requirements);
@@ -104,7 +104,7 @@ export function RankAdvancement({ userData }: RankAdvancementProps) {
           return (
             <label
               key={req.id}
-              className={`flex items-start gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer group ${
+              className={`group flex cursor-pointer items-start gap-3 rounded-xl p-2 transition-colors hover:bg-slate-50 ${
                 isSubRequirement ? 'ml-6' : ''
               }`}
             >
@@ -136,12 +136,12 @@ export function RankAdvancement({ userData }: RankAdvancementProps) {
                   }}
                   className="peer sr-only"
                 />
-                <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
+                <div className={`flex h-5 w-5 items-center justify-center rounded-md border-2 transition-all ${
                   hasSubRequirements 
-                    ? 'border-white/20 bg-white/5 cursor-not-allowed' 
+                    ? 'cursor-not-allowed border-slate-200 bg-slate-50' 
                     : isCompleted
-                    ? 'border-green-500 bg-green-500 shadow-lg shadow-green-500/30'
-                    : 'border-white/30 bg-white/10 group-hover:border-green-400 group-hover:bg-white/20'
+                    ? 'border-emerald-500 bg-emerald-500 shadow-lg shadow-emerald-100'
+                    : 'border-slate-300 bg-white group-hover:border-emerald-400 group-hover:bg-emerald-50'
                 }`}>
                   {isCompleted && (
                     <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -153,14 +153,15 @@ export function RankAdvancement({ userData }: RankAdvancementProps) {
               <span
                 className={`text-xs leading-relaxed transition-colors ${
                   isCompleted
-                    ? 'text-white/50 line-through'
+                    ? 'text-slate-400 line-through'
                     : hasSubRequirements
-                    ? 'text-white font-medium'
-                    : 'text-white/80 group-hover:text-white'
+                    ? 'font-medium text-slate-900'
+                    : 'text-slate-600 group-hover:text-slate-900'
                 }`}
               >
-                <span className="font-semibold text-cyan-400">{req.id}.</span> {req.text}
-                {hasSubRequirements ? <span className="text-white/50 text-xs block mt-1">(Choose one option below)</span> : null}
+                <span className={`font-semibold ${isCompleted ? 'text-slate-400' : 'text-sky-700'}`}>{req.id}.</span>{' '}
+                <span className={isCompleted ? 'text-slate-400' : 'text-slate-600 group-hover:text-slate-900'}>{req.text}</span>
+                {hasSubRequirements ? <span className="mt-1 block text-xs text-slate-400">(Choose one option below)</span> : null}
               </span>
             </label>
           );
@@ -168,13 +169,13 @@ export function RankAdvancement({ userData }: RankAdvancementProps) {
       </div>
 
       {/* Footer Action */}
-      <div className="mt-4 pt-4 border-t border-white/10">
+      <div className="mt-4 border-t border-slate-200 pt-4">
         <button
           onClick={() => {
             // Future: Navigate to profile when route exists
             console.log('Navigate to profile');
           }}
-          className="text-xs text-cyan-400 hover:text-cyan-300 font-medium transition-colors flex items-center gap-1"
+          className="flex items-center gap-1 text-xs font-medium text-sky-700 transition-colors hover:text-sky-600"
         >
           <span>View all ranks</span>
           <span>→</span>

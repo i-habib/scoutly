@@ -96,20 +96,9 @@ function AdvancementPage() {
   
   if (!rankData) {
     return (
-      <div 
-        className="min-h-screen bg-black flex items-center justify-center"
-        style={{
-          backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
-          backgroundSize: '14px 14px',
-          backgroundPosition: '0 0, 14px 14px',
-        }}
-      >
-        {/* Gradient glows */}
-        <div className="fixed top-0 left-0 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
-        <div className="fixed -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-cyan-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s] pointer-events-none" />
-        
+      <div className="app-shell flex min-h-screen items-center justify-center">
         <div className="text-center relative z-10">
-          <p className="text-slate-400 text-xl">Rank not found</p>
+          <p className="text-xl text-slate-500">Rank not found</p>
         </div>
       </div>
     );
@@ -238,33 +227,26 @@ function AdvancementPage() {
   };
 
   return (
-    <div 
-      className="min-h-screen bg-black"
-      style={{
-        backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
-        backgroundSize: '14px 14px',
-        backgroundPosition: '0 0, 14px 14px',
-      }}
-    >
-      {/* Gradient glows */}
-      <div className="fixed top-0 left-0 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
-      <div className="fixed -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-cyan-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s] pointer-events-none" />
+    <div className="app-shell">
+      <div className="app-shell__grid fixed inset-0" />
+      <div className="app-shell__glow app-shell__glow--top fixed" />
+      <div className="app-shell__glow app-shell__glow--bottom fixed" />
 
       {/* Content */}
       <div className="relative z-10 max-w-4xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-linear-to-br from-green-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/30">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-500 to-sky-600 shadow-[0_14px_30px_rgba(14,165,233,0.22)]">
               <EagleIcon className="w-6 h-6 text-white" size={24} />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white">Rank Advancement</h1>
-              <p className="text-slate-400">
-                Current rank: <span className="text-green-300 font-semibold capitalize">{normalizedCurrentRankLabel}</span>
+              <h1 className="text-3xl font-bold text-slate-950">Rank Advancement</h1>
+              <p className="text-slate-600">
+                Current rank: <span className="font-semibold capitalize text-emerald-700">{normalizedCurrentRankLabel}</span>
                 {inProgressRankLabel && (
                   <>
-                    {' '}• In progress: <span className="text-cyan-300 font-semibold capitalize">{inProgressRankLabel}</span>
+                    {' '}• In progress: <span className="font-semibold capitalize text-sky-700">{inProgressRankLabel}</span>
                   </>
                 )}
               </p>
@@ -273,12 +255,12 @@ function AdvancementPage() {
         </div>
 
         {/* Rank Navigation */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 mb-6">
+        <div className="app-surface mb-6 rounded-3xl p-6">
           <div className="flex items-center justify-between mb-6">
             <button
               onClick={goToPreviousRank}
               disabled={selectedRankIndex === 0}
-              className="p-3 bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed rounded-xl text-white transition-all flex items-center gap-2"
+              className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-3 text-slate-700 transition-all hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-30"
             >
               <ChevronLeft className="w-5 h-5" />
               <span className="hidden sm:inline">Previous</span>
@@ -288,10 +270,10 @@ function AdvancementPage() {
               <div className={`inline-flex items-center justify-center w-20 h-20 bg-linear-to-br ${RANK_COLORS[selectedRankId]} rounded-2xl shadow-lg mb-3`}>
                 <MeritBadgeIcon className="w-10 h-10 text-white" size={40} />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-1">{rankData.name}</h2>
+              <h2 className="mb-1 text-2xl font-bold text-slate-950">{rankData.name}</h2>
               {isCurrentRank && (
-                <div className="inline-block px-3 py-1 bg-green-500/20 border border-green-500/50 rounded-full">
-                  <span className="text-green-400 text-sm font-semibold">Current Rank</span>
+                <div className="inline-block rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1">
+                  <span className="text-sm font-semibold text-emerald-700">Current Rank</span>
                 </div>
               )}
             </div>
@@ -299,7 +281,7 @@ function AdvancementPage() {
             <button
               onClick={goToNextRank}
               disabled={selectedRankIndex === RANK_ORDER.length - 1}
-              className="p-3 bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed rounded-xl text-white transition-all flex items-center gap-2"
+              className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-3 text-slate-700 transition-all hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-30"
             >
               <span className="hidden sm:inline">Next</span>
               <ChevronRight className="w-5 h-5" />
@@ -309,10 +291,10 @@ function AdvancementPage() {
           {/* Progress Bar */}
           <div className="mb-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-slate-400 text-sm">Progress</span>
-              <span className="text-green-400 font-semibold">{completionPercentage}%</span>
+              <span className="text-sm text-slate-500">Progress</span>
+              <span className="font-semibold text-emerald-700">{completionPercentage}%</span>
             </div>
-            <div className="w-full h-3 bg-black/50 rounded-full overflow-hidden">
+            <div className="h-3 w-full overflow-hidden rounded-full bg-slate-100">
               <div
                 className={`h-full bg-linear-to-r ${RANK_COLORS[selectedRankId]} transition-all duration-500`}
                 style={{ width: `${completionPercentage}%` }}
@@ -321,8 +303,8 @@ function AdvancementPage() {
           </div>
 
           <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-2 text-slate-400">
-              <CompassIcon className="w-4 h-4 text-green-400" size={16} />
+            <div className="flex items-center gap-2 text-slate-500">
+              <CompassIcon className="w-4 h-4 text-emerald-600" size={16} />
               <span>{completedReqs} / {totalReqs} completed</span>
             </div>
 
@@ -330,13 +312,13 @@ function AdvancementPage() {
               {!isFullyCompleted ? (
                 <button
                   onClick={handleMarkAllComplete}
-                  className="px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-black font-bold text-sm transition-all flex items-center gap-2"
+                  className="flex items-center gap-2 rounded-xl bg-linear-to-r from-emerald-600 to-sky-600 px-4 py-2 text-sm font-bold text-white transition-all hover:from-emerald-500 hover:to-sky-500"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   Mark All
                 </button>
               ) : (
-                <div className="px-4 py-2 bg-green-500/20 border border-green-500/50 rounded-lg text-green-400 text-sm font-medium flex items-center gap-2">
+                <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700">
                   <CheckCircle2 className="w-4 h-4" />
                   Rank Complete!
                 </div>
@@ -344,7 +326,7 @@ function AdvancementPage() {
               {completedReqs > 0 && (
                 <button
                   onClick={handleClearAllProgress}
-                  className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-400 text-sm font-medium transition-all"
+                  className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-medium text-rose-700 transition-all hover:bg-rose-100"
                 >
                   Clear
                 </button>
@@ -354,8 +336,8 @@ function AdvancementPage() {
         </div>
 
         {/* Rank Progress Bar for All Ranks */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4 mb-6">
-          <h3 className="text-sm font-semibold text-slate-400 mb-3">Your Journey to Eagle</h3>
+        <div className="app-surface mb-6 rounded-2xl p-4">
+          <h3 className="mb-3 text-sm font-semibold text-slate-500">Your Journey to Eagle</h3>
           <div className="flex items-center gap-2">
             {RANK_ORDER.map((rankId, index) => {
               const rank = rankRequirementsData.find(r => r.id === rankId);
@@ -371,10 +353,10 @@ function AdvancementPage() {
                     isActive
                       ? `bg-linear-to-r ${RANK_COLORS[rankId]} scale-y-150`
                       : isPast
-                      ? 'bg-green-500/50'
+                      ? 'bg-emerald-300'
                       : isCurrent
-                      ? 'bg-green-500/30'
-                      : 'bg-white/10'
+                      ? 'bg-emerald-200'
+                      : 'bg-slate-200'
                   }`}
                   title={rank?.name}
                 />
@@ -389,7 +371,7 @@ function AdvancementPage() {
 
         {/* Requirements List */}
         <div className="space-y-4">
-          <h3 className="text-xl font-bold text-white mb-4">Requirements</h3>
+          <h3 className="mb-4 text-xl font-bold text-slate-950">Requirements</h3>
 
           {rankData.requirements.map((req, index) => {
             const hasSubReqs = req.sub_requirements && req.sub_requirements.length > 0;
@@ -400,7 +382,7 @@ function AdvancementPage() {
               <div
                 key={index}
                 id={`${selectedRankId}-${req.id}`}
-                className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all"
+                className="app-surface rounded-2xl p-6 transition-all hover:border-slate-300"
               >
                 <div className="space-y-4">
                   {/* Main Requirement */}
@@ -410,15 +392,15 @@ function AdvancementPage() {
                   >
                     <div className="shrink-0 mt-1">
                       {isMainCompleted ? (
-                        <CheckCircle2 className="w-6 h-6 text-green-400" />
+                        <CheckCircle2 className="w-6 h-6 text-emerald-600" />
                       ) : (
-                        <Circle className="w-6 h-6 text-white/20 group-hover:text-white/40 transition-colors" />
+                        <Circle className="w-6 h-6 text-slate-300 transition-colors group-hover:text-slate-500" />
                       )}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-start gap-2">
-                        <span className="text-green-400 font-semibold shrink-0">{req.id}.</span>
-                        <p className="text-slate-300 leading-relaxed group-hover:text-white transition-colors">
+                        <span className="shrink-0 font-semibold text-emerald-700">{req.id}.</span>
+                        <p className="leading-relaxed text-slate-600 transition-colors group-hover:text-slate-900">
                           {req.text}
                         </p>
                       </div>
@@ -441,14 +423,14 @@ function AdvancementPage() {
                           >
                             <div className="shrink-0 mt-1">
                               {isSubCompleted ? (
-                                <CheckCircle2 className="w-5 h-5 text-cyan-400" />
+                                <CheckCircle2 className="w-5 h-5 text-sky-600" />
                               ) : (
-                                <Circle className="w-5 h-5 text-white/20 group-hover:text-white/40 transition-colors" />
+                                <Circle className="w-5 h-5 text-slate-300 transition-colors group-hover:text-slate-500" />
                               )}
                             </div>
                             <div className="flex-1 flex items-start gap-2">
-                              <span className="text-cyan-400 font-semibold text-sm shrink-0">{subReq.id}.</span>
-                              <p className="text-slate-400 text-sm leading-relaxed group-hover:text-slate-300 transition-colors">
+                              <span className="shrink-0 text-sm font-semibold text-sky-700">{subReq.id}.</span>
+                              <p className="text-sm leading-relaxed text-slate-500 transition-colors group-hover:text-slate-700">
                                 {subReq.text}
                               </p>
                             </div>
@@ -465,12 +447,12 @@ function AdvancementPage() {
 
         {/* Completion Message */}
         {isFullyCompleted && (
-          <div className="mt-8 p-6 bg-linear-to-r from-green-500/20 to-emerald-500/20 border border-green-500/50 rounded-xl">
+          <div className="mt-8 rounded-3xl border border-emerald-200 bg-linear-to-r from-emerald-50 to-sky-50 p-6">
             <div className="flex items-center gap-3">
-              <CheckCircle2 className="w-8 h-8 text-green-400" />
+              <CheckCircle2 className="w-8 h-8 text-emerald-600" />
               <div>
-                <h3 className="text-xl font-bold text-white">Congratulations!</h3>
-                <p className="text-slate-300">
+                <h3 className="text-xl font-bold text-slate-950">Congratulations!</h3>
+                <p className="text-slate-600">
                   You've completed all requirements for {rankData.name}. 
                   {selectedRankIndex < RANK_ORDER.length - 1 
                     ? " Don't forget to schedule your board of review and start working on your next rank!"

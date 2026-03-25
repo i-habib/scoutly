@@ -58,19 +58,12 @@ function Onboarding() {
 
   return (
 
-    <div 
-      className="min-h-screen bg-black flex items-center justify-center p-6"
-      style={{
-        backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
-        backgroundSize: '14px 14px',
-        backgroundPosition: '0 0, 14px 14px',
-      }}
-    >
-      {/* Gradient glows */}
-      <div className="fixed top-0 left-0 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
-      <div className="fixed -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-cyan-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s] pointer-events-none" />
-      
-      <div className="w-full max-w-2xl relative z-10">
+    <div className="app-shell flex items-center justify-center p-6">
+      <div className="app-shell__grid" />
+      <div className="app-shell__glow app-shell__glow--top" />
+      <div className="app-shell__glow app-shell__glow--bottom" />
+
+      <div className="relative z-10 w-full max-w-2xl">
         {/* Progress Indicator */}
         <div className="mb-8 flex items-center justify-center gap-2">
           {[1, 2, 3].map((s) => (
@@ -78,10 +71,10 @@ function Onboarding() {
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${
                   s === step
-                    ? 'bg-green-500 text-white scale-110 shadow-lg shadow-cyan-500/50'
+                    ? 'scale-110 bg-linear-to-br from-emerald-600 to-sky-600 text-white shadow-lg shadow-sky-200'
                     : s < step
-                    ? 'bg-cyan-600 text-white'
-                    : 'bg-slate-700 text-slate-400'
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : 'bg-white text-slate-400 ring-1 ring-slate-200'
                 }`}
               >
                 {s}
@@ -89,7 +82,7 @@ function Onboarding() {
               {s < 3 && (
                 <div
                   className={`w-16 h-1 mx-2 rounded transition-all duration-300 ${
-                    s < step ? 'bg-cyan-600' : 'bg-slate-700'
+                    s < step ? 'bg-emerald-400' : 'bg-slate-200'
                   }`}
                 />
               )}
@@ -98,21 +91,21 @@ function Onboarding() {
         </div>
 
         {/* Main Card */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
+        <div className="app-surface rounded-3xl p-8">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-green-500 to-cyan-600 rounded-2xl mb-4 shadow-lg shadow-green-500/30">
+            <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-500 to-sky-600 shadow-[0_16px_36px_rgba(14,165,233,0.22)]">
               {step === 1 && <ScoutFleurDeLis className="w-8 h-8 text-white" size={32} />}
               {step === 2 && <CompassIcon className="w-8 h-8 text-white" size={32} />}
               {step === 3 && <EagleIcon className="w-8 h-8 text-white" size={32} />}
             </div>
             
-            <h1 className="text-3xl font-bold text-white mb-2">
+            <h1 className="mb-2 text-3xl font-bold text-slate-950">
               {step === 1 && "Welcome to Scoutly"}
               {step === 2 && "Your Current Progress"}
               {step === 3 && "Set Your Eagle Goal"}
             </h1>
             
-            <p className="text-gray-400 text-lg">
+            <p className="text-lg text-slate-600">
               {step === 1 && "Let's start your journey to Eagle Scout"}
               {step === 2 && "Where are you on your path?"}
               {step === 3 && "When do you aim to achieve Eagle?"}
@@ -123,7 +116,7 @@ function Onboarding() {
           {step === 1 && (
             <div className="space-y-6 animate-fadeIn">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="name" className="mb-2 block text-sm font-medium text-slate-700">
                   What's your name?
                 </label>
                 <input
@@ -131,7 +124,7 @@ function Onboarding() {
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 transition-all focus:outline-none focus:ring-4 focus:ring-sky-100 focus:border-sky-400"
                   placeholder="Enter your first name"
                   autoFocus
                 />
@@ -143,7 +136,7 @@ function Onboarding() {
           {step === 2 && (
             <div className="space-y-6 animate-fadeIn">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-4">
+                <label className="mb-4 block text-sm font-medium text-slate-700">
                   What's your current rank?
                 </label>
                 <div className="grid grid-cols-2 gap-3">
@@ -153,8 +146,8 @@ function Onboarding() {
                       onClick={() => setFormData({ ...formData, currentRank: rank.id })}
                       className={`p-4 rounded-lg border-2 transition-all duration-200 ${
                         formData.currentRank === rank.id
-                          ? 'border-cyan-500 bg-green-500/10 text-green-400 shadow-lg shadow-cyan-500/20'
-                          : 'border-slate-600 bg-slate-900/30 text-gray-300 hover:border-slate-500 hover:bg-slate-900/50'
+                          ? 'border-sky-400 bg-sky-50 text-sky-700 shadow-lg shadow-sky-100'
+                          : 'border-slate-200 bg-white text-slate-600 hover:border-sky-200 hover:bg-slate-50'
                       }`}
                     >
                       <div className="font-semibold">{rank.name}</div>
@@ -169,7 +162,7 @@ function Onboarding() {
           {step === 3 && (
             <div className="space-y-6 animate-fadeIn">
               <div>
-                <label htmlFor="targetDate" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="targetDate" className="mb-2 block text-sm font-medium text-slate-700">
                   When do you want to achieve Eagle Scout?
                 </label>
                 <input
@@ -178,9 +171,9 @@ function Onboarding() {
                   value={formData.targetEagleDate}
                   onChange={(e) => setFormData({ ...formData, targetEagleDate: e.target.value })}
                   min={new Date().toISOString().split('T')[0]}
-                  className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 transition-all focus:outline-none focus:ring-4 focus:ring-sky-100 focus:border-sky-400"
                 />
-                <p className="mt-2 text-sm text-gray-400">
+                <p className="mt-2 text-sm text-slate-500">
                   💡 Most Scouts take 3-5 years to reach Eagle
                 </p>
               </div>
@@ -192,7 +185,7 @@ function Onboarding() {
             {step > 1 && (
               <button
                 onClick={handleBack}
-                className="flex-1 px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-lg transition-colors"
+                className="flex-1 rounded-xl border border-slate-200 bg-white px-6 py-3 font-semibold text-slate-700 transition-colors hover:bg-slate-50"
               >
                 Back
               </button>
@@ -202,7 +195,7 @@ function Onboarding() {
               <button
                 onClick={handleNext}
                 disabled={!isStepValid()}
-                className="flex-1 px-6 py-3 bg-green-500 hover:bg-cyan-600 disabled:bg-slate-600 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors shadow-lg shadow-cyan-500/30 disabled:shadow-none flex items-center justify-center gap-2"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-linear-to-r from-emerald-600 to-sky-600 px-6 py-3 font-semibold text-white transition-colors shadow-lg shadow-sky-100 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
               >
                 Continue
                 <ChevronRight className="w-5 h-5" />
@@ -211,7 +204,7 @@ function Onboarding() {
               <button
                 onClick={handleSubmit}
                 disabled={!isStepValid() || isUpdatingProfile}
-                className="flex-1 px-6 py-3 bg-linear-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 disabled:from-slate-600 disabled:to-slate-600 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all shadow-lg shadow-cyan-500/30 disabled:shadow-none flex items-center justify-center gap-2"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-linear-to-r from-emerald-600 to-sky-600 px-6 py-3 font-semibold text-white transition-all shadow-lg shadow-sky-100 hover:from-emerald-500 hover:to-sky-500 disabled:cursor-not-allowed disabled:from-slate-300 disabled:to-slate-300 disabled:shadow-none"
               >
                 {isUpdatingProfile ? (
                   'Starting Your Journey...'
@@ -227,7 +220,7 @@ function Onboarding() {
         </div>
 
         {/* Bottom Text */}
-        <p className="text-center mt-6 text-gray-400 text-sm">
+        <p className="mt-6 text-center text-sm text-slate-500">
           Your data is stored locally and completely private
         </p>
       </div>

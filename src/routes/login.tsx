@@ -70,27 +70,20 @@ function LoginPage() {
   }
 
   return (
-    <div 
-      className="min-h-screen bg-black text-white flex items-center justify-center px-4 py-12"
-      style={{
-        backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
-        backgroundSize: '14px 14px',
-        backgroundPosition: '0 0, 14px 14px',
-      }}
-    >
-      {/* Gradient glows */}
-      <div className="fixed top-0 left-0 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
-      <div className="fixed -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-cyan-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s] pointer-events-none" />
-      
-      <div className="w-full max-w-lg rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl shadow-2xl relative z-10">
+    <div className="app-shell flex items-center justify-center px-4 py-12">
+      <div className="app-shell__grid" />
+      <div className="app-shell__glow app-shell__glow--top" />
+      <div className="app-shell__glow app-shell__glow--bottom" />
+
+      <div className="app-surface relative z-10 w-full max-w-lg rounded-3xl p-8">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-green-500/20 text-cyan-200 shadow-[0_0_25px_rgba(34,211,238,0.35)]">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-500 to-sky-600 text-white shadow-[0_16px_35px_rgba(14,165,233,0.25)]">
             <ScoutFleurDeLis size={28} />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-950">
             {mode === 'signin' ? 'Welcome back to Scoutly' : 'Create your Scoutly account'}
           </h1>
-          <p className="mt-2 text-sm text-slate-300/80">
+          <p className="mt-2 text-sm leading-6 text-slate-600">
             {mode === 'signin'
               ? 'Sign in to sync your progress and unlock AI planning tools.'
               : 'Create an account to sync your progress securely across devices.'}
@@ -99,7 +92,7 @@ function LoginPage() {
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-slate-200">
+            <label htmlFor="email" className="block text-sm font-medium text-slate-700">
               Email
             </label>
             <input
@@ -107,7 +100,7 @@ function LoginPage() {
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="mt-1 w-full rounded-lg border border-white/10 bg-slate-900/80 px-4 py-3 text-sm text-white placeholder-slate-400 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/40"
+              className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100"
               placeholder="you@example.com"
               required
               autoComplete="email"
@@ -115,7 +108,7 @@ function LoginPage() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-slate-200">
+            <label htmlFor="password" className="block text-sm font-medium text-slate-700">
               Password
             </label>
             <input
@@ -123,7 +116,7 @@ function LoginPage() {
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="mt-1 w-full rounded-lg border border-white/10 bg-slate-900/80 px-4 py-3 text-sm text-white placeholder-slate-400 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/40"
+              className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100"
               placeholder="Enter a strong password"
               required
               autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
@@ -132,7 +125,7 @@ function LoginPage() {
 
           {mode === 'signup' && (
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-200">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700">
                 Confirm Password
               </label>
               <input
@@ -140,7 +133,7 @@ function LoginPage() {
                 type="password"
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
-                className="mt-1 w-full rounded-lg border border-white/10 bg-slate-900/80 px-4 py-3 text-sm text-white placeholder-slate-400 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/40"
+                className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100"
                 placeholder="Re-enter your password"
                 required
                 autoComplete="new-password"
@@ -163,38 +156,38 @@ function LoginPage() {
           <button
             type="submit"
             disabled={mode === 'signin' ? isSigningIn : isSigningUp}
-            className="group flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-cyan-500 to-blue-600 px-4 py-3 text-sm font-semibold tracking-wide text-white shadow-[0_16px_40px_rgba(8,145,178,0.35)] transition hover:from-cyan-400 hover:to-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
+            className="group flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-emerald-600 to-sky-600 px-4 py-3 text-sm font-semibold tracking-wide text-white shadow-[0_16px_40px_rgba(14,165,233,0.22)] transition hover:from-emerald-500 hover:to-sky-500 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {mode === 'signin' ? (isSigningIn ? 'Signing In...' : 'Sign In') : (isSigningUp ? 'Creating Account...' : 'Create Account')}
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </button>
         </form>
 
-        <div className="mt-8 text-center text-sm text-slate-300/80">
+        <div className="mt-8 text-center text-sm text-slate-600">
           {mode === 'signin' ? (
             <>
               Need an account?
-              <button type="button" onClick={toggleMode} className="ml-1 text-cyan-300 hover:text-cyan-200">
+              <button type="button" onClick={toggleMode} className="ml-1 font-semibold text-sky-700 hover:text-sky-600">
                 Create one
               </button>
             </>
           ) : (
             <>
               Already have an account?
-              <button type="button" onClick={toggleMode} className="ml-1 text-cyan-300 hover:text-cyan-200">
+              <button type="button" onClick={toggleMode} className="ml-1 font-semibold text-sky-700 hover:text-sky-600">
                 Sign in
               </button>
             </>
           )}
         </div>
 
-        <div className="mt-6 text-center text-xs text-slate-400">
+        <div className="mt-6 text-center text-xs text-slate-500">
           By continuing you agree to our{' '}
-          <span className="text-cyan-200">Terms</span> and <span className="text-cyan-200">Privacy Policy</span>.
+          <span className="font-medium text-sky-700">Terms</span> and <span className="font-medium text-sky-700">Privacy Policy</span>.
         </div>
 
         <div className="mt-8 text-center text-sm">
-          <Link to="/" className="text-slate-300 hover:text-white transition">
+          <Link to="/" className="text-slate-600 transition hover:text-slate-900">
             ← Back to landing
           </Link>
         </div>

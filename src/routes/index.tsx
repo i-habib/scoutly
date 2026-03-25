@@ -208,10 +208,10 @@ function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="bg-black min-h-screen flex items-center justify-center">
+      <div className="app-shell flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-400">Loading your journey...</p>
+          <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent"></div>
+          <p className="text-slate-500">Loading your journey...</p>
         </div>
       </div>
     );
@@ -244,32 +244,25 @@ function Dashboard() {
   const currentPlan = userData?.aiPlan?.plan;
 
   return (
-    <div className="bg-black text-white min-h-screen">
-      {/* Dotted Background */}
-      <div
-        className="fixed inset-0 z-0"
-        style={{
-          backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
-          backgroundSize: '14px 14px',
-        }}
-      />
-      {/* Gradient Glow */}
-      <div className="fixed -top-1/4 -left-1/4 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
-      <div className="fixed -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-cyan-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s] pointer-events-none" />
+    <div className="app-shell">
+      <div className="app-shell__grid fixed inset-0" />
+      <div className="app-shell__glow app-shell__glow--top fixed" />
+      <div className="app-shell__glow app-shell__glow--bottom fixed" />
 
       {/* Main Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
+      <div className="relative z-10 mx-auto max-w-7xl px-6 py-8">
         {/* Welcome Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-linear-to-br from-green-500 to-cyan-600 rounded-xl flex items-center justify-center">
+          <div className="mb-2 flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-500 to-sky-600 shadow-[0_12px_28px_rgba(14,165,233,0.22)]">
               <span className="text-2xl">🧭</span>
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white">
-                Welcome back, <span className="text-green-400">{userName}</span>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Dashboard</p>
+              <h1 className="text-3xl font-bold text-slate-950">
+                Welcome back, <span className="text-emerald-700">{userName}</span>
               </h1>
-              <p className="text-slate-400">Let's continue your Eagle Scout journey</p>
+              <p className="text-slate-600">Let's continue your Eagle Scout journey</p>
             </div>
           </div>
         </div>
@@ -278,14 +271,14 @@ function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Progress Card */}
           <Link to="/merit-badges/" className="block">
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-green-500/50 transition-all backdrop-blur-sm">
+            <div className="app-surface rounded-2xl p-6 transition-all hover:-translate-y-0.5 hover:border-emerald-200">
               <div className="flex items-center justify-between mb-4">
-                <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
                   <span className="text-xl">🎯</span>
                 </div>
-                <span className="text-2xl font-bold text-white">{stats.percentage}%</span>
+                <span className="text-2xl font-bold text-slate-950">{stats.percentage}%</span>
               </div>
-              <h3 className="text-slate-400 text-sm font-medium">Overall Progress</h3>
+              <h3 className="text-sm font-medium text-slate-500">Overall Progress</h3>
             </div>
           </Link>
 
@@ -311,56 +304,56 @@ function Dashboard() {
 
           {/* Merit Badges Card */}
           <Link to="/merit-badges/" className="block">
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-green-500/50 transition-all backdrop-blur-sm">
+            <div className="app-surface rounded-2xl p-6 transition-all hover:-translate-y-0.5 hover:border-emerald-200">
               <div className="flex items-center justify-between mb-4">
-                <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
                   <span className="text-xl">🏅</span>
                 </div>
-                <span className="text-2xl font-bold text-white">{stats.completed}/{stats.total}</span>
+                <span className="text-2xl font-bold text-slate-950">{stats.completed}/{stats.total}</span>
               </div>
-              <h3 className="text-slate-400 text-sm font-medium">Eagle Required</h3>
+              <h3 className="text-sm font-medium text-slate-500">Eagle Required</h3>
             </div>
           </Link>
 
           {/* Upcoming Events Card */}
           <Link to="/events" className="block">
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-cyan-500/50 transition-all backdrop-blur-sm">
+            <div className="app-surface rounded-2xl p-6 transition-all hover:-translate-y-0.5 hover:border-sky-200">
               <div className="flex items-center justify-between mb-4">
-                <div className="w-10 h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-50 text-sky-700">
                   <span className="text-xl">📅</span>
                 </div>
-                <span className="text-2xl font-bold text-white">{stats.events}</span>
+                <span className="text-2xl font-bold text-slate-950">{stats.events}</span>
               </div>
-              <h3 className="text-slate-400 text-sm font-medium">Upcoming Events</h3>
+              <h3 className="text-sm font-medium text-slate-500">Upcoming Events</h3>
             </div>
           </Link>
 
           {/* Days to Eagle Card */}
-          <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-green-500/50 transition-all backdrop-blur-sm">
+          <div className="app-surface rounded-2xl p-6 transition-all hover:-translate-y-0.5 hover:border-emerald-200">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
                 <span className="text-xl">📈</span>
               </div>
-              <span className="text-2xl font-bold text-white">{stats.daysToEagle}</span>
+              <span className="text-2xl font-bold text-slate-950">{stats.daysToEagle}</span>
             </div>
-            <h3 className="text-slate-400 text-sm font-medium">Days to Goal</h3>
+            <h3 className="text-sm font-medium text-slate-500">Days to Goal</h3>
           </div>
         </div>
 
         {/* Main Content Grid - More balanced 5-column layout (3:2 ratio) */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* AI Eagle Plan - Featured Section */}
-          <div className="lg:col-span-3 bg-white/5 border border-white/10 rounded-xl overflow-hidden backdrop-blur-sm">
+          <div className="app-surface overflow-hidden rounded-3xl lg:col-span-3">
             {/* Header */}
-            <div className="bg-green-500/10 border-b border-white/10 px-6 py-4">
+            <div className="border-b border-slate-200 bg-linear-to-r from-emerald-50 via-white to-sky-50 px-6 py-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-linear-to-br from-green-500 to-cyan-600 rounded-xl">
+                  <div className="rounded-2xl bg-linear-to-br from-emerald-500 to-sky-600 p-2 shadow-[0_12px_24px_rgba(14,165,233,0.2)]">
                     <span className="text-xl">🦅</span>
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-white">Your Eagle Scout Plan</h2>
-                    <p className="text-sm text-green-300">AI-powered personalized roadmap</p>
+                    <h2 className="text-xl font-bold text-slate-950">Your Eagle Scout Plan</h2>
+                    <p className="text-sm text-emerald-700">AI-powered personalized roadmap</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -368,23 +361,23 @@ function Dashboard() {
                     <>
                       <button
                         onClick={handleDownloadPDF}
-                        className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                        className="rounded-lg p-2 text-emerald-700 transition-colors hover:bg-white"
                         title="Download as PDF"
                       >
-                        <FileDown className="w-5 h-5 text-green-400" />
+                        <FileDown className="w-5 h-5" />
                       </button>
                       <button
                         onClick={handleDownloadPlan}
-                        className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                        className="rounded-lg p-2 text-emerald-700 transition-colors hover:bg-white"
                         title="Download as Markdown"
                       >
-                        <Download className="w-5 h-5 text-green-400" />
+                        <Download className="w-5 h-5" />
                       </button>
                     </>
                   )}
                   <Link
                     to="/ai-coach"
-                    className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                    className="rounded-lg p-2 transition-colors hover:bg-white"
                     title="Open AI Coach chat"
                   >
                     <span className="text-xl">💬</span>
@@ -396,47 +389,47 @@ function Dashboard() {
             {/* Plan Content */}
             <div className="p-6">
               {currentPlan ? (
-                <div className="prose prose-invert prose-sm max-w-none">
+                <div className="prose prose-sm max-w-none prose-headings:text-slate-950 prose-p:text-slate-600">
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
                     components={{
                       h1: ({ children }) => (
-                        <h1 className="text-2xl font-bold text-white mb-4">{children}</h1>
+                        <h1 className="mb-4 text-2xl font-bold text-slate-950">{children}</h1>
                       ),
                       h2: ({ children }) => (
-                        <h2 className="text-xl font-bold text-white mb-3 mt-6">{children}</h2>
+                        <h2 className="mb-3 mt-6 text-xl font-bold text-slate-950">{children}</h2>
                       ),
                       h3: ({ children }) => (
-                        <h3 className="text-lg font-semibold text-green-400 mb-2 mt-4">{children}</h3>
+                        <h3 className="mb-2 mt-4 text-lg font-semibold text-emerald-700">{children}</h3>
                       ),
                       p: ({ children }) => (
-                        <p className="text-slate-300 mb-3 leading-relaxed">{children}</p>
+                        <p className="mb-3 leading-relaxed text-slate-600">{children}</p>
                       ),
                       ul: ({ children }) => (
-                        <ul className="space-y-2 text-slate-300 mb-4">{children}</ul>
+                        <ul className="mb-4 space-y-2 text-slate-600">{children}</ul>
                       ),
                       ol: ({ children }) => (
-                        <ol className="list-decimal list-inside space-y-2 text-slate-300 mb-4">{children}</ol>
+                        <ol className="mb-4 list-decimal list-inside space-y-2 text-slate-600">{children}</ol>
                       ),
                       table: ({ children }) => (
                         <div className="overflow-x-auto my-4">
-                          <table className="w-full border-collapse border border-white/20">{children}</table>
+                          <table className="w-full border-collapse border border-slate-200">{children}</table>
                         </div>
                       ),
                       thead: ({ children }) => (
-                        <thead className="bg-green-500/20">{children}</thead>
+                        <thead className="bg-emerald-50">{children}</thead>
                       ),
                       tbody: ({ children }) => (
-                        <tbody className="divide-y divide-white/10">{children}</tbody>
+                        <tbody className="divide-y divide-slate-200">{children}</tbody>
                       ),
                       tr: ({ children }) => (
-                        <tr className="border-b border-white/10">{children}</tr>
+                        <tr className="border-b border-slate-200">{children}</tr>
                       ),
                       th: ({ children }) => (
-                        <th className="px-4 py-2 text-left text-green-400 font-semibold border border-white/20">{children}</th>
+                        <th className="border border-slate-200 px-4 py-2 text-left font-semibold text-emerald-700">{children}</th>
                       ),
                       td: ({ children }) => (
-                        <td className="px-4 py-2 text-slate-300 border border-white/20">{children}</td>
+                        <td className="border border-slate-200 px-4 py-2 text-slate-600">{children}</td>
                       ),
                       li: ({ children }) => {
                         const childText = String(children);
@@ -450,7 +443,7 @@ function Dashboard() {
                           const isChecked = checkedItems[checkboxId] ?? isInitiallyChecked;
                           
                           return (
-                            <li className="flex items-start gap-2 text-slate-300">
+                            <li className="flex items-start gap-2 text-slate-600">
                               <input
                                 type="checkbox"
                                 checked={isChecked}
@@ -462,19 +455,19 @@ function Dashboard() {
                                   setCheckedItems(newCheckedItems);
                                   localStorage.setItem('scoutly_plan_checkboxes', JSON.stringify(newCheckedItems));
                                 }}
-                                className="mt-1 w-4 h-4 rounded border-green-500 text-green-500 focus:ring-green-500 bg-black cursor-pointer"
+                                className="mt-1 h-4 w-4 cursor-pointer rounded border-emerald-400 bg-white text-emerald-600 focus:ring-emerald-500"
                               />
-                              <span className={isChecked ? 'line-through text-slate-500' : ''}>{text}</span>
+                              <span className={isChecked ? 'text-slate-400 line-through' : ''}>{text}</span>
                             </li>
                           );
                         }
-                        return <li className="text-slate-300 ml-6">{children}</li>;
+                        return <li className="ml-6 text-slate-600">{children}</li>;
                       },
                       strong: ({ children }) => (
-                        <strong className="text-green-400 font-semibold">{children}</strong>
+                        <strong className="font-semibold text-emerald-700">{children}</strong>
                       ),
                       em: ({ children }) => (
-                        <em className="text-cyan-400">{children}</em>
+                        <em className="text-sky-700">{children}</em>
                       ),
                       a: ({ href, children }) => {
                         // Extract text from children (handle both string and array cases)
@@ -487,7 +480,7 @@ function Dashboard() {
                         return (
                           <a 
                             href={href} 
-                            className="text-green-400 hover:text-green-300 underline transition-colors font-medium"
+                            className="font-medium text-sky-700 underline transition-colors hover:text-sky-600"
                             target={href?.startsWith('http') ? '_blank' : undefined}
                             rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
                           >
@@ -496,17 +489,17 @@ function Dashboard() {
                         );
                       },
                       code: ({ children }) => (
-                        <code className="bg-white/10 px-2 py-1 rounded text-green-400 text-sm">{children}</code>
+                        <code className="rounded bg-slate-100 px-2 py-1 text-sm text-emerald-700">{children}</code>
                       ),
                       hr: () => (
-                        <hr className="border-white/10 my-6" />
+                        <hr className="my-6 border-slate-200" />
                       ),
                     }}
                   >
                     {currentPlan}
                   </ReactMarkdown>
                   {userData?.aiPlan?.lastUpdated && (
-                    <p className="text-xs text-slate-500 mt-6 border-t border-slate-700 pt-4">
+                    <p className="mt-6 border-t border-slate-200 pt-4 text-xs text-slate-500">
                       Last updated: {new Date(userData.aiPlan.lastUpdated).toLocaleDateString()} at{' '}
                       {new Date(userData.aiPlan.lastUpdated).toLocaleTimeString()}
                     </p>
@@ -514,17 +507,17 @@ function Dashboard() {
                 </div>
               ) : (
                 <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
                     <span className="text-3xl">📋</span>
                   </div>
-                  <h3 className="text-xl font-semibold text-white mb-2">No Plan Yet</h3>
-                  <p className="text-slate-400 mb-6 max-w-md mx-auto">
+                  <h3 className="mb-2 text-xl font-semibold text-slate-950">No Plan Yet</h3>
+                  <p className="mx-auto mb-6 max-w-md text-slate-600">
                     Let our AI coach create a personalized roadmap to help you reach Eagle Scout based on your progress and goals.
                   </p>
                   <button
                     onClick={handleGeneratePlan}
                     disabled={isGeneratingPlan}
-                    className="px-6 py-3 bg-linear-to-r from-green-500 to-cyan-600 text-black font-bold rounded-xl hover:shadow-lg transition-all disabled:opacity-50 inline-flex items-center gap-2"
+                    className="inline-flex items-center gap-2 rounded-2xl bg-linear-to-r from-emerald-600 to-sky-600 px-6 py-3 font-bold text-white transition-all hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50"
                   >
                     {isGeneratingPlan ? (
                       <>
@@ -551,8 +544,8 @@ function Dashboard() {
             {userData && (
               <Suspense
                 fallback={
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-                    <p className="text-sm text-slate-400">Loading rank advancement...</p>
+                  <div className="app-surface rounded-2xl p-6">
+                    <p className="text-sm text-slate-500">Loading rank advancement...</p>
                   </div>
                 }
               >

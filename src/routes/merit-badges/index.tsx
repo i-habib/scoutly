@@ -54,35 +54,28 @@ function MeritBadgesList() {
   const eagleRequiredCount = meritBadgesData.meritBadges.filter(b => b.eagleRequired).length;
 
   return (
-    <div 
-      className="min-h-screen bg-black"
-      style={{
-        backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
-        backgroundSize: '14px 14px',
-        backgroundPosition: '0 0, 14px 14px',
-      }}
-    >
-      {/* Gradient glows */}
-      <div className="fixed top-0 left-0 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
-      <div className="fixed -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-cyan-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s] pointer-events-none" />
+    <div className="app-shell">
+      <div className="app-shell__grid fixed inset-0" />
+      <div className="app-shell__glow app-shell__glow--top fixed" />
+      <div className="app-shell__glow app-shell__glow--bottom fixed" />
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-linear-to-br from-green-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/30">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-500 to-sky-600 shadow-[0_14px_30px_rgba(14,165,233,0.22)]">
               <MeritBadgeIcon className="w-6 h-6 text-white" size={24} />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white">Merit Badges</h1>
-              <p className="text-slate-400">{meritBadgesData.meritBadges.length} badges available · {eagleRequiredCount} Eagle-required</p>
+              <h1 className="text-3xl font-bold text-slate-950">Merit Badges</h1>
+              <p className="text-slate-600">{meritBadgesData.meritBadges.length} badges available · {eagleRequiredCount} Eagle-required</p>
             </div>
           </div>
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 mb-8">
+        <div className="app-surface mb-8 rounded-3xl p-6">
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
@@ -92,7 +85,7 @@ function MeritBadgesList() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search merit badges..."
-                className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                className="w-full rounded-xl border border-slate-200 bg-white py-3 pr-4 pl-10 text-slate-900 placeholder-slate-400 transition-all focus:outline-none focus:ring-4 focus:ring-emerald-100 focus:border-transparent"
               />
             </div>
 
@@ -102,8 +95,8 @@ function MeritBadgesList() {
                 onClick={() => setFilterType('all')}
                 className={`px-4 py-3 rounded-lg font-medium transition-all ${
                   filterType === 'all'
-                    ? 'bg-green-500 text-black font-bold'
-                    : 'bg-white/10 text-slate-400 hover:bg-white/20 hover:text-slate-300'
+                    ? 'bg-emerald-600 text-white font-bold'
+                    : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                 }`}
               >
                 All
@@ -113,7 +106,7 @@ function MeritBadgesList() {
                 className={`px-4 py-3 rounded-lg font-medium transition-all ${
                   filterType === 'eagle'
                     ? 'bg-amber-500 text-white'
-                    : 'bg-white/10 text-slate-400 hover:bg-white/20 hover:text-slate-300'
+                    : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                 }`}
               >
                 Eagle
@@ -122,8 +115,8 @@ function MeritBadgesList() {
                 onClick={() => setFilterType('started')}
                 className={`px-4 py-3 rounded-lg font-medium transition-all ${
                   filterType === 'started'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-white/10 text-slate-400 hover:bg-white/20 hover:text-slate-300'
+                    ? 'bg-sky-600 text-white'
+                    : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                 }`}
               >
                 Started
@@ -133,7 +126,7 @@ function MeritBadgesList() {
                 className={`px-4 py-3 rounded-lg font-medium transition-all ${
                   filterType === 'completed'
                     ? 'bg-emerald-500 text-white'
-                    : 'bg-white/10 text-slate-400 hover:bg-white/20 hover:text-slate-300'
+                    : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                 }`}
               >
                 Completed
@@ -173,11 +166,11 @@ function MeritBadgesList() {
                 key={badge.id}
                 to="/merit-badges/$badgeId"
                 params={{ badgeId: badge.id }}
-                className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 hover:border-green-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/10 group"
+                className="app-surface group rounded-3xl p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-200"
               >
                 {/* Badge Icon */}
                 <div className="flex items-start gap-4 mb-4">
-                  <div className="w-16 h-16 bg-white/10 rounded-xl flex items-center justify-center shadow-lg overflow-hidden border-2 border-white/10 group-hover:border-green-500/50 transition-all">
+                  <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-sm transition-all group-hover:border-emerald-200">
                     {'imageUrl' in badge && badge.imageUrl ? (
                       <img 
                         src={badge.imageUrl as string} 
@@ -189,10 +182,10 @@ function MeritBadgesList() {
                         }}
                       />
                     ) : null}
-                    <MeritBadgeIcon className="w-8 h-8 text-green-400 hidden" size={32} />
+                    <MeritBadgeIcon className="hidden w-8 h-8 text-emerald-600" size={32} />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-white mb-1 group-hover:text-green-400 transition-colors">
+                    <h3 className="mb-1 text-lg font-semibold text-slate-950 transition-colors group-hover:text-emerald-700">
                       {badge.name}
                     </h3>
                     {badge.eagleRequired && (
@@ -206,18 +199,18 @@ function MeritBadgesList() {
                 {/* Progress */}
                 <div className="mb-3">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-gray-400 text-sm">Progress</span>
-                    <span className="text-green-400 text-sm font-semibold">{percentage}%</span>
+                    <span className="text-sm text-slate-500">Progress</span>
+                    <span className="text-sm font-semibold text-emerald-700">{percentage}%</span>
                   </div>
-                  <div className="w-full h-2 bg-slate-900/50 rounded-full overflow-hidden">
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
                     <div
-                      className="h-full bg-linear-to-r from-cyan-500 to-blue-600 transition-all duration-500"
+                      className="h-full bg-linear-to-r from-emerald-500 to-sky-600 transition-all duration-500"
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
                 </div>
 
-                <p className="text-gray-400 text-sm">
+                <p className="text-sm text-slate-500">
                   {completedCount} / {totalCount} requirements completed
                 </p>
               </Link>
@@ -228,9 +221,9 @@ function MeritBadgesList() {
         {/* Empty State */}
         {filteredBadges.length === 0 && (
           <div className="text-center py-12">
-            <MeritBadgeIcon className="w-16 h-16 text-gray-600 mx-auto mb-4" size={64} />
-            <p className="text-gray-400 text-lg">No merit badges found</p>
-            <p className="text-gray-500 text-sm mt-2">Try adjusting your search or filters</p>
+            <MeritBadgeIcon className="mx-auto mb-4 h-16 w-16 text-slate-300" size={64} />
+            <p className="text-lg text-slate-600">No merit badges found</p>
+            <p className="mt-2 text-sm text-slate-500">Try adjusting your search or filters</p>
           </div>
         )}
       </div>
