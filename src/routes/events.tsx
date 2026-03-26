@@ -160,6 +160,40 @@ function parseICSDate(dateStr: string): string {
   return `${year}-${month}-${day}T00:00:00`;
 }
 
+function computeMeetingsPerMonthFrom(events: Event[]) {
+  const troopMeetings = events.filter(
+    (event) =>
+      event.type === 'meeting' &&
+      typeof event.name === 'string' &&
+      event.name.trim().toLowerCase() === 'troop meeting',
+  );
+
+  if (troopMeetings.length === 0) {
+    return 4;
+  }
+
+  const meetingsByMonth = new Map<string, number>();
+
+  troopMeetings.forEach((event) => {
+    const date = new Date(event.startTime);
+    if (Number.isNaN(date.getTime())) return;
+
+    const key = `${date.getFullYear()}-${date.getMonth()}`;
+    meetingsByMonth.set(key, (meetingsByMonth.get(key) || 0) + 1);
+  });
+
+  if (meetingsByMonth.size === 0) {
+    return 4;
+  }
+
+  const totalMeetings = Array.from(meetingsByMonth.values()).reduce(
+    (sum, count) => sum + count,
+    0,
+  );
+
+  return Math.max(1, Math.round(totalMeetings / meetingsByMonth.size));
+}
+
 function EventsPage() {
   const navigate = useNavigate();
   const { userData, isLoading, updateProfile } = useUserData();
@@ -171,7 +205,6 @@ function EventsPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
-  const [hoverTimer, setHoverTimer] = useState<NodeJS.Timeout | null>(null);
   const [hoverTimer, setHoverTimer] = useState<NodeJS.Timeout | null>(null);
   const [newEvent, setNewEvent] = useState({
     name: '',
@@ -194,7 +227,7 @@ function EventsPage() {
   const computeAutoMeetingsPerMonth = () => {
     const targetMonth = currentMonth || new Date();
     const monthStart = new Date(targetMonth.getFullYear(), targetMonth.getMonth(), 1);
-    const monthEnd = new Date(targetMonth.getFullYear(), targetMonth.getMonth() + 1, 0);
+    const monthEnd = new Date(targetMonth.getFullYear(), targetMonth.getMonth() + 1, 0, 23, 59, 59, 999);
     const troopMeetingsCurrentMonth = (events || [])
       .filter(e => e.type === 'meeting' && typeof e.name === 'string' && e.name.trim() === 'Troop Meeting')
       .filter(e => {
@@ -236,33 +269,6 @@ function EventsPage() {
     .filter(e => new Date(e.startTime) < new Date())
     .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
     .slice(0, 5); // Limit to 5 past events
-
-  // Load AI analysis from localStorage on mount (with versioning & auto-purge)
-  useEffect(() => {
-    const raw = localStorage.getItem(ANALYSIS_STORAGE_KEY);
-    if (!raw) return;
-    try {
-      const parsed = JSON.parse(raw);
-      // New shape: { version: number, analyses: Record<string, EventAnalysis> }
-      if (parsed && typeof parsed === 'object' && 'version' in parsed && 'analyses' in parsed) {
-        if (parsed.version === EVENT_ANALYSIS_SCHEMA_VERSION) {
-          setEventAnalysis(parsed.analyses || {});
-        } else {
-          // Version mismatch -> purge
-          localStorage.removeItem(ANALYSIS_STORAGE_KEY);
-          setEventAnalysis({});
-        }
-      } else {
-        // Old/unversioned cache -> purge it
-        localStorage.removeItem(ANALYSIS_STORAGE_KEY);
-        setEventAnalysis({});
-      }
-    } catch (e) {
-      console.error('Failed to parse saved analysis, purging cache:', e);
-      localStorage.removeItem(ANALYSIS_STORAGE_KEY);
-      setEventAnalysis({});
-    }
-  }, []);
 
   // Auto-sync Scoutbook calendar once per day when a URL is saved
   useEffect(() => {
@@ -318,11 +324,7 @@ function EventsPage() {
     const currentUserData = JSON.parse(localStorage.getItem('scoutly_user_data') || '{}');
     currentUserData.events = [];
     localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
-    
-  // Clear analysis too
-  localStorage.removeItem(ANALYSIS_STORAGE_KEY);
-  setEventAnalysis({});
-    
+
     // Trigger storage event to update UI
     window.dispatchEvent(new StorageEvent('storage', {
       key: 'scoutly_user_data',
@@ -414,15 +416,7 @@ function EventsPage() {
     const currentUserData = JSON.parse(localStorage.getItem('scoutly_user_data') || '{}');
     currentUserData.events = currentUserData.events.filter((e: Event) => e.id !== eventId);
     localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
-    
-    // Delete associated AI analysis
-    setEventAnalysis(prev => {
-      const updated = { ...prev };
-      delete updated[eventId];
-      localStorage.setItem(ANALYSIS_STORAGE_KEY, JSON.stringify({ version: EVENT_ANALYSIS_SCHEMA_VERSION, analyses: updated }));
-      return updated;
-    });
-    
+
     // Trigger storage event to update UI
     window.dispatchEvent(new StorageEvent('storage', {
       key: 'scoutly_user_data',
@@ -538,15 +532,12 @@ function EventsPage() {
             </div>
 
             <div className="flex gap-3 items-center">
-              {/* Read-only Meetings/Month display (editable only in Profile) */}
+              {/* Meetings/Month display */}
               <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-2 py-1 shadow-sm">
                 <span className="text-xs text-slate-500">Meetings/mo</span>
-                <span className="text-sm text-slate-900">
-                  {(meetingsPerMonthOverride ?? autoMeetingsPerMonth).toString()}
+                <span className="text-sm font-medium text-slate-900">
+                  {autoMeetingsPerMonth.toString()}
                 </span>
-                <Link to="/profile" className="text-xs text-slate-600 underline hover:text-slate-900">
-                  Edit in Profile
-                </Link>
               </div>
               {/* Removed Build Recommendations Button and Analyzing Spinner */}
               
@@ -825,19 +816,6 @@ function EventsPage() {
           </div>
         </div>
 
-        {/* Analyzing Indicator */}
-        {isAnalyzing && (
-          <div className="mb-6">
-            <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 flex items-center gap-3">
-              <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-              <div>
-                <p className="text-indigo-700 font-medium">Reviewing your calendar...</p>
-                <p className="text-slate-600 text-sm">Preparing recommendations for each event</p>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Upcoming Events */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
@@ -847,12 +825,6 @@ function EventsPage() {
                 <span className="text-slate-600">
                   Sorted by priority • {upcomingEvents.filter(e => eventAnalysis[e.id]).length} analyzed
                 </span>
-                {isAnalyzing && (
-                  <div className="flex items-center gap-2 px-2 py-1 bg-indigo-100 rounded text-indigo-700">
-                    <div className="w-3 h-3 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-                    Analyzing...
-                  </div>
-                )}
               </div>
             )}
           </div>
@@ -1183,28 +1155,8 @@ function EventCard({
             )}
           </div>
 
-          {/* See More Button */}
+          {/* AI Analysis Section - Shown automatically */}
           {!isPast && hasAnalysis && (
-            <button
-              onClick={() => setShowDetails(!showDetails)}
-              className="mt-3 w-full py-2 px-4 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 hover:border-emerald-300 rounded-lg text-sm font-medium text-emerald-700 transition-all flex items-center justify-center gap-2"
-            >
-              {showDetails ? (
-                <>
-                  Hide Details
-                  <ChevronUp className="w-4 h-4" />
-                </>
-              ) : (
-                <>
-                  See What You Can Do Here
-                  <ChevronDown className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          )}
-
-          {/* AI Analysis Section - Show when button clicked */}
-          {!isPast && hasAnalysis && showDetails && (
             <div className="mt-4 pt-4 border-t border-slate-200 animate-in fade-in duration-200">
               <div className="grid gap-4">
                 {/* Opportunities */}

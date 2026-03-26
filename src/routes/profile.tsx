@@ -251,7 +251,7 @@ function getRankInfo(userData: NonNullable<ReturnType<typeof useUserData>['userD
 function Profile() {
   const queryClient = useQueryClient();
   const { userData, isLoading, updateProfileAsync } = useUserData();
-  const { showToast, confirm } = useToast();
+  const { showToast } = useToast();
 
   const [paceAssessment, setPaceAssessment] = useState('Calculating...');
   const [isEditing, setIsEditing] = useState(false);

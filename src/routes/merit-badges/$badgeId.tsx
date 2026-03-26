@@ -172,7 +172,7 @@ function MeritBadgeDetail() {
       <div className="relative z-10 max-w-4xl mx-auto px-6 py-8">
         {/* Back Button */}
         <Link
-          to="/merit-badges/"
+          to="/merit-badges"
           className="mb-6 inline-flex items-center gap-2 text-emerald-700 transition-colors hover:text-sky-700"
         >
           <ChevronLeft className="w-5 h-5" />

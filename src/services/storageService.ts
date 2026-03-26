@@ -13,6 +13,18 @@ export const fetchUserData = async (): Promise<UserData> => {
   const data = localStorage.getItem(USER_DATA_KEY);
   if (data) {
     const parsed = JSON.parse(data) as Partial<UserData>;
+    const defaultNotificationPreferences = initialUserData.profile.notificationPreferences || {
+      meetingReminders: true,
+      eventReminders: true,
+      progressUpdates: true,
+    };
+    const defaultTroopInfo = initialUserData.profile.troopInfo || {
+      troopNumber: null,
+      meetingDay: null,
+      meetingTime: null,
+    };
+    const parsedNotificationPreferences = parsed.profile?.notificationPreferences;
+    const parsedTroopInfo = parsed.profile?.troopInfo;
     const userData: UserData = {
       ...initialUserData,
       ...parsed,
@@ -26,12 +38,20 @@ export const fetchUserData = async (): Promise<UserData> => {
         electiveBadges:
           parsed.profile?.electiveBadges ?? initialUserData.profile.electiveBadges,
         notificationPreferences: {
-          ...initialUserData.profile.notificationPreferences,
-          ...(parsed.profile?.notificationPreferences || {}),
+          meetingReminders:
+            parsedNotificationPreferences?.meetingReminders ??
+            defaultNotificationPreferences.meetingReminders,
+          eventReminders:
+            parsedNotificationPreferences?.eventReminders ??
+            defaultNotificationPreferences.eventReminders,
+          progressUpdates:
+            parsedNotificationPreferences?.progressUpdates ??
+            defaultNotificationPreferences.progressUpdates,
         },
         troopInfo: {
-          ...initialUserData.profile.troopInfo,
-          ...(parsed.profile?.troopInfo || {}),
+          troopNumber: parsedTroopInfo?.troopNumber ?? defaultTroopInfo.troopNumber,
+          meetingDay: parsedTroopInfo?.meetingDay ?? defaultTroopInfo.meetingDay,
+          meetingTime: parsedTroopInfo?.meetingTime ?? defaultTroopInfo.meetingTime,
         },
       },
       progress: parsed.progress ?? initialUserData.progress,

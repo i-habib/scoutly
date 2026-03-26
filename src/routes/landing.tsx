@@ -68,7 +68,7 @@ function LandingPage() {
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                to="/merit-badges/"
+                to="/merit-badges"
                 preload="intent"
                 className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 hover:text-slate-950"
               >

@@ -6,7 +6,11 @@ function hasProfileValue(value: string | null | undefined) {
 
 function hasReturningUserActivity(userData: UserData) {
   const badgeChoices = userData.profile.badgeChoices || {};
-  const troopInfo = userData.profile.troopInfo || {};
+  const troopInfo = userData.profile.troopInfo || {
+    troopNumber: null,
+    meetingDay: null,
+    meetingTime: null,
+  };
 
   return (
     Object.keys(userData.progress || {}).length > 0 ||
@@ -15,7 +19,7 @@ function hasReturningUserActivity(userData: UserData) {
     (userData.profile.electiveBadges || []).length > 0 ||
     Object.values(badgeChoices).some(Boolean) ||
     hasProfileValue(userData.profile.name) ||
-    hasProfileValue(userData.profile.troopInfo?.troopNumber) ||
+    hasProfileValue(troopInfo.troopNumber) ||
     hasProfileValue(troopInfo.meetingDay) ||
     hasProfileValue(troopInfo.meetingTime) ||
     hasProfileValue(userData.profile.scoutbookCalendarUrl)
