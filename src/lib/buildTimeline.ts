@@ -170,15 +170,15 @@ export const buildTimelineState: BuildTimeline = (userData, options) => {
     if (options?.meetingsPerMonthOverride && options.meetingsPerMonthOverride > 0) {
       return options.meetingsPerMonthOverride
     }
-    // 2) Preferred auto: last calendar month exact title "Troop Meeting"
+    // 2) Preferred auto: current calendar month exact title "Troop Meeting"
     const events = userData.events || []
-    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0) // last day of previous month
-    const lastMonthStart = new Date(lastMonthEnd.getFullYear(), lastMonthEnd.getMonth(), 1)
+    const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
+    const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1)
     const troopMeetingCount = events
       .filter((e: any) => e.type === 'meeting' && typeof e.name === 'string' && e.name.trim() === 'Troop Meeting')
       .filter((e: any) => {
         const d = new Date(e.startTime || e.date)
-        return d >= lastMonthStart && d <= lastMonthEnd
+        return d >= currentMonthStart && d <= currentMonthEnd
       }).length
     if (troopMeetingCount > 0) return troopMeetingCount
 

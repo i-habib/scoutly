@@ -9,6 +9,7 @@ import {
 import { useUserData } from '../hooks/useUserData';
 import { ScoutFleurDeLis } from '../components/ScoutIcons';
 import { PageSkeleton } from '../components/SkeletonLoader';
+import { isOnboardingComplete, needsOnboarding } from '../lib/onboarding';
 
 export const Route = createFileRoute('/landing')({
   component: LandingPage,
@@ -17,18 +18,19 @@ export const Route = createFileRoute('/landing')({
 function LandingPage() {
   const { userData, isLoading } = useUserData();
   const navigate = useNavigate();
+  const onboardingComplete = isOnboardingComplete(userData);
 
   useEffect(() => {
-    if (!isLoading && userData?.profile?.name) {
+    if (!isLoading && userData && onboardingComplete) {
       navigate({ to: '/', replace: true });
     }
-  }, [userData, isLoading, navigate]);
+  }, [userData, isLoading, navigate, onboardingComplete]);
 
-  if (isLoading || (!isLoading && userData?.profile?.name)) {
+  if (isLoading || (!isLoading && userData && onboardingComplete)) {
     return <PageSkeleton />;
   }
 
-  const entryRoute = '/';
+  const entryRoute = needsOnboarding(userData) ? '/onboarding' : '/';
 
   return (
     <div className="app-shell">

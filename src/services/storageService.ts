@@ -1,7 +1,10 @@
 import { initialUserData } from '../data/userData';
 import type { UserData, Event, ChatMessage } from '../data/userData';
 import { RANK_ORDER, normalizeRankId } from '../lib/constants';
+import { isOnboardingComplete } from '../lib/onboarding';
 import rankRequirementsData from '../data/rank-reqs.json';
+import { parseICSContent, inferEventType } from '../lib/icsParser';
+import { fetchCalendarICS } from '../server/calendar-functions';
 
 const USER_DATA_KEY = 'scoutly_user_data';
 
@@ -9,7 +12,41 @@ const USER_DATA_KEY = 'scoutly_user_data';
 export const fetchUserData = async (): Promise<UserData> => {
   const data = localStorage.getItem(USER_DATA_KEY);
   if (data) {
-    return JSON.parse(data);
+    const parsed = JSON.parse(data) as Partial<UserData>;
+    const userData: UserData = {
+      ...initialUserData,
+      ...parsed,
+      profile: {
+        ...initialUserData.profile,
+        ...(parsed.profile || {}),
+        badgeChoices: {
+          ...initialUserData.profile.badgeChoices,
+          ...(parsed.profile?.badgeChoices || {}),
+        },
+        electiveBadges:
+          parsed.profile?.electiveBadges ?? initialUserData.profile.electiveBadges,
+        notificationPreferences: {
+          ...initialUserData.profile.notificationPreferences,
+          ...(parsed.profile?.notificationPreferences || {}),
+        },
+        troopInfo: {
+          ...initialUserData.profile.troopInfo,
+          ...(parsed.profile?.troopInfo || {}),
+        },
+      },
+      progress: parsed.progress ?? initialUserData.progress,
+      events: parsed.events ?? initialUserData.events,
+      rankProgress: parsed.rankProgress ?? initialUserData.rankProgress,
+      aiPlan: parsed.aiPlan ?? initialUserData.aiPlan,
+    };
+
+    const onboardingComplete = isOnboardingComplete(userData);
+    if (userData.profile.hasCompletedOnboarding !== onboardingComplete) {
+      userData.profile.hasCompletedOnboarding = onboardingComplete;
+      localStorage.setItem(USER_DATA_KEY, JSON.stringify(userData));
+    }
+
+    return userData;
   }
   // For first-time users, initialize and save
   localStorage.setItem(USER_DATA_KEY, JSON.stringify(initialUserData));
@@ -278,6 +315,70 @@ export const clearChatHistory = async (): Promise<UserData> => {
   if (user.aiPlan) {
     user.aiPlan.chatHistory = [];
   }
+  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
+  return user;
+};
+
+// ─── Scoutbook Calendar Sync ─────────────────────────────────────────────────
+
+/** Save (or clear) the Scoutbook Plus ICS calendar URL in the user profile. */
+export const updateCalendarUrl = async (url: string | null): Promise<UserData> => {
+  const user = await fetchUserData();
+  user.profile.scoutbookCalendarUrl = url || null;
+  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
+  return user;
+};
+
+/**
+ * Fetch the saved Scoutbook ICS URL, parse it, and merge the resulting
+ * events into local storage. Events previously imported from Scoutbook
+ * (source === 'scoutbook') are replaced wholesale; manually added events
+ * and file-imported events are left untouched.
+ *
+ * Returns the updated UserData or throws an Error with a user-friendly message.
+ */
+export const syncScoutbookCalendar = async (): Promise<UserData> => {
+  const user = await fetchUserData();
+  const url = user.profile.scoutbookCalendarUrl;
+
+  if (!url) {
+    throw new Error('No Scoutbook calendar URL saved. Add it in Profile settings.');
+  }
+
+  let icsText: string;
+  try {
+    const result = await fetchCalendarICS({ data: { url } });
+    icsText = result.icsText;
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    throw new Error(`Could not fetch calendar: ${msg}. Check the URL and try again.`);
+  }
+
+  const parsed = parseICSContent(icsText);
+
+  if (parsed.length === 0) {
+    throw new Error('The calendar URL returned no events. Make sure the link is correct.');
+  }
+
+  // Build the fresh Scoutbook events with proper typing and source tag
+  const now = new Date().toISOString();
+  const freshEvents: Event[] = parsed.map((ev) => ({
+    id: `scoutbook_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    createdAt: now,
+    name: ev.name,
+    startTime: ev.startTime,
+    endTime: ev.endTime,
+    location: ev.location,
+    // Prefer parser-inferred type, fall back to name-based inference
+    type: ev.type !== 'other' ? ev.type : inferEventType(ev.name),
+    source: 'scoutbook' as const,
+  }));
+
+  // Remove stale Scoutbook events, keep everything else
+  const keptEvents = (user.events || []).filter((e) => e.source !== 'scoutbook');
+  user.events = [...keptEvents, ...freshEvents];
+  user.profile.lastCalendarSync = now;
+
   localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
   return user;
 };

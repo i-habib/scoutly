@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useQueryClient } from '@tanstack/react-query';
-import { type ChangeEvent, type ReactNode, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import meritBadgesData from '../data/merit-badges.json';
 import rankRequirementsData from '../data/rank-reqs.json';
 import { useUserData } from '../hooks/useUserData';
@@ -10,12 +10,12 @@ import {
   Bell,
   CalendarDays,
   CheckCircle2,
-  Download,
   Edit2,
   Gauge,
+  Link2,
+  RefreshCw,
   Save,
   Target,
-  Upload,
   Users,
   X,
 } from 'lucide-react';
@@ -39,6 +39,7 @@ interface ProfileFormState {
   meetingReminders: boolean;
   eventReminders: boolean;
   progressUpdates: boolean;
+  scoutbookCalendarUrl: string;
 }
 
 const EMPTY_FORM: ProfileFormState = {
@@ -52,6 +53,7 @@ const EMPTY_FORM: ProfileFormState = {
   meetingReminders: true,
   eventReminders: true,
   progressUpdates: true,
+  scoutbookCalendarUrl: '',
 };
 
 const MEETING_DAY_OPTIONS = [
@@ -101,6 +103,7 @@ function createProfileFormState(profile?: {
     meetingDay: string | null;
     meetingTime: string | null;
   };
+  scoutbookCalendarUrl?: string | null;
 }): ProfileFormState {
   return {
     name: profile?.name || '',
@@ -116,6 +119,7 @@ function createProfileFormState(profile?: {
     meetingReminders: profile?.notificationPreferences?.meetingReminders ?? true,
     eventReminders: profile?.notificationPreferences?.eventReminders ?? true,
     progressUpdates: profile?.notificationPreferences?.progressUpdates ?? true,
+    scoutbookCalendarUrl: profile?.scoutbookCalendarUrl || '',
   };
 }
 
@@ -246,14 +250,13 @@ function getRankInfo(userData: NonNullable<ReturnType<typeof useUserData>['userD
 
 function Profile() {
   const queryClient = useQueryClient();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const { userData, isLoading, updateProfileAsync } = useUserData();
   const { showToast, confirm } = useToast();
 
   const [paceAssessment, setPaceAssessment] = useState('Calculating...');
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [isImporting, setIsImporting] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [form, setForm] = useState<ProfileFormState>(EMPTY_FORM);
 
   useEffect(() => {
@@ -298,6 +301,12 @@ function Profile() {
       }
     }
 
+    const calUrl = form.scoutbookCalendarUrl.trim();
+    if (calUrl && !calUrl.startsWith('http')) {
+      showToast('error', 'Calendar URL must start with http:// or https://');
+      return;
+    }
+
     setIsSaving(true);
 
     try {
@@ -320,6 +329,8 @@ function Profile() {
         progressUpdates: form.progressUpdates,
       });
 
+      await storage.updateCalendarUrl(calUrl || null);
+
       await queryClient.invalidateQueries({ queryKey: ['userData'] });
       setIsEditing(false);
       showToast('success', 'Profile settings updated.');
@@ -330,57 +341,23 @@ function Profile() {
     }
   };
 
-  const handleExportData = async () => {
-    try {
-      const data = await storage.exportUserData();
-      const blob = new Blob([data], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `scoutly-backup-${new Date().toISOString().slice(0, 10)}.json`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      showToast('success', 'Backup exported.');
-    } catch {
-      showToast('error', 'Unable to export your data.');
+  const handleSyncCalendar = async () => {
+    // If we're in edit mode and there's a URL in the form field,
+    // save it first before syncing so we always work from the latest value
+    const calUrl = form.scoutbookCalendarUrl.trim();
+    if (isEditing && calUrl) {
+      await storage.updateCalendarUrl(calUrl || null);
     }
-  };
-
-  const handleImportClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleImportFile = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    event.target.value = '';
-
-    if (!file) return;
-
-    const shouldContinue = await confirm({
-      title: 'Import backup?',
-      message:
-        'Importing a backup will replace your current Scoutly data with the selected file.',
-      confirmLabel: 'Import data',
-      cancelLabel: 'Keep current data',
-      destructive: true,
-    });
-
-    if (!shouldContinue) return;
-
-    setIsImporting(true);
-
+    setIsSyncing(true);
     try {
-      const fileContents = await file.text();
-      await storage.importUserData(fileContents);
+      await storage.syncScoutbookCalendar();
       await queryClient.invalidateQueries({ queryKey: ['userData'] });
-      setIsEditing(false);
-      showToast('success', 'Backup imported successfully.');
-    } catch {
-      showToast('error', 'Import failed. Select a valid Scoutly backup file.');
+      showToast('success', 'Calendar synced! Events updated from Scoutbook.');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Sync failed.';
+      showToast('error', msg);
     } finally {
-      setIsImporting(false);
+      setIsSyncing(false);
     }
   };
 
@@ -421,21 +398,6 @@ function Profile() {
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
-                <button
-                  onClick={handleExportData}
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-slate-700 transition-colors hover:bg-slate-50"
-                >
-                  <Download size={18} />
-                  Export Backup
-                </button>
-                <button
-                  onClick={handleImportClick}
-                  disabled={isImporting}
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  <Upload size={18} />
-                  {isImporting ? 'Importing...' : 'Import Backup'}
-                </button>
                 {!isEditing ? (
                   <button
                     onClick={handleStartEdit}
@@ -445,13 +407,6 @@ function Profile() {
                     Edit Settings
                   </button>
                 ) : null}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="application/json"
-                  onChange={handleImportFile}
-                  className="hidden"
-                />
               </div>
             </div>
 
@@ -579,6 +534,48 @@ function Profile() {
                   </section>
                 </div>
 
+                <section className="rounded-2xl border border-sky-200 bg-sky-50 p-5">
+                  <div className="mb-4 flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-100 text-sky-700">
+                      <Link2 className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-semibold text-slate-950">Calendar sync</h2>
+                      <p className="text-sm text-slate-600">
+                        Auto-import events from your Scoutbook Plus calendar.
+                      </p>
+                    </div>
+                  </div>
+
+                  <Field
+                    label="Scoutbook Plus calendar URL"
+                    hint='In Scoutbook Plus → Calendar, scroll to the bottom and click "Copy url" next to your troop. Paste it here.'
+                  >
+                    <div className="flex gap-2">
+                      <input
+                        type="url"
+                        value={form.scoutbookCalendarUrl}
+                        onChange={(event) =>
+                          handleFieldChange('scoutbookCalendarUrl', event.target.value)
+                        }
+                        className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 focus:border-transparent focus:ring-4 focus:ring-sky-100"
+                        placeholder="https://api.scouting.org/advancements/events/calendar/…"
+                        spellCheck={false}
+                        autoComplete="off"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleSyncCalendar}
+                        disabled={isSyncing || (!form.scoutbookCalendarUrl.trim() && !userData?.profile.scoutbookCalendarUrl)}
+                        className="inline-flex items-center gap-2 rounded-xl bg-sky-600 px-4 py-3 font-semibold text-white transition-all hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <RefreshCw size={16} className={isSyncing ? 'animate-spin' : ''} />
+                        {isSyncing ? 'Syncing…' : 'Sync Now'}
+                      </button>
+                    </div>
+                  </Field>
+                </section>
+
                 <section className="rounded-2xl border border-slate-200 bg-white p-5">
                   <div className="mb-4 flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
@@ -675,6 +672,46 @@ function Profile() {
                   label="Planning tools"
                   value="Used by dashboard, timeline, and events"
                 />
+                <div className="rounded-2xl border border-sky-200 bg-sky-50 p-4 md:col-span-2">
+                  <div className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] text-sky-700">
+                    Calendar sync
+                  </div>
+                  {userData.profile.scoutbookCalendarUrl ? (
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <div className="text-sm font-semibold text-slate-900 break-all">
+                          {userData.profile.scoutbookCalendarUrl.length > 60
+                            ? `${userData.profile.scoutbookCalendarUrl.slice(0, 60)}…`
+                            : userData.profile.scoutbookCalendarUrl}
+                        </div>
+                        <div className="mt-0.5 text-xs text-slate-500">
+                          {userData.profile.lastCalendarSync
+                            ? `Last synced ${new Date(userData.profile.lastCalendarSync).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}`
+                            : 'Not yet synced'}
+                        </div>
+                      </div>
+                      <button
+                        onClick={handleSyncCalendar}
+                        disabled={isSyncing}
+                        className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-sky-600 px-3 py-2 text-sm font-semibold text-white transition-all hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <RefreshCw size={14} className={isSyncing ? 'animate-spin' : ''} />
+                        {isSyncing ? 'Syncing…' : 'Sync Now'}
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="text-sm text-slate-500">
+                      No calendar URL set. Click{' '}
+                      <button
+                        onClick={handleStartEdit}
+                        className="font-semibold text-sky-700 underline hover:text-sky-900"
+                      >
+                        Edit Settings
+                      </button>{' '}
+                      to add your Scoutbook Plus URL.
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>

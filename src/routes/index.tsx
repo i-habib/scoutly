@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { lazy, Suspense } from 'react';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { lazy, Suspense, useEffect } from 'react';
 import {
   Award,
   CalendarRange,
@@ -12,7 +12,9 @@ import {
 import { useUserData } from '../hooks/useUserData';
 import { countEagleRequiredCompleted, splitEagleRequiredByStatus } from '../lib/progress';
 import { ScoutFleurDeLis } from '../components/ScoutIcons';
+import { PageSkeleton } from '../components/SkeletonLoader';
 import { RANKS } from '../data/ranks';
+import { needsOnboarding } from '../lib/onboarding';
 
 const RankAdvancement = lazy(() =>
   import('../components/RankAdvancement').then((module) => ({
@@ -24,16 +26,18 @@ export const Route = createFileRoute('/')({ component: Dashboard });
 
 function Dashboard() {
   const { userData, isLoading } = useUserData();
+  const navigate = useNavigate();
 
-  if (isLoading || !userData) {
-    return (
-      <div className="app-shell flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-[#24584b] border-t-transparent"></div>
-          <p className="text-slate-500">Loading dashboard...</p>
-        </div>
-      </div>
-    );
+  const onboardingRequired = needsOnboarding(userData);
+
+  useEffect(() => {
+    if (!isLoading && userData && onboardingRequired) {
+      navigate({ to: '/onboarding', replace: true });
+    }
+  }, [isLoading, navigate, onboardingRequired, userData]);
+
+  if (isLoading || !userData || onboardingRequired) {
+    return <PageSkeleton />;
   }
 
   const userName = userData.profile.name || 'Scout';
@@ -78,17 +82,17 @@ function Dashboard() {
       to: '/merit-badges/',
     },
     !userData.profile.meetingsPerMonthOverride && upcomingEvents.length === 0
-      ? {
-          title: 'Set meeting cadence',
-          description: 'Add meetings per month in your profile until your troop calendar is loaded.',
-          to: '/onboarding',
-        }
+          ? {
+              title: 'Set meeting cadence',
+              description: 'Add meetings per month in your profile until your troop calendar is loaded.',
+              to: '/profile',
+            }
       : null,
     missingSetupItems.length > 0
       ? {
           title: 'Finish profile setup',
           description: 'Add your name, current rank, and Eagle target date.',
-          to: '/onboarding',
+          to: '/profile',
         }
       : null,
   ].filter(Boolean) as Array<{ title: string; description: string; to: string }>;
@@ -136,7 +140,7 @@ function Dashboard() {
                 </p>
               </div>
               <Link
-                to="/onboarding"
+                to="/profile"
                 className="inline-flex items-center justify-center rounded-lg bg-amber-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-amber-950"
               >
                 Complete profile
@@ -278,7 +282,7 @@ function Dashboard() {
               </div>
 
               <Link
-                to="/onboarding"
+                to="/profile"
                 className="mt-4 inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-100"
               >
                 Manage profile settings

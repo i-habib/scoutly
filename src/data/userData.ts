@@ -1,5 +1,6 @@
 // Initial user data structure
 export interface UserProfile {
+  hasCompletedOnboarding?: boolean;
   name: string | null;
   targetEagleDate: string | null;
   troopMeetingSchedule: string | null;
@@ -79,6 +80,7 @@ export interface UserData {
 
 export const initialUserData: UserData = {
   profile: {
+    hasCompletedOnboarding: false,
     name: null,
     targetEagleDate: null,
     troopMeetingSchedule: 'weekly_tuesday',

@@ -1,13 +1,15 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import React, { useState, useEffect, useMemo } from 'react';
-import { Upload, Trash2, MapPin, Clock, Plus, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Upload, Trash2, MapPin, Clock, Plus, X, ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
 import { useUserData } from '../hooks/useUserData';
-import { analyzeCalendarEvents, type EventAnalysis, EVENT_ANALYSIS_SCHEMA_VERSION } from '../services/aiService';
+import type { EventAnalysis } from '../services/aiService';
+import { generateEventRecommendations } from '../lib/calendarRecommendations';
 import type { Event } from '../data/userData';
 import { TentIcon, CompassIcon } from '../components/ScoutIcons';
 import meritBadgesData from '../data/merit-badges.json';
 import { getUserTimezone } from '../lib/constants';
 import { useToast } from '../components/Toast';
+import { syncScoutbookCalendar } from '../services/storageService';
 
 export const Route = createFileRoute('/events')({
   component: EventsPage,
@@ -165,14 +167,12 @@ function EventsPage() {
   const userTimezone = useMemo(() => getUserTimezone(), []);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
   const [hoverTimer, setHoverTimer] = useState<NodeJS.Timeout | null>(null);
-  const [eventAnalysis, setEventAnalysis] = useState<Record<string, EventAnalysis>>({});
-  const ANALYSIS_STORAGE_KEY = 'scoutly_event_analysis';
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const hasTriggeredAutoAnalysis = React.useRef(false);
+  const [hoverTimer, setHoverTimer] = useState<NodeJS.Timeout | null>(null);
   const [newEvent, setNewEvent] = useState({
     name: '',
     startTime: '',
@@ -183,61 +183,27 @@ function EventsPage() {
   const [showMeetingsDetectedModal, setShowMeetingsDetectedModal] = useState<{ open: boolean; estimate: number }>(() => ({ open: false, estimate: 0 }));
 
   const events = userData?.events || [];
-  // Auto-estimate meetings/month: prefer last month exact-title 'Troop Meeting', else 90-day average
+  
+  // Calculate analysis automatically without AI
+  const eventAnalysis = useMemo(() => {
+    if (!userData) return {};
+    return generateEventRecommendations(userData, events);
+  }, [userData, events]);
+
+  // Use the currently viewed month to calculate meetings
   const computeAutoMeetingsPerMonth = () => {
-    const now = new Date();
-    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
-    const lastMonthStart = new Date(lastMonthEnd.getFullYear(), lastMonthEnd.getMonth(), 1);
-    const troopMeetingsLastMonth = (events || [])
+    const targetMonth = currentMonth || new Date();
+    const monthStart = new Date(targetMonth.getFullYear(), targetMonth.getMonth(), 1);
+    const monthEnd = new Date(targetMonth.getFullYear(), targetMonth.getMonth() + 1, 0);
+    const troopMeetingsCurrentMonth = (events || [])
       .filter(e => e.type === 'meeting' && typeof e.name === 'string' && e.name.trim() === 'Troop Meeting')
       .filter(e => {
         const d = new Date(e.startTime || (e as any).date);
-        return d >= lastMonthStart && d <= lastMonthEnd;
+        return d >= monthStart && d <= monthEnd;
       }).length;
-    if (troopMeetingsLastMonth > 0) return troopMeetingsLastMonth;
-
-    const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-    const byMonth: Record<string, number> = {};
-    (events || []).filter(e => e.type === 'meeting').forEach(e => {
-      const d = new Date(e.startTime || (e as any).date);
-      if (d >= ninetyDaysAgo && d <= now) {
-        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-        byMonth[key] = (byMonth[key] || 0) + 1;
-      }
-    });
-    const months = Object.keys(byMonth);
-    if (months.length === 0) return 4;
-    const avg = months.reduce((s,k)=>s+byMonth[k],0) / months.length;
-    return Math.max(1, Math.round(avg));
+    return troopMeetingsCurrentMonth > 0 ? troopMeetingsCurrentMonth : 4;
   };
 
-  // Compute meetings/mo from a provided events array (used post-ICS-import before state refresh)
-  const computeMeetingsPerMonthFrom = (evs: Event[]) => {
-    const now = new Date();
-    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
-    const lastMonthStart = new Date(lastMonthEnd.getFullYear(), lastMonthEnd.getMonth(), 1);
-    const troopMeetingsLastMonth = (evs || [])
-      .filter(e => e.type === 'meeting' && typeof e.name === 'string' && e.name.trim() === 'Troop Meeting')
-      .filter(e => {
-        const d = new Date(e.startTime || (e as any).date);
-        return d >= lastMonthStart && d <= lastMonthEnd;
-      }).length;
-    if (troopMeetingsLastMonth > 0) return troopMeetingsLastMonth;
-
-    const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-    const byMonth: Record<string, number> = {};
-    (evs || []).filter(e => e.type === 'meeting').forEach(e => {
-      const d = new Date(e.startTime || (e as any).date);
-      if (d >= ninetyDaysAgo && d <= now) {
-        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-        byMonth[key] = (byMonth[key] || 0) + 1;
-      }
-    });
-    const months = Object.keys(byMonth);
-    if (months.length === 0) return 4;
-    const avg = months.reduce((s,k)=>s+byMonth[k],0) / months.length;
-    return Math.max(1, Math.round(avg));
-  }
   const autoMeetingsPerMonth = computeAutoMeetingsPerMonth();
   const meetingsPerMonthOverride = userData?.profile?.meetingsPerMonthOverride ?? null;
   
@@ -298,34 +264,50 @@ function EventsPage() {
     }
   }, []);
 
-  // Removed unused eventAnalysisCount after schema simplification
+  // Auto-sync Scoutbook calendar once per day when a URL is saved
+  useEffect(() => {
+    if (!userData?.profile.scoutbookCalendarUrl) return;
+    const lastSync = userData.profile.lastCalendarSync;
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    if (lastSync && lastSync > oneDayAgo) return; // already synced today
 
-  // Removed auto-analysis - users now click the button to analyze events manually
-
-  const handleManualAnalysis = async () => {
-    if (!userData) return;
-    
-    setIsAnalyzing(true);
-    try {
-      console.log('Manually triggering calendar analysis...');
-      // Auto-purge any cached analyses before re-analyzing
-      localStorage.removeItem(ANALYSIS_STORAGE_KEY);
-      const analysis = await analyzeCalendarEvents(userData, {}, { skipCache: true });
-      setEventAnalysis(() => {
-        const updated = { ...analysis };
-        localStorage.setItem(ANALYSIS_STORAGE_KEY, JSON.stringify({ version: EVENT_ANALYSIS_SCHEMA_VERSION, analyses: updated }));
-        return updated;
-      });
-    } catch (error) {
-      console.error('❌ Failed to analyze calendar:', error);
-      if (error instanceof Error && error.message.includes('Rate limit')) {
-        showToast('warning', 'Too many requests. Please wait 10 seconds before analyzing again.');
-      } else {
-        showToast('error', 'Failed to analyze events. Please try again.');
+    // Fire & forget background sync — show a subtle toast only on error
+    (async () => {
+      try {
+        await syncScoutbookCalendar();
+        // Trigger storage event so the calendar re-renders with fresh events
+        window.dispatchEvent(new StorageEvent('storage', {
+          key: 'scoutly_user_data',
+          newValue: localStorage.getItem('scoutly_user_data'),
+          url: window.location.href,
+          storageArea: localStorage,
+        }));
+      } catch {
+        // Silent on auto-sync; user can manually sync if needed
       }
+    })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userData?.profile.scoutbookCalendarUrl]);
+
+  // handleManualAnalysis replaced by generateEventRecommendations
+
+  const handleSyncScoutbook = async () => {
+    setIsSyncing(true);
+    try {
+      await syncScoutbookCalendar();
+      // Trigger storage event so event list re-renders
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'scoutly_user_data',
+        newValue: localStorage.getItem('scoutly_user_data'),
+        url: window.location.href,
+        storageArea: localStorage,
+      }));
+      showToast('success', 'Calendar synced! Events updated from Scoutbook.');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Sync failed.';
+      showToast('error', msg);
     } finally {
-      setIsAnalyzing(false);
-      hasTriggeredAutoAnalysis.current = false;
+      setIsSyncing(false);
     }
   };
 
@@ -370,6 +352,7 @@ function EventsPage() {
       const newEvents = parsedEvents.map(event => ({
         id: Date.now().toString() + Math.random().toString(36).substring(7),
         createdAt: new Date().toISOString(),
+        source: 'ics_file' as const,
         ...event,
       }));
 
@@ -565,39 +548,26 @@ function EventsPage() {
                   Edit in Profile
                 </Link>
               </div>
-              {!isAnalyzing && userData && (() => {
-                const today = new Date();
-                const thirtyDaysFromNow = new Date(today);
-                thirtyDaysFromNow.setDate(today.getDate() + 30);
-                
-                const futureEventsInNext30Days = events.filter(e => {
-                  const eventDate = new Date(e.startTime);
-                  return eventDate >= today && eventDate <= thirtyDaysFromNow;
-                }).filter(e => {
-                  const isTroopMeeting = e.type === 'meeting' && typeof e.name === 'string' && e.name.trim() === 'Troop Meeting';
-                  const isService = e.type === 'service';
-                  const isCampout = e.type === 'campout';
-                  return isTroopMeeting || isService || isCampout;
-                });
-                const unanalyzedCount = futureEventsInNext30Days.filter(e => !eventAnalysis[e.id]).length;
-                return unanalyzedCount > 0 ? (
-                  <button
-                    onClick={handleManualAnalysis}
-                    className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg text-indigo-700 transition-all flex items-center gap-2"
-                  >
-                    <CompassIcon className="w-4 h-4" size={16} />
-                    Build 30-Day Recommendations ({unanalyzedCount})
-                  </button>
-                ) : null;
-              })()}
+              {/* Removed Build Recommendations Button and Analyzing Spinner */}
               
-              {isAnalyzing && (
-                <div className="px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-700 flex items-center gap-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-sky-500 border-t-transparent"></div>
-                  Building recommendations...
+              {/* Scoutbook Sync button — shown when a URL is saved */}
+              {userData?.profile.scoutbookCalendarUrl && (
+                <div className="flex flex-col items-end">
+                  <button
+                    onClick={handleSyncScoutbook}
+                    disabled={isSyncing}
+                    className="px-4 py-2 bg-sky-50 hover:bg-sky-100 border border-sky-300 rounded-lg text-sky-700 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
+                    {isSyncing ? 'Syncing…' : 'Sync Scoutbook'}
+                  </button>
+                  {userData.profile.lastCalendarSync && (
+                    <span className="text-[10px] text-slate-400 mt-0.5 pr-1">
+                      Last synced {new Date(userData.profile.lastCalendarSync).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                    </span>
+                  )}
                 </div>
               )}
-              
               <button
                 onClick={() => setShowUploadModal(true)}
                 className="px-4 py-2 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-lg text-sky-700 transition-all flex items-center gap-2"
