@@ -6,9 +6,53 @@ import meritBadgesData from '../data/merit-badges.json';
 import { MeritBadgeIcon } from '../components/ScoutIcons';
 import { buildTimelineState } from '../lib/buildTimeline';
 import { getRankDisplayName } from '../lib/constants';
-import type { TimelineState } from '../lib/timelineTypes';
+import type { BadgePlanItem, TimelineState } from '../lib/timelineTypes';
 
 const meritBadges = meritBadgesData.meritBadges;
+const PRE_FIRST_CLASS_RANKS = ['Scout', 'Tenderfoot', 'Second Class', 'First Class'];
+
+function formatRequirementsPerMeeting(signoffsPerWeek: string | number, meetingsPerWeek: number) {
+  const weeklyRate = Number(signoffsPerWeek || 0);
+  if (!meetingsPerWeek || meetingsPerWeek <= 0) return weeklyRate.toFixed(1);
+
+  const perMeeting = weeklyRate / meetingsPerWeek;
+  return Number.isInteger(perMeeting) ? String(perMeeting) : perMeeting.toFixed(1);
+}
+
+function summarizeBadgeFocusByPhase(badgePlan: BadgePlanItem[]) {
+  const summary = {
+    Star: { total: 0, eagleRequired: 0, electiveSlots: 0 },
+    Life: { total: 0, eagleRequired: 0, electiveSlots: 0 },
+  };
+
+  badgePlan.forEach((item) => {
+    if (item.phase !== 'Star' && item.phase !== 'Life') return;
+
+    summary[item.phase].total += 1;
+    if (item.isElective) summary[item.phase].electiveSlots += 1;
+
+    const badgeMeta = meritBadges.find(
+      (badge: any) =>
+        (item.id && badge.id === item.id) ||
+        badge.name.toLowerCase() === item.name.toLowerCase(),
+    );
+
+    if (badgeMeta?.eagleRequired) {
+      summary[item.phase].eagleRequired += 1;
+    }
+  });
+
+  return summary;
+}
+
+function sanitizeElectiveSelection(ids: string[], totalSlots: number) {
+  const uniqueIds: string[] = [];
+  ids.forEach((id) => {
+    if (!id || uniqueIds.includes(id)) return;
+    uniqueIds.push(id);
+  });
+  return uniqueIds.slice(0, totalSlots);
+}
 
 export const Route = createFileRoute('/timeline')({
   component: TimelinePage,
@@ -18,7 +62,7 @@ export const Route = createFileRoute('/timeline')({
 
 function TimelinePage() {
   const navigate = useNavigate();
-  const { userData } = useUserData();
+  const { userData, updateProfile, updateProgress } = useUserData();
   const [timelineTab, setTimelineTab] = useState<'signoffs' | 'badges'>('signoffs');
 
   // Calculate timeline using the shared builder (DRY)
@@ -79,6 +123,23 @@ function TimelinePage() {
   }
 
   const timeline = timelineState.ok ? timelineState : undefined;
+  const rankRequirementItems = timeline
+    ? timeline.remainingRanks.filter((rank) => PRE_FIRST_CLASS_RANKS.includes(rank.title))
+    : [];
+  const badgeFocusByPhase = useMemo(
+    () => summarizeBadgeFocusByPhase(timeline?.badgePlan || []),
+    [timeline?.badgePlan],
+  );
+  const remainingBadgeRequirements = timeline
+    ? timeline.remainingBadges.reduce((total, badge) => total + badge.requirementsRemaining, 0)
+    : 0;
+  const isMeritBadgeFocusedTimeline = timeline
+    ? ['Star', 'Life', 'Eagle'].includes(timeline.currentRankName)
+    : false;
+  const preFirstClassRequirementsRemaining = rankRequirementItems.reduce(
+    (total, rank) => total + rank.requirementsRemaining,
+    0,
+  );
 
   return (
     <div className="app-shell light-overrides min-h-screen">
@@ -147,10 +208,16 @@ function TimelinePage() {
               <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
                 <div className="flex items-center gap-2 mb-2">
                   <TrendingUp className="w-5 h-5 text-indigo-600" />
-                  <span className="text-sm text-slate-600">Signoffs Needed</span>
+                  <span className="text-sm text-slate-600">
+                    {isMeritBadgeFocusedTimeline ? 'Open Merit Badges' : 'Signoffs Needed'}
+                  </span>
                 </div>
                 <p className="text-2xl font-bold text-slate-900">
-                  {timeline?.totalSignoffsNeeded || '—'}
+                  {timeline
+                    ? isMeritBadgeFocusedTimeline
+                      ? timeline.remainingBadges.length
+                      : preFirstClassRequirementsRemaining || timeline.totalSignoffsNeeded
+                    : '—'}
                 </p>
               </div>
               {/* Meetings per month display + target signoffs per meeting (editable only in Profile) */}
@@ -161,7 +228,11 @@ function TimelinePage() {
                       <Calendar className="w-5 h-5 text-emerald-600" />
                       <span className="text-sm text-slate-600">Meetings/mo</span>
                     </div>
-                    <span className="text-xs text-slate-600">Target/mtg: {timeline.signoffsPerMeetingTarget ?? Math.max(1, Math.round(timeline.adjustedReqsPerMeeting))}</span>
+                    <span className="text-xs text-slate-600">
+                      {isMeritBadgeFocusedTimeline
+                        ? `Open badges: ${timeline.remainingBadges.length}`
+                        : `Target/mtg: ${timeline.signoffsPerMeetingTarget ?? Math.max(1, Math.round(timeline.adjustedReqsPerMeeting))}`}
+                    </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-slate-900 font-semibold">
@@ -335,7 +406,9 @@ function TimelinePage() {
                     {timeline.milestones.star && timeline.milestones.star.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </p>
                   <p className="text-xs text-slate-600">
-                    {timeline.phases.star.signoffs} signoffs during this phase
+                    {badgeFocusByPhase.Star.total > 0
+                      ? `${badgeFocusByPhase.Star.total} merit badges scheduled`
+                      : 'Merit badge-focused phase'}
                   </p>
                 </div>
               </div>
@@ -350,7 +423,9 @@ function TimelinePage() {
                     {timeline.milestones.life && timeline.milestones.life.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </p>
                   <p className="text-xs text-slate-600">
-                    {timeline.phases.life.signoffs} signoffs during this phase
+                    {badgeFocusByPhase.Life.total > 0
+                      ? `${badgeFocusByPhase.Life.total} merit badges scheduled`
+                      : 'Merit badge-focused phase'}
                   </p>
                 </div>
               </div>
@@ -365,7 +440,7 @@ function TimelinePage() {
                     {timeline.milestones.eagle && timeline.milestones.eagle.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </p>
                   <p className="text-xs text-slate-600">
-                    {timeline.phases.eagle.signoffs} signoffs during this phase
+                    {timeline.remainingBadges.length} eagle-required badges still open
                   </p>
                 </div>
               </div>
@@ -419,132 +494,100 @@ function TimelinePage() {
 
             {/* Phase Breakdown */}
             <div className="border-t border-slate-200 pt-4">
-              <h3 className="text-lg font-semibold text-slate-900 mb-3">Pace Per Phase (Adjusted for Completion)</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                {timeline.phases.scout && timeline.phases.scout.days > 0 && (
-                  <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
-                    <p className="text-xs text-slate-600 mb-1">Scout</p>
-                    <p className="text-2xl font-bold text-slate-700">
-                      {(() => {
-                        const spw = timeline.phases.scout.signoffsPerWeek as number
-                        const mpw = (timeline as any).meetingsPerWeek as number
-                        if (!mpw || mpw <= 0) return spw
-                        const spm = spw / mpw
-                        return spm % 1 === 0 ? spm : spm.toFixed(1)
-                      })()}
-                    </p>
-                    <p className="text-xs text-slate-600">signoffs/meeting</p>
-                    <p className="text-[10px] text-slate-500">{timeline.phases.scout.signoffs} reqs in {Math.ceil(timeline.phases.scout.days / 7)} wks</p>
-                  </div>
-                )}
-                {timeline.phases.tenderfoot && timeline.phases.tenderfoot.days > 0 && (
-                  <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
-                    <p className="text-xs text-slate-600 mb-1">Tenderfoot</p>
-                    <p className="text-2xl font-bold text-emerald-700">
-                      {(() => {
-                        const spw = timeline.phases.tenderfoot.signoffsPerWeek as number
-                        const mpw = (timeline as any).meetingsPerWeek as number
-                        if (!mpw || mpw <= 0) return spw
-                        const spm = spw / mpw
-                        return spm % 1 === 0 ? spm : spm.toFixed(1)
-                      })()}
-                    </p>
-                    <p className="text-xs text-slate-600">signoffs/meeting</p>
-                    <p className="text-[10px] text-slate-500">{timeline.phases.tenderfoot.signoffs} reqs in {Math.ceil(timeline.phases.tenderfoot.days / 7)} wks</p>
-                  </div>
-                )}
-                {timeline.phases.secondClass && timeline.phases.secondClass.days > 0 && (
-                  <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
-                    <p className="text-xs text-slate-600 mb-1">Second Class</p>
-                    <p className="text-2xl font-bold text-sky-700">
-                      {(() => {
-                        const spw = timeline.phases.secondClass.signoffsPerWeek as number
-                        const mpw = (timeline as any).meetingsPerWeek as number
-                        if (!mpw || mpw <= 0) return spw
-                        const spm = spw / mpw
-                        return spm % 1 === 0 ? spm : spm.toFixed(1)
-                      })()}
-                    </p>
-                    <p className="text-xs text-slate-600">signoffs/meeting</p>
-                    <p className="text-[10px] text-slate-500">{timeline.phases.secondClass.signoffs} reqs in {Math.ceil(timeline.phases.secondClass.days / 7)} wks</p>
-                  </div>
-                )}
-                {timeline.phases.firstClass && timeline.phases.firstClass.days > 0 && (
-                  <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
-                    <p className="text-xs text-slate-600 mb-1">First Class</p>
-                    <p className="text-2xl font-bold text-indigo-700">
-                      {(() => {
-                        const spw = timeline.phases.firstClass.signoffsPerWeek as number
-                        const mpw = (timeline as any).meetingsPerWeek as number
-                        if (!mpw || mpw <= 0) return spw
-                        const spm = spw / mpw
-                        return spm % 1 === 0 ? spm : spm.toFixed(1)
-                      })()}
-                    </p>
-                    <p className="text-xs text-slate-600">signoffs/meeting</p>
-                    <p className="text-[10px] text-slate-500">{timeline.phases.firstClass.signoffs} reqs in {Math.ceil(timeline.phases.firstClass.days / 7)} wks</p>
-                  </div>
-                )}
-                {!timeline.isAlreadyFirstClass && timeline.phases.preFirstClass && (timeline.phases.preFirstClass as any).days > 0 && (
-                  <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
-                    <p className="text-xs text-slate-600 mb-1">Pre-First Class</p>
-                    <p className="text-2xl font-bold text-indigo-700">
-                      {(() => {
-                        const spw = (timeline.phases.preFirstClass as any).signoffsPerWeek as number
-                        const mpw = (timeline as any).meetingsPerWeek as number
-                        if (!mpw || mpw <= 0) return spw
-                        const spm = spw / mpw
-                        return spm % 1 === 0 ? spm : spm.toFixed(1)
-                      })()}
-                    </p>
-                    <p className="text-xs text-slate-600">signoffs/meeting</p>
-                  </div>
-                )}
-                {timeline.phases.star.days > 0 && (
-                <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
-                  <p className="text-xs text-slate-600 mb-1">Star Phase</p>
-                  <p className="text-2xl font-bold text-violet-700">
-                    {(() => {
-                      const spw = timeline.phases.star.signoffsPerWeek as number
-                      const mpw = (timeline as any).meetingsPerWeek as number
-                      if (!mpw || mpw <= 0) return spw
-                      const spm = spw / mpw
-                      return spm % 1 === 0 ? spm : spm.toFixed(1)
-                    })()}
-                  </p>
-                  <p className="text-xs text-slate-600">signoffs/meeting</p>
+              <h3 className="text-lg font-semibold text-slate-900 mb-3">Phase Focus</h3>
+
+              <div className="mb-4">
+                <p className="mb-3 text-sm font-semibold uppercase tracking-[0.12em] text-slate-500">
+                  Scout Through First Class: Requirement Pace
+                </p>
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+                  {timeline.phases.scout && timeline.phases.scout.days > 0 && (
+                    <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
+                      <p className="text-xs text-slate-600 mb-1">Scout</p>
+                      <p className="text-2xl font-bold text-slate-700">
+                        {formatRequirementsPerMeeting(timeline.phases.scout.signoffsPerWeek, timeline.meetingsPerWeek)}
+                      </p>
+                      <p className="text-xs text-slate-600">requirements/meeting</p>
+                      <p className="text-[10px] text-slate-500">
+                        {timeline.phases.scout.signoffs} remaining sign-offs in {Math.ceil(timeline.phases.scout.days / 7)} weeks
+                      </p>
+                    </div>
+                  )}
+                  {timeline.phases.tenderfoot && timeline.phases.tenderfoot.days > 0 && (
+                    <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
+                      <p className="text-xs text-slate-600 mb-1">Tenderfoot</p>
+                      <p className="text-2xl font-bold text-emerald-700">
+                        {formatRequirementsPerMeeting(timeline.phases.tenderfoot.signoffsPerWeek, timeline.meetingsPerWeek)}
+                      </p>
+                      <p className="text-xs text-slate-600">requirements/meeting</p>
+                      <p className="text-[10px] text-slate-500">
+                        {timeline.phases.tenderfoot.signoffs} remaining sign-offs in {Math.ceil(timeline.phases.tenderfoot.days / 7)} weeks
+                      </p>
+                    </div>
+                  )}
+                  {timeline.phases.secondClass && timeline.phases.secondClass.days > 0 && (
+                    <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
+                      <p className="text-xs text-slate-600 mb-1">Second Class</p>
+                      <p className="text-2xl font-bold text-sky-700">
+                        {formatRequirementsPerMeeting(timeline.phases.secondClass.signoffsPerWeek, timeline.meetingsPerWeek)}
+                      </p>
+                      <p className="text-xs text-slate-600">requirements/meeting</p>
+                      <p className="text-[10px] text-slate-500">
+                        {timeline.phases.secondClass.signoffs} remaining sign-offs in {Math.ceil(timeline.phases.secondClass.days / 7)} weeks
+                      </p>
+                    </div>
+                  )}
+                  {timeline.phases.firstClass && timeline.phases.firstClass.days > 0 && (
+                    <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
+                      <p className="text-xs text-slate-600 mb-1">First Class</p>
+                      <p className="text-2xl font-bold text-indigo-700">
+                        {formatRequirementsPerMeeting(timeline.phases.firstClass.signoffsPerWeek, timeline.meetingsPerWeek)}
+                      </p>
+                      <p className="text-xs text-slate-600">requirements/meeting</p>
+                      <p className="text-[10px] text-slate-500">
+                        {timeline.phases.firstClass.signoffs} remaining sign-offs in {Math.ceil(timeline.phases.firstClass.days / 7)} weeks
+                      </p>
+                    </div>
+                  )}
                 </div>
-                )}
-                {timeline.phases.life.days > 0 && (
-                <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
-                  <p className="text-xs text-slate-600 mb-1">Life Phase</p>
-                  <p className="text-2xl font-bold text-cyan-700">
-                    {(() => {
-                      const spw = timeline.phases.life.signoffsPerWeek as number
-                      const mpw = (timeline as any).meetingsPerWeek as number
-                      if (!mpw || mpw <= 0) return spw
-                      const spm = spw / mpw
-                      return spm % 1 === 0 ? spm : spm.toFixed(1)
-                    })()}
-                  </p>
-                  <p className="text-xs text-slate-600">signoffs/meeting</p>
+              </div>
+
+              <div>
+                <p className="mb-3 text-sm font-semibold uppercase tracking-[0.12em] text-slate-500">
+                  Star Through Eagle: Merit Badge Focus
+                </p>
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                  {timeline.phases.star.days > 0 && (
+                    <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
+                      <p className="text-xs text-slate-600 mb-1">Star Phase</p>
+                      <p className="text-2xl font-bold text-violet-700">{badgeFocusByPhase.Star.total}</p>
+                      <p className="text-xs text-slate-600">merit badges scheduled</p>
+                      <p className="text-[10px] text-slate-500">
+                        {badgeFocusByPhase.Star.eagleRequired} eagle-required, {badgeFocusByPhase.Star.electiveSlots} electives
+                      </p>
+                    </div>
+                  )}
+                  {timeline.phases.life.days > 0 && (
+                    <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
+                      <p className="text-xs text-slate-600 mb-1">Life Phase</p>
+                      <p className="text-2xl font-bold text-cyan-700">{badgeFocusByPhase.Life.total}</p>
+                      <p className="text-xs text-slate-600">merit badges scheduled</p>
+                      <p className="text-[10px] text-slate-500">
+                        {badgeFocusByPhase.Life.eagleRequired} eagle-required, {badgeFocusByPhase.Life.electiveSlots} electives
+                      </p>
+                    </div>
+                  )}
+                  {timeline.phases.eagle.days > 0 && (
+                    <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
+                      <p className="text-xs text-slate-600 mb-1">Eagle Phase</p>
+                      <p className="text-2xl font-bold text-amber-700">{timeline.remainingBadges.length}</p>
+                      <p className="text-xs text-slate-600">eagle-required badges still open</p>
+                      <p className="text-[10px] text-slate-500">
+                        {remainingBadgeRequirements} remaining merit badge requirements
+                      </p>
+                    </div>
+                  )}
                 </div>
-                )}
-                {timeline.phases.eagle.days > 0 && (
-                <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
-                  <p className="text-xs text-slate-600 mb-1">Eagle Phase</p>
-                  <p className="text-2xl font-bold text-amber-700">
-                    {(() => {
-                      const spw = timeline.phases.eagle.signoffsPerWeek as number
-                      const mpw = (timeline as any).meetingsPerWeek as number
-                      if (!mpw || mpw <= 0) return spw
-                      const spm = spw / mpw
-                      return spm % 1 === 0 ? spm : spm.toFixed(1)
-                    })()}
-                  </p>
-                  <p className="text-xs text-slate-600">signoffs/meeting</p>
-                </div>
-                )}
               </div>
             </div>
 
@@ -553,7 +596,7 @@ function TimelinePage() {
                 <strong>Smart Timeline:</strong> Time allocation adjusts based on your progress. Base ratios: Scout=1/10, Tenderfoot=3/10, Second Class=1/2, First Class=2/5 of Eagle phase.
                 If you've completed 50% of a rank, it gets 50% of the time. 
                 {!timeline.isAlreadyFirstClass && timeline.milestones.firstClass && ` Complete First Class by ${timeline.milestones.firstClass.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}, then`}
-                {' '}work on Star and Life requirements during their mandatory 4 and 6 month waiting periods.
+                {' '}shift the focus to merit badges during Star, Life, and the final push to Eagle.
               </p>
             </div>
           </div>
@@ -564,18 +607,13 @@ function TimelinePage() {
           <BadgesTab
             badgePlan={timeline.badgePlan}
             userChoices={userData.profile?.badgeChoices || {}}
+            selectedElectiveIds={userData.profile?.electiveBadges || []}
             onUpdateChoice={(group: string, value: string) =>
               updateProfile({ badgeChoices: { ...(userData.profile?.badgeChoices || {}), [group]: value } })
             }
-            onAddElective={(badgeId: string) => {
-              const existing = userData.profile?.electiveBadges || [];
-              if (existing.includes(badgeId)) return; // prevent duplicates
-              updateProfile({ electiveBadges: [ ...existing, badgeId ] });
-            }}
-            onRemoveElective={(badgeId: string) => {
-              const existing = userData.profile?.electiveBadges || [];
-              updateProfile({ electiveBadges: existing.filter(id => id !== badgeId) });
-            }}
+            onReplaceElectives={(badgeIds: string[]) =>
+              updateProfile({ electiveBadges: badgeIds })
+            }
             progressMap={userData.progress || {}}
             onCompleteBadge={async (badgeId: string) => {
               try {
@@ -600,7 +638,7 @@ function TimelinePage() {
         )}
 
         {/* Requirements Summary */}
-        {timeline && (timeline.remainingRanks.length > 0 || timeline.remainingBadges.length > 0) && (
+        {timeline && (rankRequirementItems.length > 0 || timeline.remainingBadges.length > 0) && (
           <div className="app-surface rounded-2xl p-8">
             <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
               <TrendingUp className="w-7 h-7 text-emerald-600" />
@@ -608,11 +646,13 @@ function TimelinePage() {
             </h2>
 
             {/* Remaining Ranks */}
-            {timeline.remainingRanks.length > 0 && (
+            {rankRequirementItems.length > 0 && (
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-slate-900 mb-3">Rank Requirements</h3>
+                <h3 className="text-lg font-semibold text-slate-900 mb-3">
+                  Rank Requirements: Scout Through First Class
+                </h3>
                 <div className="space-y-2">
-                  {timeline.remainingRanks.map((rank) => (
+                  {rankRequirementItems.map((rank) => (
                     <div
                       key={rank.id}
                       className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-lg hover:border-amber-300 transition-all shadow-sm"
@@ -637,7 +677,9 @@ function TimelinePage() {
             {/* Remaining Merit Badges */}
             {timeline.remainingBadges.length > 0 && (
               <div>
-                <h3 className="text-lg font-semibold text-slate-900 mb-3">Eagle-Required Merit Badges</h3>
+                <h3 className="text-lg font-semibold text-slate-900 mb-3">
+                  Merit Badge Focus: Star Through Eagle
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {timeline.remainingBadges.map((badge) => (
                     <div
@@ -680,17 +722,17 @@ function TimelinePage() {
 function BadgesTab({
   badgePlan,
   userChoices,
+  selectedElectiveIds,
   onUpdateChoice,
-  onAddElective,
-  onRemoveElective,
+  onReplaceElectives,
   progressMap,
   onCompleteBadge,
 }: {
   badgePlan: any[];
   userChoices: Record<string, string>;
+  selectedElectiveIds: string[];
   onUpdateChoice: (group: string, value: string) => void;
-  onAddElective: (badgeId: string) => void;
-  onRemoveElective: (badgeId: string) => void;
+  onReplaceElectives: (badgeIds: string[]) => void;
   progressMap: Record<string, any>;
   onCompleteBadge: (badgeId: string) => void;
 }) {
@@ -749,8 +791,9 @@ function BadgesTab({
 
   // Elective tracking
   const totalElectiveSlots = badgePlan.filter(b => b.isElective).length;
-  const chosenElectives = badgePlan.filter(b => b.isElective && !b.placeholder);
-  const chosenIds = new Set(chosenElectives.map(e => e.id));
+  const sanitizedSelectedElectiveIds = sanitizeElectiveSelection(selectedElectiveIds, totalElectiveSlots);
+  const chosenIds = new Set(sanitizedSelectedElectiveIds);
+  const canAddMoreElectives = chosenIds.size < totalElectiveSlots;
 
   // Compute badge progress (requirements completion %) for a badge id
   function computeBadgeProgress(badgeId: string) {
@@ -803,9 +846,9 @@ function BadgesTab({
       </div>
       <div className="mb-4 flex flex-wrap items-center gap-3 text-xs text-slate-700">
         <span className="px-2 py-1 rounded bg-sky-50 border border-sky-200 text-sky-800">
-          Electives: {chosenElectives.length}/{totalElectiveSlots}
+          Electives: {sanitizedSelectedElectiveIds.length}/{totalElectiveSlots}
         </span>
-        {chosenElectives.length > 0 && (
+        {sanitizedSelectedElectiveIds.length > 0 && (
           <span className="text-slate-600">Remove an elective to free a slot.</span>
         )}
       </div>
@@ -838,20 +881,24 @@ function BadgesTab({
                           <MeritBadgeIcon size={28} className={colorClass} />
                         );
                       })()}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (b.id && !b.placeholder) {
-                            navigate({
-                              to: '/merit-badges/$badgeId',
-                              params: { badgeId: b.id },
-                            });
-                          }
-                        }}
-                        className="min-w-0 text-left group focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded"
-                      >
+                      <div className="min-w-0">
                         <p className="text-sm text-slate-900 font-semibold truncate flex items-center gap-2">
-                          {b.name}
+                          {b.id && !b.placeholder ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                navigate({
+                                  to: '/merit-badges/$badgeId',
+                                  params: { badgeId: b.id },
+                                });
+                              }}
+                              className="truncate text-left transition-colors hover:text-sky-700"
+                            >
+                              {b.name}
+                            </button>
+                          ) : (
+                            <span className="truncate">{b.name}</span>
+                          )}
                           {b.note ? (
                             <span className="ml-1 text-xs text-slate-600">({b.note})</span>
                           ) : null}
@@ -878,6 +925,7 @@ function BadgesTab({
                             <select
                               className="bg-white border border-slate-200 rounded px-2 py-1 text-slate-800 hover:border-sky-300"
                               value={userChoices?.[b.choiceGroup] || b.name}
+                              onClick={(e) => e.stopPropagation()}
                               onChange={(e) => onUpdateChoice(b.choiceGroup, e.target.value)}
                             >
                               {b.options.map((opt: string) => (
@@ -886,21 +934,28 @@ function BadgesTab({
                             </select>
                           </div>
                         )}
-                      </button>
+                      </div>
                     </div>
                     <div className="text-right ml-3">
                       {b.isElective && (
                         b.placeholder ? (
                           <button
                             className="text-xs px-2 py-1 rounded bg-sky-50 text-sky-700 border border-sky-200 hover:bg-sky-100"
-                            onClick={() => setShowModal(true)}
+                            onClick={() => setShowElectiveManager(true)}
                           >
                             Choose elective
                           </button>
                         ) : (
                           <button
                             className="text-xs px-2 py-1 rounded bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100"
-                            onClick={() => onRemoveElective(b.id)}
+                            onClick={() =>
+                              onReplaceElectives(
+                                sanitizeElectiveSelection(
+                                  sanitizedSelectedElectiveIds.filter((id) => id !== b.id),
+                                  totalElectiveSlots,
+                                ),
+                              )
+                            }
                             title="Remove elective"
                           >
                             Remove
@@ -994,11 +1049,24 @@ function BadgesTab({
                       </div>
                     </div>
                     <button
-                      className={`text-xs px-2 py-1 rounded border ${alreadyChosen ? 'bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed' : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'}`}
-                      disabled={alreadyChosen}
-                      onClick={() => { if (!alreadyChosen) { onAddElective(b.id); setShowModal(false); } }}
+                      className={`text-xs px-2 py-1 rounded border ${
+                        alreadyChosen || !canAddMoreElectives
+                          ? 'bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed'
+                          : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                      }`}
+                      disabled={alreadyChosen || !canAddMoreElectives}
+                      onClick={() => {
+                        if (alreadyChosen || !canAddMoreElectives) return;
+                        onReplaceElectives(
+                          sanitizeElectiveSelection(
+                            [...sanitizedSelectedElectiveIds, b.id],
+                            totalElectiveSlots,
+                          ),
+                        );
+                        setShowModal(false);
+                      }}
                     >
-                      {alreadyChosen ? 'Added' : 'Add'}
+                      {alreadyChosen ? 'Added' : !canAddMoreElectives ? 'Slots Full' : 'Add'}
                     </button>
                   </div>
                 );
@@ -1028,10 +1096,9 @@ function BadgesTab({
             <ElectiveManagerComponent
               onClose={() => setShowElectiveManager(false)}
               totalSlots={totalElectiveSlots}
-              chosenIds={chosenIds}
+              selectedIds={sanitizedSelectedElectiveIds}
               electivesCatalog={electivesCatalog}
-              onAddElective={onAddElective}
-              onRemoveElective={onRemoveElective}
+              onReplaceElectives={onReplaceElectives}
             />
           </div>
         </div>
@@ -1043,20 +1110,18 @@ function BadgesTab({
 // Bulk elective manager component
 const ElectiveManagerComponent = ({
   totalSlots,
-  chosenIds,
+  selectedIds,
   electivesCatalog,
-  onAddElective,
-  onRemoveElective,
+  onReplaceElectives,
   onClose,
 }: {
   totalSlots: number;
-  chosenIds: Set<string>;
+  selectedIds: string[];
   electivesCatalog: any[];
-  onAddElective: (id: string) => void;
-  onRemoveElective: (id: string) => void;
+  onReplaceElectives: (badgeIds: string[]) => void;
   onClose: () => void;
 }) => {
-  const [localSelection, setLocalSelection] = useState<Set<string>>(new Set(chosenIds));
+  const [localSelection, setLocalSelection] = useState<Set<string>>(new Set(selectedIds));
 
   const toggle = (id: string) => {
     const next = new Set(localSelection);
@@ -1078,14 +1143,7 @@ const ElectiveManagerComponent = ({
   const clearAll = () => setLocalSelection(new Set());
 
   const applyChanges = () => {
-    // Add newly selected
-    for (const id of localSelection) {
-      if (!chosenIds.has(id)) onAddElective(id);
-    }
-    // Remove deselected
-    for (const id of chosenIds) {
-      if (!localSelection.has(id)) onRemoveElective(id);
-    }
+    onReplaceElectives(sanitizeElectiveSelection(Array.from(localSelection), totalSlots));
     onClose();
   };
 

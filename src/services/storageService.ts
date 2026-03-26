@@ -1,6 +1,7 @@
-// src/services/storageService.ts
 import { initialUserData } from '../data/userData';
 import type { UserData, Event, ChatMessage } from '../data/userData';
+import { RANK_ORDER, normalizeRankId } from '../lib/constants';
+import rankRequirementsData from '../data/rank-reqs.json';
 
 const USER_DATA_KEY = 'scoutly_user_data';
 
@@ -37,6 +38,42 @@ export const updateRequirementProgress = async ({
 // Update user profile information
 export const updateProfile = async (profileData: Partial<UserData['profile']>): Promise<UserData> => {
   const user = await fetchUserData();
+  
+  // Auto-complete rank requirements if currentRank changes
+  if (profileData.currentRank && profileData.currentRank !== user.profile.currentRank) {
+    const newRankId = normalizeRankId(profileData.currentRank);
+    const newRankIndex = RANK_ORDER.indexOf(newRankId as (typeof RANK_ORDER)[number]);
+    
+    if (newRankIndex >= 0) {
+      if (!user.rankProgress) user.rankProgress = {};
+      const today = new Date().toISOString().split('T')[0];
+
+      // Mark all requirements up to and including the new current rank as completed
+      for (let i = 0; i <= newRankIndex; i++) {
+        const rankId = RANK_ORDER[i];
+        if (!user.rankProgress[rankId]) user.rankProgress[rankId] = {};
+        
+        const rankData = rankRequirementsData.find(r => r.id === rankId);
+        if (rankData) {
+          rankData.requirements.forEach(req => {
+            // Check off main requirement
+            if (!user.rankProgress![rankId][req.id]) {
+              user.rankProgress![rankId][req.id] = today;
+            }
+            // Check off sub-requirements
+            if ('sub_requirements' in req && (req as any).sub_requirements) {
+              (req as any).sub_requirements.forEach((subReq: any) => {
+                if (!user.rankProgress![rankId][subReq.id]) {
+                  user.rankProgress![rankId][subReq.id] = today;
+                }
+              });
+            }
+          });
+        }
+      }
+    }
+  }
+
   user.profile = { ...user.profile, ...profileData };
   localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
   return user;

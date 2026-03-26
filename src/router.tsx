@@ -1,4 +1,5 @@
 import { createRouter } from '@tanstack/react-router'
+import { PageSkeleton } from './components/SkeletonLoader'
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
@@ -8,7 +9,9 @@ export const getRouter = () => {
   const router = createRouter({
     routeTree,
     scrollRestoration: true,
+    defaultPreload: 'intent',
     defaultPreloadStaleTime: 0,
+    defaultPendingComponent: PageSkeleton,
   })
 
   return router

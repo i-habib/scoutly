@@ -868,64 +868,6 @@ function Profile() {
             </div>
           </div>
         )}
-
-        {/* Data Management */}
-        <div className="app-surface mt-6 rounded-3xl p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Download className="h-6 w-6 text-slate-600" />
-            <h2 className="text-xl font-bold text-slate-950">Data Management</h2>
-          </div>
-          <p className="mb-4 text-sm text-slate-600">
-            Export your progress to keep a backup, or import from a previous backup.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={() => {
-                const data = localStorage.getItem('scoutly_user_data');
-                if (!data) return;
-                const blob = new Blob([data], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `scoutly-backup-${new Date().toISOString().split('T')[0]}.json`;
-                a.click();
-                URL.revokeObjectURL(url);
-              }}
-              className="flex items-center gap-2 rounded-xl bg-linear-to-r from-emerald-600 to-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:from-emerald-500 hover:to-sky-500"
-            >
-              <Download className="h-4 w-4" />
-              Export Backup
-            </button>
-            <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50">
-              <Upload className="h-4 w-4" />
-              Import Backup
-              <input
-                type="file"
-                accept=".json"
-                className="hidden"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  try {
-                    const text = await file.text();
-                    JSON.parse(text); // Validate JSON
-                    localStorage.setItem('scoutly_user_data', text);
-                    window.dispatchEvent(new StorageEvent('storage', {
-                      key: 'scoutly_user_data',
-                      newValue: text,
-                      url: window.location.href,
-                      storageArea: localStorage,
-                    }));
-                    window.location.reload();
-                  } catch {
-                    // toast handled by parent
-                  }
-                  e.target.value = '';
-                }}
-              />
-            </label>
-          </div>
-        </div>
       </div>
     </div>
   );

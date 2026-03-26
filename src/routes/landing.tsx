@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useUserData } from '../hooks/useUserData';
 import { ScoutFleurDeLis } from '../components/ScoutIcons';
+import { PageSkeleton } from '../components/SkeletonLoader';
 
 export const Route = createFileRoute('/landing')({
   component: LandingPage,
@@ -24,7 +25,7 @@ function LandingPage() {
   }, [userData, isLoading, navigate]);
 
   if (isLoading || (!isLoading && userData?.profile?.name)) {
-    return <div className="app-shell min-h-screen" />;
+    return <PageSkeleton />;
   }
 
   const entryRoute = '/';
@@ -58,6 +59,7 @@ function LandingPage() {
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Link
                 to={entryRoute}
+                preload="intent"
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1f3448] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#182b3b]"
               >
                 Open Workspace
@@ -65,6 +67,7 @@ function LandingPage() {
               </Link>
               <Link
                 to="/merit-badges/"
+                preload="intent"
                 className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 hover:text-slate-950"
               >
                 Browse Merit Badges

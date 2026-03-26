@@ -22,6 +22,10 @@ export interface UserProfile {
     meetingDay: string | null;
     meetingTime: string | null;
   };
+  // Scoutbook Plus calendar ICS URL for automatic event syncing
+  scoutbookCalendarUrl?: string | null;
+  // ISO timestamp of last successful calendar sync
+  lastCalendarSync?: string | null;
 }
 
 export interface UserProgress {
@@ -48,6 +52,8 @@ export interface Event {
   location?: string;
   type: 'meeting' | 'campout' | 'service' | 'other';
   createdAt: string;
+  // Track how the event was added for smart merge on sync
+  source?: 'manual' | 'ics_file' | 'scoutbook';
 }
 
 export interface ChatMessage {
@@ -90,6 +96,8 @@ export const initialUserData: UserData = {
       meetingDay: null,
       meetingTime: null,
     },
+    scoutbookCalendarUrl: null,
+    lastCalendarSync: null,
   },
   progress: {},
   events: [],

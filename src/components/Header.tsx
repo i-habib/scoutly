@@ -49,7 +49,7 @@ export default function Header() {
               <Menu size={20} />
             </button>
 
-            <Link to="/" className="flex min-w-0 items-center gap-3">
+            <Link to="/" preload="intent" className="flex min-w-0 items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1f3448] shadow-[0_10px_18px_rgba(31,52,72,0.16)]">
                 <ScoutFleurDeLis className="h-5 w-5 text-white" />
               </div>
@@ -70,6 +70,7 @@ export default function Header() {
                   <Link
                     key={item.to}
                     to={item.to}
+                    preload="intent"
                     className={navBaseClass}
                     activeProps={{ className: navActiveClass }}
                   >
@@ -124,6 +125,7 @@ export default function Header() {
               <Link
                 key={item.to}
                 to={item.to}
+                preload="intent"
                 onClick={() => setIsOpen(false)}
                 className="flex items-center gap-3 rounded-xl border border-transparent bg-white p-3 text-slate-700 transition-all hover:border-slate-200 hover:bg-slate-50"
                 activeProps={{
