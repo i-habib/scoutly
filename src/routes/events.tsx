@@ -39,7 +39,7 @@ function convertBadgeNamesToLinks(text: string): (string | React.ReactNode)[] {
           key={`badge-link-${keyCounter++}`}
           to="/merit-badges/$badgeId"
           params={{ badgeId: badge.id }}
-          className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50 hover:decoration-blue-300"
+          className="text-sky-700 hover:text-sky-800 underline decoration-sky-500/50 hover:decoration-sky-700"
         >
           {match[0]}
         </Link>
@@ -303,7 +303,7 @@ function EventsPage() {
     
     setIsAnalyzing(true);
     try {
-      console.log('🤖 Manually triggering AI analysis...');
+      console.log('Manually triggering calendar analysis...');
       // Auto-purge any cached analyses before re-analyzing
       localStorage.removeItem(ANALYSIS_STORAGE_KEY);
       const analysis = await analyzeCalendarEvents(userData, {}, { skipCache: true });
@@ -445,10 +445,10 @@ function EventsPage() {
 
   const getEventTypeColor = (type: Event['type']) => {
     switch (type) {
-      case 'meeting': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-      case 'campout': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      case 'service': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
-      default: return 'bg-slate-500/20 text-slate-400 border-slate-500/30';
+      case 'meeting': return 'bg-sky-50 text-sky-700 border-sky-200';
+      case 'campout': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+      case 'service': return 'bg-indigo-50 text-indigo-700 border-indigo-200';
+      default: return 'bg-slate-100 text-slate-700 border-slate-200';
     }
   };
 
@@ -514,62 +514,48 @@ function EventsPage() {
 
   if (isLoading) {
     return (
-      <div 
-        className="min-h-screen bg-black flex items-center justify-center"
-        style={{
-          backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
-          backgroundSize: '14px 14px',
-          backgroundPosition: '0 0, 14px 14px',
-        }}
-      >
-        {/* Gradient glows */}
-        <div className="fixed top-0 left-0 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
-        <div className="fixed -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s] pointer-events-none" />
+      <div className="app-shell light-overrides min-h-screen flex items-center justify-center">
+        <div className="app-shell__grid fixed inset-0" />
+        <div className="app-shell__glow app-shell__glow--top fixed" />
+        <div className="app-shell__glow app-shell__glow--bottom fixed" />
         
         <div className="text-center relative z-10">
-          <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-400">Loading events...</p>
+          <div className="w-16 h-16 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading events...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div 
-      className="min-h-screen bg-black"
-      style={{
-        backgroundImage: 'radial-gradient(#0b3b12 1px, transparent 1px)',
-        backgroundSize: '14px 14px',
-        backgroundPosition: '0 0, 14px 14px',
-      }}
-    >
-      {/* Gradient glows */}
-      <div className="fixed top-0 left-0 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
-      <div className="fixed -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-green-500/10 rounded-full blur-[150px] animate-pulse [animation-delay:2s] pointer-events-none" />
+    <div className="app-shell light-overrides min-h-screen">
+      <div className="app-shell__grid fixed inset-0" />
+      <div className="app-shell__glow app-shell__glow--top fixed" />
+      <div className="app-shell__glow app-shell__glow--bottom fixed" />
 
       {/* Main Content */}
-      <div className="relative z-10 max-w-6xl mx-auto px-6 py-8">
+      <div className="app-shell__content max-w-6xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-linear-to-br from-green-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/30">
+              <div className="w-12 h-12 bg-linear-to-br from-emerald-600 to-sky-600 rounded-xl flex items-center justify-center shadow-[0_10px_24px_rgba(14,165,233,0.22)]">
                 <TentIcon className="w-6 h-6 text-white" size={24} />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-white">Troop Events</h1>
-                <p className="text-slate-400">Manage your scouting calendar</p>
+                <h1 className="text-3xl font-bold text-slate-900">Troop Events</h1>
+                <p className="text-slate-600">Manage your scouting calendar</p>
               </div>
             </div>
 
             <div className="flex gap-3 items-center">
               {/* Read-only Meetings/Month display (editable only in Profile) */}
-              <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-2 py-1">
-                <span className="text-xs text-slate-400">Meetings/mo</span>
-                <span className="text-sm text-white">
+              <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-2 py-1 shadow-sm">
+                <span className="text-xs text-slate-500">Meetings/mo</span>
+                <span className="text-sm text-slate-900">
                   {(meetingsPerMonthOverride ?? autoMeetingsPerMonth).toString()}
                 </span>
-                <Link to="/profile" className="text-xs text-slate-300 underline hover:text-white">
+                <Link to="/profile" className="text-xs text-slate-600 underline hover:text-slate-900">
                   Edit in Profile
                 </Link>
               </div>
@@ -591,31 +577,31 @@ function EventsPage() {
                 return unanalyzedCount > 0 ? (
                   <button
                     onClick={handleManualAnalysis}
-                    className="px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 rounded-lg text-purple-400 transition-all flex items-center gap-2"
+                    className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg text-indigo-700 transition-all flex items-center gap-2"
                   >
                     <CompassIcon className="w-4 h-4" size={16} />
-                    Analyze Next 30 Days ({unanalyzedCount})
+                    Build 30-Day Recommendations ({unanalyzedCount})
                   </button>
                 ) : null;
               })()}
               
               {isAnalyzing && (
-                <div className="px-4 py-2 bg-green-500/20 border border-green-500/30 rounded-lg text-green-400 flex items-center gap-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-cyan-400 border-t-transparent"></div>
-                  Analyzing...
+                <div className="px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-700 flex items-center gap-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-sky-500 border-t-transparent"></div>
+                  Building recommendations...
                 </div>
               )}
               
               <button
                 onClick={() => setShowUploadModal(true)}
-                className="px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg text-blue-400 transition-all flex items-center gap-2"
+                className="px-4 py-2 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-lg text-sky-700 transition-all flex items-center gap-2"
               >
                 <Upload className="w-4 h-4" />
                 Import ICS
               </button>
               <button
                 onClick={() => setShowAddModal(true)}
-                className="px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-black font-bold transition-all flex items-center gap-2"
+                className="px-4 py-2 bg-linear-to-r from-emerald-600 to-sky-600 hover:from-emerald-500 hover:to-sky-500 rounded-lg text-white font-semibold transition-all flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
                 Add Event
@@ -623,7 +609,7 @@ function EventsPage() {
               {events.length > 0 && (
                 <button
                   onClick={handleClearAllEvents}
-                  className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-400 transition-all flex items-center gap-2"
+                  className="px-4 py-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg text-rose-700 transition-all flex items-center gap-2"
                 >
                   <X className="w-4 h-4" />
                   Clear All
@@ -634,33 +620,33 @@ function EventsPage() {
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4">
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
-              <div className="text-2xl font-bold text-green-400">{upcomingEvents.length}</div>
-              <div className="text-sm text-slate-400">Upcoming Events</div>
+            <div className="app-surface rounded-xl p-4">
+              <div className="text-2xl font-bold text-emerald-700">{upcomingEvents.length}</div>
+              <div className="text-sm text-slate-600">Upcoming Events</div>
             </div>
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
-              <div className="text-2xl font-bold text-blue-400">{events.length}</div>
-              <div className="text-sm text-slate-400">Total Events</div>
+            <div className="app-surface rounded-xl p-4">
+              <div className="text-2xl font-bold text-sky-700">{events.length}</div>
+              <div className="text-sm text-slate-600">Total Events</div>
             </div>
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
-              <div className="text-2xl font-bold text-purple-400">{pastEvents.length}</div>
-              <div className="text-sm text-slate-400">Past Events</div>
+            <div className="app-surface rounded-xl p-4">
+              <div className="text-2xl font-bold text-indigo-700">{pastEvents.length}</div>
+              <div className="text-sm text-slate-600">Past Events</div>
             </div>
           </div>
         </div>
 
         {/* Calendar View */}
         <div className="mb-8">
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6">
+          <div className="app-surface rounded-xl p-6">
             {/* Calendar Header */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-white">
+              <h2 className="text-2xl font-bold text-slate-900">
                 {monthNames[month]} {year}
               </h2>
               <div className="flex gap-2">
                 <button
                   onClick={previousMonth}
-                  className="p-2 bg-white/10 hover:bg-white/20 rounded-lg text-black font-bold transition-all"
+                  className="p-2 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-slate-700 font-semibold transition-all"
                   aria-label="Previous month"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -669,13 +655,13 @@ function EventsPage() {
                 </button>
                 <button
                   onClick={() => setCurrentMonth(new Date())}
-                  className="px-4 py-2 bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 rounded-lg text-green-400 transition-all"
+                  className="px-4 py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-emerald-700 transition-all"
                 >
                   Today
                 </button>
                 <button
                   onClick={nextMonth}
-                  className="p-2 bg-white/10 hover:bg-white/20 rounded-lg text-black font-bold transition-all"
+                  className="p-2 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-slate-700 font-semibold transition-all"
                   aria-label="Next month"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -689,7 +675,7 @@ function EventsPage() {
             <div className="grid grid-cols-7 gap-2">
               {/* Day headers */}
               {dayNames.map(day => (
-                <div key={day} className="text-center text-sm font-semibold text-slate-400 pb-2">
+                <div key={day} className="text-center text-sm font-semibold text-slate-600 pb-2">
                   {day}
                 </div>
               ))}
@@ -716,10 +702,10 @@ function EventsPage() {
                       onMouseLeave={handleMouseLeave}
                       className={`w-full min-h-24 p-1.5 rounded-lg transition-all relative flex flex-col ${
                         isTodayDate
-                          ? 'bg-green-500/20 border-2 border-green-500 text-green-400 font-bold'
+                          ? 'bg-emerald-100 border-2 border-emerald-400 text-emerald-800 font-bold'
                           : hasEvents
-                          ? 'bg-white/10/50 hover:bg-white/10 border border-white/10 text-white'
-                          : 'bg-white/5/50 hover:bg-white/10 border border-white/10/50 text-slate-400'
+                          ? 'bg-white hover:bg-slate-50 border border-slate-200 text-slate-900 shadow-sm'
+                          : 'bg-slate-50 hover:bg-white border border-slate-200 text-slate-500'
                       }`}
                     >
                       <div className="text-sm font-semibold mb-1">{day}</div>
@@ -755,8 +741,8 @@ function EventsPage() {
 
                     {/* Hover popup for full details */}
                     {isHovered && hasEvents && (
-                      <div className="absolute z-50 top-full mt-2 left-1/2 transform -translate-x-1/2 w-64 bg-white/5 border border-white/10 rounded-lg shadow-xl p-3 pointer-events-none">
-                        <div className="text-xs font-semibold text-slate-400 mb-2">
+                      <div className="absolute z-50 top-full mt-2 left-1/2 transform -translate-x-1/2 w-64 bg-white border border-slate-200 rounded-lg shadow-xl p-3 pointer-events-none">
+                        <div className="text-xs font-semibold text-slate-600 mb-2">
                           {currentDate.toLocaleDateString('en-US', { 
                             weekday: 'short', 
                             month: 'short', 
@@ -779,9 +765,9 @@ function EventsPage() {
                                       : 'bg-slate-400'
                                   }`}
                                 />
-                                <span className="text-white font-medium truncate">{event.name}</span>
+                                <span className="text-slate-900 font-medium truncate">{event.name}</span>
                               </div>
-                              <div className="text-slate-400 text-xs ml-4 flex items-center gap-1">
+                              <div className="text-slate-600 text-xs ml-4 flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
                                 {new Date(event.startTime).toLocaleTimeString('en-US', {
                                   hour: 'numeric',
@@ -801,9 +787,9 @@ function EventsPage() {
 
             {/* Selected Date Events */}
             {selectedDate && getEventsForDate(selectedDate).length > 0 && (
-              <div className="mt-6 pt-6 border-t border-white/10">
+              <div className="mt-6 pt-6 border-t border-slate-200">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-white">
+                  <h3 className="text-lg font-semibold text-slate-900">
                     Events on {selectedDate.toLocaleDateString('en-US', { 
                       weekday: 'long', 
                       month: 'long', 
@@ -813,7 +799,7 @@ function EventsPage() {
                   </h3>
                   <button
                     onClick={() => setSelectedDate(null)}
-                    className="text-slate-400 hover:text-white"
+                    className="text-slate-500 hover:text-slate-900"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -822,16 +808,16 @@ function EventsPage() {
                   {getEventsForDate(selectedDate).map(event => (
                     <div
                       key={event.id}
-                      className="bg-white/10/50 rounded-lg p-3 flex items-start justify-between"
+                      className="bg-white rounded-lg p-3 border border-slate-200 flex items-start justify-between"
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <span className={`px-2 py-0.5 rounded text-xs font-medium border ${getEventTypeColor(event.type)}`}>
                             {event.type}
                           </span>
-                          <span className="text-white font-medium">{event.name}</span>
+                          <span className="text-slate-900 font-medium">{event.name}</span>
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-slate-400">
+                        <div className="flex items-center gap-4 text-sm text-slate-600">
                           <div className="flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {new Date(event.startTime).toLocaleTimeString('en-US', { 
@@ -866,11 +852,11 @@ function EventsPage() {
         {/* Analyzing Indicator */}
         {isAnalyzing && (
           <div className="mb-6">
-            <div className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-4 flex items-center gap-3">
-              <div className="w-5 h-5 border-2 border-purple-400 border-t-transparent rounded-full animate-spin"></div>
+            <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 flex items-center gap-3">
+              <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
               <div>
-                <p className="text-purple-300 font-medium">AI is analyzing your calendar...</p>
-                <p className="text-slate-400 text-sm">Adding smart suggestions to each event</p>
+                <p className="text-indigo-700 font-medium">Reviewing your calendar...</p>
+                <p className="text-slate-600 text-sm">Preparing recommendations for each event</p>
               </div>
             </div>
           </div>
@@ -879,15 +865,15 @@ function EventsPage() {
         {/* Upcoming Events */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-white">Upcoming Events</h2>
+            <h2 className="text-xl font-bold text-slate-900">Upcoming Events</h2>
             {upcomingEvents.length > 0 && (
               <div className="flex items-center gap-2 text-sm">
-                <span className="text-slate-400">
+                <span className="text-slate-600">
                   Sorted by priority • {upcomingEvents.filter(e => eventAnalysis[e.id]).length} analyzed
                 </span>
                 {isAnalyzing && (
-                  <div className="flex items-center gap-2 px-2 py-1 bg-purple-500/20 rounded text-purple-300">
-                    <div className="w-3 h-3 border-2 border-purple-400 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="flex items-center gap-2 px-2 py-1 bg-indigo-100 rounded text-indigo-700">
+                    <div className="w-3 h-3 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
                     Analyzing...
                   </div>
                 )}
@@ -895,9 +881,9 @@ function EventsPage() {
             )}
           </div>
           {upcomingEvents.length === 0 ? (
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-8 text-center">
+            <div className="app-surface rounded-xl p-8 text-center">
               <TentIcon className="w-12 h-12 text-slate-600 mx-auto mb-3" size={48} />
-              <p className="text-slate-400">No upcoming events. Add one or import from ICS file!</p>
+              <p className="text-slate-600">No upcoming events. Add one or import from ICS file!</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -911,7 +897,7 @@ function EventsPage() {
         {/* Past Events */}
         {pastEvents.length > 0 && (
           <div>
-            <h2 className="text-xl font-bold text-white mb-4">Past Events</h2>
+            <h2 className="text-xl font-bold text-slate-900 mb-4">Past Events</h2>
             <div className="space-y-3">
               {pastEvents.map((event) => (
                 <EventCard key={event.id} event={event} onDelete={handleDeleteEvent} getTypeColor={getEventTypeColor} isPast analysis={eventAnalysis[event.id]} />
@@ -923,64 +909,64 @@ function EventsPage() {
 
       {/* Add Event Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 max-w-md w-full">
+        <div className="fixed inset-0 bg-slate-900/35 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-md w-full shadow-2xl">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-white">Add Event</h3>
-              <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-white">
+              <h3 className="text-xl font-bold text-slate-900">Add Event</h3>
+              <button onClick={() => setShowAddModal(false)} className="text-slate-500 hover:text-slate-900">
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Event Name *</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Event Name *</label>
                 <input
                   type="text"
                   value={newEvent.name}
                   onChange={(e) => setNewEvent({ ...newEvent, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-900 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                   placeholder="Troop Meeting, Campout, etc."
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Start Time *</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Start Time *</label>
                 <input
                   type="datetime-local"
                   value={newEvent.startTime}
                   onChange={(e) => setNewEvent({ ...newEvent, startTime: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-900 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">End Time</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">End Time</label>
                 <input
                   type="datetime-local"
                   value={newEvent.endTime}
                   onChange={(e) => setNewEvent({ ...newEvent, endTime: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-900 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Location</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Location</label>
                 <input
                   type="text"
                   value={newEvent.location}
                   onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-900 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                   placeholder="Location or address"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Event Type</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Event Type</label>
                 <select
                   value={newEvent.type}
                   onChange={(e) => setNewEvent({ ...newEvent, type: e.target.value as Event['type'] })}
-                  className="w-full px-3 py-2 bg-slate-900 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 >
                   <option value="meeting">Meeting</option>
                   <option value="campout">Campout</option>
@@ -992,13 +978,13 @@ function EventsPage() {
               <div className="flex gap-3 pt-4">
                 <button
                   onClick={() => setShowAddModal(false)}
-                  className="flex-1 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-black font-bold transition-all"
+                  className="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 font-semibold transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleAddEvent}
-                  className="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-black font-bold transition-all"
+                  className="flex-1 px-4 py-2 bg-linear-to-r from-emerald-600 to-sky-600 hover:from-emerald-500 hover:to-sky-500 rounded-lg text-white font-semibold transition-all"
                 >
                   Add Event
                 </button>
@@ -1010,21 +996,21 @@ function EventsPage() {
 
       {/* Upload ICS Modal */}
       {showUploadModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 max-w-md w-full">
+        <div className="fixed inset-0 bg-slate-900/35 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-md w-full shadow-2xl">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-white">Import Calendar</h3>
-              <button onClick={() => setShowUploadModal(false)} className="text-slate-400 hover:text-white">
+              <h3 className="text-xl font-bold text-slate-900">Import Calendar</h3>
+              <button onClick={() => setShowUploadModal(false)} className="text-slate-500 hover:text-slate-900">
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             <div className="space-y-4">
-              <p className="text-slate-400 text-sm">
+              <p className="text-slate-600 text-sm">
                 Upload an ICS (iCalendar) file to import events from your troop calendar, Google Calendar, or other calendar apps.
               </p>
 
-              <div className="border-2 border-dashed border-white/10 rounded-xl p-8 text-center hover:border-green-500 transition-colors">
+              <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-emerald-400 transition-colors bg-slate-50">
                 <input
                   type="file"
                   accept=".ics,.ical"
@@ -1033,15 +1019,15 @@ function EventsPage() {
                   id="ics-upload"
                 />
                 <label htmlFor="ics-upload" className="cursor-pointer">
-                  <Upload className="w-12 h-12 text-green-400 mx-auto mb-3" />
-                  <p className="text-white font-medium mb-1">Click to upload</p>
-                  <p className="text-sm text-slate-400">or drag and drop ICS file</p>
+                  <Upload className="w-12 h-12 text-emerald-600 mx-auto mb-3" />
+                  <p className="text-slate-900 font-medium mb-1">Click to upload</p>
+                  <p className="text-sm text-slate-600">or drag and drop ICS file</p>
                 </label>
               </div>
 
               <button
                 onClick={() => setShowUploadModal(false)}
-                className="w-full px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-black font-bold transition-all"
+                className="w-full px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 font-semibold transition-all"
               >
                 Cancel
               </button>
@@ -1052,20 +1038,20 @@ function EventsPage() {
 
       {/* Meetings Detected Modal */}
       {showMeetingsDetectedModal.open && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 max-w-md w-full">
+        <div className="fixed inset-0 bg-slate-900/35 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-md w-full shadow-2xl">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-white">Meetings per Month</h3>
-              <button onClick={() => setShowMeetingsDetectedModal({ open: false, estimate: 0 })} className="text-slate-400 hover:text-white">
+              <h3 className="text-xl font-bold text-slate-900">Meetings per Month</h3>
+              <button onClick={() => setShowMeetingsDetectedModal({ open: false, estimate: 0 })} className="text-slate-500 hover:text-slate-900">
                 <X className="w-6 h-6" />
               </button>
             </div>
-            <p className="text-slate-300 mb-4">
-              AI analyzed your imported calendar and estimates
-              {' '}<span className="text-green-300 font-semibold">{showMeetingsDetectedModal.estimate}</span>{' '}
+            <p className="text-slate-700 mb-4">
+              Calendar analysis estimates
+              {' '}<span className="text-emerald-700 font-semibold">{showMeetingsDetectedModal.estimate}</span>{' '}
               Troop meeting(s) per month.
             </p>
-            <p className="text-slate-400 text-sm mb-5">
+            <p className="text-slate-600 text-sm mb-5">
               You can proceed with this value or edit it anytime in your profile. Once set, we won’t auto-recalculate it.
             </p>
             <div className="flex gap-3">
@@ -1074,7 +1060,7 @@ function EventsPage() {
                   updateProfile({ meetingsPerMonthOverride: showMeetingsDetectedModal.estimate });
                   setShowMeetingsDetectedModal({ open: false, estimate: 0 });
                 }}
-                className="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-black font-bold transition-all"
+                className="flex-1 px-4 py-2 bg-linear-to-r from-emerald-600 to-sky-600 hover:from-emerald-500 hover:to-sky-500 rounded-lg text-white font-semibold transition-all"
               >
                 Use {showMeetingsDetectedModal.estimate}/mo
               </button>
@@ -1084,7 +1070,7 @@ function EventsPage() {
                   setShowMeetingsDetectedModal({ open: false, estimate: 0 });
                   navigate({ to: '/profile' });
                 }}
-                className="flex-1 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white font-medium transition-all"
+                className="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 font-medium transition-all"
               >
                 Edit in Profile
               </button>
@@ -1144,37 +1130,37 @@ function EventCard({
   
   // Priority badge color
   const getPriorityColor = (priority: string | undefined) => {
-    if (!priority || typeof priority !== 'string') return 'bg-slate-500/20 text-slate-400 border-slate-500/40';
-    if (priority === 'high') return 'bg-red-500/20 text-red-400 border-red-500/40';
-    if (priority === 'medium') return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40';
-    return 'bg-slate-500/20 text-slate-400 border-slate-500/40';
+    if (!priority || typeof priority !== 'string') return 'bg-slate-100 text-slate-700 border-slate-200';
+    if (priority === 'high') return 'bg-rose-50 text-rose-700 border-rose-200';
+    if (priority === 'medium') return 'bg-amber-50 text-amber-700 border-amber-200';
+    return 'bg-slate-100 text-slate-700 border-slate-200';
   };
 
   return (
     <div 
-      className={`relative bg-white/5 backdrop-blur-xl border rounded-xl p-4 transition-all ${
-        isPast ? 'opacity-60 border-white/10' : hasAnalysis && analysis.priority === 'high' ? 'border-orange-500/50 shadow-lg shadow-orange-500/10' : 'border-white/10 hover:border-green-500/50'
+      className={`relative bg-white border rounded-xl p-4 transition-all shadow-sm ${
+        isPast ? 'opacity-60 border-slate-200' : hasAnalysis && analysis.priority === 'high' ? 'border-amber-300 shadow-md' : 'border-slate-200 hover:border-emerald-300'
       }`}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
       {/* Quick Tooltip on Hover */}
       {!isPast && hasAnalysis && showTooltip && !showDetails && (
-        <div className="absolute z-50 left-0 right-0 top-full mt-2 p-3 bg-black border border-green-500/50 rounded-lg shadow-xl animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="text-xs text-slate-300 space-y-2">
+        <div className="absolute z-50 left-0 right-0 top-full mt-2 p-3 bg-white border border-emerald-200 rounded-lg shadow-xl animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="text-xs text-slate-700 space-y-2">
             {/* Opportunities */}
             {analysis.opportunities && analysis.opportunities.length > 0 && (
               <div className="space-y-1">
                 {analysis.opportunities.slice(0, 3).map((opp: any, i: number) => (
                   <div key={i} className="flex items-start gap-2">
-                    <CompassIcon className="w-3 h-3 text-green-400 mt-0.5 shrink-0" size={12} />
+                    <CompassIcon className="w-3 h-3 text-emerald-600 mt-0.5 shrink-0" size={12} />
                     <span>{opp.title}</span>
                   </div>
                 ))}
               </div>
             )}
             
-            <div className="text-green-400 font-medium pt-1 border-t border-white/10">→ Click to see full analysis</div>
+            <div className="text-emerald-700 font-medium pt-1 border-t border-slate-200">→ Click to see full analysis</div>
           </div>
         </div>
       )}
@@ -1193,11 +1179,11 @@ function EventCard({
               </span>
             )}
             
-            <h3 className="text-lg font-semibold text-white">{event.name}</h3>
+            <h3 className="text-lg font-semibold text-slate-900">{event.name}</h3>
           </div>
 
           <div className="space-y-1">
-            <div className="flex items-center gap-2 text-sm text-slate-400">
+            <div className="flex items-center gap-2 text-sm text-slate-600">
               <Clock className="w-4 h-4" />
               <span>
                 {startDate.toLocaleDateString('en-US', dateOptions)}
@@ -1208,7 +1194,7 @@ function EventCard({
             </div>
 
             {event.location && (
-              <div className="flex items-center gap-2 text-sm text-slate-400">
+              <div className="flex items-center gap-2 text-sm text-slate-600">
                 <MapPin className="w-4 h-4" />
                 <span>{event.location}</span>
               </div>
@@ -1225,7 +1211,7 @@ function EventCard({
           {!isPast && hasAnalysis && (
             <button
               onClick={() => setShowDetails(!showDetails)}
-              className="mt-3 w-full py-2 px-4 bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 hover:border-green-500/50 rounded-lg text-sm font-medium text-green-400 transition-all flex items-center justify-center gap-2"
+              className="mt-3 w-full py-2 px-4 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 hover:border-emerald-300 rounded-lg text-sm font-medium text-emerald-700 transition-all flex items-center justify-center gap-2"
             >
               {showDetails ? (
                 <>
@@ -1243,27 +1229,27 @@ function EventCard({
 
           {/* AI Analysis Section - Show when button clicked */}
           {!isPast && hasAnalysis && showDetails && (
-            <div className="mt-4 pt-4 border-t border-white/10 animate-in fade-in duration-200">
+            <div className="mt-4 pt-4 border-t border-slate-200 animate-in fade-in duration-200">
               <div className="grid gap-4">
                 {/* Opportunities */}
                 {analysis.opportunities && analysis.opportunities.length > 0 && (
                   <div>
                     <div className="flex items-center gap-1.5 mb-1.5">
-                      <CompassIcon className="w-3.5 h-3.5 text-green-400" size={14} />
-                      <h5 className="text-xs font-semibold text-green-400">What To Do</h5>
+                      <CompassIcon className="w-3.5 h-3.5 text-emerald-600" size={14} />
+                      <h5 className="text-xs font-semibold text-emerald-700">What To Do</h5>
                     </div>
                     <ul className="space-y-1">
                       {analysis.opportunities.map((opp: any, i: number) => {
                         const content = opp.kind === 'rank' ? (
                           <Link
                             to="/advancement"
-                            className="underline decoration-green-400/40 hover:decoration-green-300 text-green-300"
+                            className="underline decoration-emerald-500/40 hover:decoration-emerald-600 text-emerald-700"
                           >
                             {opp.title}
                           </Link>
                         ) : convertBadgeNamesToLinks(opp.title)
                         return (
-                          <li key={i} className="text-xs text-slate-300 pl-4 before:content-['•'] before:mr-2 before:text-green-400">
+                          <li key={i} className="text-xs text-slate-700 pl-4 before:content-['•'] before:mr-2 before:text-emerald-600">
                             {content}
                           </li>
                         )
@@ -1276,8 +1262,8 @@ function EventCard({
                 {analysis.signoffs && analysis.signoffs.length > 0 && (
                   <div>
                     <div className="flex items-center gap-1.5 mb-1.5">
-                      <span className="w-3.5 h-3.5 rounded-full bg-blue-400 inline-block" />
-                      <h5 className="text-xs font-semibold text-blue-400">Exact Signoffs To Get</h5>
+                      <span className="w-3.5 h-3.5 rounded-full bg-sky-500 inline-block" />
+                      <h5 className="text-xs font-semibold text-sky-700">Exact Signoffs To Get</h5>
                     </div>
                     <ul className="space-y-1">
                       {analysis.signoffs.map((s: any, i: number) => {
@@ -1289,8 +1275,8 @@ function EventCard({
                         const anchor = rankId && reqCode ? `${rankId}-${reqCode}` : null;
                         const href = anchor ? `/advancement#${anchor}` : '/advancement';
                         return (
-                          <li key={i} className="text-xs text-slate-300 pl-4 before:content-['•'] before:mr-2 before:text-blue-400">
-                            <a href={href} className="underline decoration-blue-400/40 hover:decoration-blue-300 text-blue-300">
+                          <li key={i} className="text-xs text-slate-700 pl-4 before:content-['•'] before:mr-2 before:text-sky-600">
+                            <a href={href} className="underline decoration-sky-500/40 hover:decoration-sky-600 text-sky-700">
                               {s.name}
                             </a>
                           </li>
@@ -1306,7 +1292,7 @@ function EventCard({
 
         <button
           onClick={() => onDelete(event.id)}
-          className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all"
+          className="p-2 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-all"
           title="Delete event"
         >
           <Trash2 className="w-4 h-4" />

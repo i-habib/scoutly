@@ -4,7 +4,16 @@ import { useState, useEffect } from 'react';
 import meritBadgesData from '../data/merit-badges.json';
 import rankRequirementsData from '../data/rank-reqs.json';
 import { ScoutFleurDeLis, EagleIcon, MeritBadgeIcon } from '../components/ScoutIcons';
-import { Edit2, Save, X } from 'lucide-react';
+import {
+  Award,
+  CalendarDays,
+  CheckCircle2,
+  Edit2,
+  Gauge,
+  Save,
+  Target,
+  X,
+} from 'lucide-react';
 import { computeBadgeProgressByMeta, splitEagleRequiredByStatus } from '../lib/progress';
 
 export const Route = createFileRoute('/profile')({ component: Profile });
@@ -61,7 +70,7 @@ function Profile() {
 
   const calculatePace = () => {
     if (!userData?.profile.targetEagleDate) {
-      setAiPace('No target date set');
+      setAiPace('Set a target date to calculate your current pace.');
       return;
     }
 
@@ -96,7 +105,7 @@ function Profile() {
     const moreBadges = incompleteBadges.length > 3 ? ` +${incompleteBadges.length - 3} more` : '';
     
     if (daysRemaining <= 0) {
-      setAiPace('⚠️ Past target date - Update your goal');
+      setAiPace('Your target date has already passed. Update the goal to rebuild a realistic plan.');
       return;
     }
 
@@ -105,13 +114,13 @@ function Profile() {
     const reqsPerWeek = (totalRequirementsRemaining / (daysRemaining / 7)).toFixed(1);
     
     if (badgesPerMonth < 0.5) {
-      setAiPace(`🟢 Ahead of schedule! ${badgesNeeded} badges remaining (${totalRequirementsRemaining} requirements, ~${reqsPerWeek} sign-offs/week). Focus on: ${badgeNames}${moreBadges}`);
+      setAiPace(`Ahead of schedule. ${badgesNeeded} badges remain (${totalRequirementsRemaining} requirements, about ${reqsPerWeek} sign-offs each week). Priority badges: ${badgeNames}${moreBadges}.`);
     } else if (badgesPerMonth < 1) {
-      setAiPace(`🟡 On track - Complete ~1 badge per month (${totalRequirementsRemaining} requirements, ~${reqsPerWeek} sign-offs/week). Priority: ${badgeNames}${moreBadges}`);
+      setAiPace(`On track. Plan for roughly one badge each month (${totalRequirementsRemaining} requirements, about ${reqsPerWeek} sign-offs each week). Priority badges: ${badgeNames}${moreBadges}.`);
     } else if (badgesPerMonth < 2) {
-      setAiPace(`🟠 Fast pace needed - ${badgesPerMonthLabel} badges/month (${totalRequirementsRemaining} requirements, ~${reqsPerWeek} sign-offs/week). Focus: ${badgeNames}${moreBadges}`);
+      setAiPace(`A faster pace is needed. You need about ${badgesPerMonthLabel} badges each month (${totalRequirementsRemaining} requirements, about ${reqsPerWeek} sign-offs each week). Focus on: ${badgeNames}${moreBadges}.`);
     } else {
-      setAiPace(`🔴 Very aggressive pace - ${badgesPerMonthLabel} badges/month required (${totalRequirementsRemaining} requirements, ~${reqsPerWeek} sign-offs/week). Immediate action needed on: ${badgeNames}${moreBadges}`);
+      setAiPace(`This target is very aggressive. You need about ${badgesPerMonthLabel} badges each month (${totalRequirementsRemaining} requirements, about ${reqsPerWeek} sign-offs each week). Immediate focus: ${badgeNames}${moreBadges}.`);
     }
   };
 
@@ -279,18 +288,22 @@ function Profile() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Current Rank */}
             <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center">
-              <div className="text-3xl mb-2">🏆</div>
-              <div className="mb-1 text-sm font-semibold text-emerald-700">Current Rank</div>
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
+                <Award className="h-5 w-5" />
+              </div>
+              <div className="mb-1 text-sm font-semibold uppercase tracking-[0.14em] text-slate-500">Current Rank</div>
               <div className="text-xl font-bold text-slate-950">{rankInfo?.currentRankDisplay}</div>
             </div>
 
             {/* Next Rank Progress */}
             <div className="rounded-2xl border border-slate-200 bg-white p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-2xl">🎯</span>
+              <div className="mb-2 flex items-center justify-between">
+                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
+                  <Target className="h-5 w-5" />
+                </span>
                 <span className="text-2xl font-bold text-slate-950">{rankInfo?.progress}%</span>
               </div>
-              <div className="mb-2 text-sm font-semibold text-sky-700">
+              <div className="mb-2 text-sm font-semibold text-[#1f3448]">
                 Progress to {rankInfo?.nextRankDisplay}
               </div>
               <div className="mb-2 h-2 overflow-hidden rounded-full bg-slate-100">
@@ -306,8 +319,10 @@ function Profile() {
 
             {/* Target Date */}
             <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center">
-              <div className="text-3xl mb-2">📅</div>
-              <div className="mb-1 text-sm font-semibold text-emerald-700">Eagle Target</div>
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
+                <CalendarDays className="h-5 w-5" />
+              </div>
+              <div className="mb-1 text-sm font-semibold uppercase tracking-[0.14em] text-slate-500">Eagle Target</div>
               <div className="text-xl font-bold text-slate-950">
                 {userData?.profile.targetEagleDate 
                   ? new Date(userData.profile.targetEagleDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
@@ -317,11 +332,13 @@ function Profile() {
           </div>
         </div>
 
-        {/* AI Pace Analysis */}
-        <div className="mb-6 rounded-3xl border border-sky-200 bg-linear-to-r from-sky-50 via-white to-emerald-50 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
+        {/* Pace Assessment */}
+        <div className="mb-6 rounded-3xl border border-slate-200 bg-linear-to-r from-[#f2f6f3] via-white to-[#f3eee4] p-6 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
           <div className="flex items-center gap-3 mb-2">
-            <span className="text-2xl">🤖</span>
-            <h2 className="text-xl font-bold text-slate-950">AI Pace Analysis</h2>
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-slate-700 shadow-sm">
+              <Gauge className="h-5 w-5" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-950">Pace Assessment</h2>
           </div>
           <p className="text-lg font-semibold text-slate-900">{aiPace}</p>
           <p className="mt-2 text-sm text-slate-600">
@@ -333,7 +350,7 @@ function Profile() {
         {completed.length > 0 && (
           <div className="app-surface mb-6 rounded-3xl p-6">
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-2xl">✅</span>
+              <CheckCircle2 className="h-6 w-6 text-emerald-600" />
               <h2 className="text-xl font-bold text-slate-950">
                 Completed Eagle-Required Badges ({completed.length}/21)
               </h2>
@@ -354,7 +371,9 @@ function Profile() {
                         className="w-16 h-16 mx-auto mb-2 object-contain"
                       />
                     ) : (
-                      <div className="text-3xl mb-2">🏅</div>
+                      <div className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-white">
+                        <MeritBadgeIcon className="h-8 w-8 text-emerald-700" />
+                      </div>
                     )}
                     <div className="mb-1 min-h-8 line-clamp-2 text-xs font-semibold text-slate-900">
                       {badge.name}
@@ -371,7 +390,7 @@ function Profile() {
         {inProgress.length > 0 && (
           <div className="app-surface mb-6 rounded-3xl p-6">
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-2xl">🔄</span>
+              <Target className="h-6 w-6 text-sky-600" />
               <h2 className="text-xl font-bold text-slate-950">
                 In Progress ({inProgress.length})
               </h2>
@@ -392,7 +411,9 @@ function Profile() {
                         className="w-16 h-16 mx-auto mb-2 object-contain"
                       />
                     ) : (
-                      <div className="text-3xl mb-2">🏅</div>
+                      <div className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-white">
+                        <MeritBadgeIcon className="h-8 w-8 text-sky-700" />
+                      </div>
                     )}
                     <div className="mb-2 min-h-8 line-clamp-2 text-xs font-semibold text-slate-900">
                       {badge.name}
@@ -415,7 +436,7 @@ function Profile() {
         {notStarted.length > 0 && (
           <div className="app-surface rounded-3xl p-6">
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-2xl">⬜</span>
+              <MeritBadgeIcon className="h-6 w-6 text-slate-500" />
               <h2 className="text-xl font-bold text-slate-950">
                 Not Started ({notStarted.length})
               </h2>

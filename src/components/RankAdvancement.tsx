@@ -1,3 +1,5 @@
+import { Link } from '@tanstack/react-router';
+import { Award, CheckCircle2, Target } from 'lucide-react';
 import type { UserData } from '../data/userData';
 import rankRequirementsData from '../data/rank-reqs.json';
 
@@ -18,27 +20,28 @@ interface RankAdvancementProps {
 }
 
 export function RankAdvancement({ userData }: RankAdvancementProps) {
-  // Handle both formats: 'scout' and 'rank_scout'
   let currentRankId = userData.profile.currentRank || 'scout';
   if (!currentRankId.startsWith('rank_')) {
     currentRankId = `rank_${currentRankId}`;
   }
-  
+
   const currentRankIndex = RANK_PROGRESSION.indexOf(currentRankId as typeof RANK_PROGRESSION[number]);
   const nextRankIndex = currentRankIndex + 1;
 
-  // If already Eagle, show celebration
   if (currentRankIndex === RANK_PROGRESSION.length - 1) {
     return (
-      <div className="app-surface rounded-3xl p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-amber-400 to-yellow-500 shadow-lg">
-            <span className="text-2xl">🦅</span>
+      <div className="app-surface rounded-[1.75rem] p-6">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-50 text-amber-700">
+            <Award className="h-5 w-5" />
           </div>
-          <h3 className="text-lg font-bold text-slate-950">Eagle Scout!</h3>
+          <div>
+            <h3 className="text-xl font-semibold text-slate-950">Eagle Scout achieved</h3>
+            <p className="text-sm text-slate-600">Your advancement journey has reached the final rank.</p>
+          </div>
         </div>
-        <p className="text-sm leading-relaxed text-slate-600">
-          Congratulations on reaching the pinnacle of Scouting! Continue your journey with lifelong service and leadership.
+        <p className="text-sm leading-7 text-slate-600">
+          Congratulations on reaching the highest rank in Scouting. Keep using Scoutly to track service, leadership, and long-term goals.
         </p>
       </div>
     );
@@ -47,83 +50,77 @@ export function RankAdvancement({ userData }: RankAdvancementProps) {
   const nextRank = RANK_REQUIREMENTS[nextRankIndex];
   if (!nextRank) return null;
 
-  // Get progress for next rank
   const rankProgress: Record<string, string | null> = userData.rankProgress?.[nextRank.id] || {};
-  
-  // Flatten requirements to include sub-requirements
-  const allRequirements = nextRank.requirements.flatMap(req => {
+
+  const allRequirements = nextRank.requirements.flatMap((req) => {
     if ('sub_requirements' in req && req.sub_requirements) {
-      // For choice-based requirements, show parent + all sub-options
       return [req, ...req.sub_requirements];
     }
     return [req];
   });
-  
+
   const completedReqs = Object.values(rankProgress).filter(Boolean).length;
   const totalReqs = allRequirements.length;
   const progressPercent = (completedReqs / totalReqs) * 100;
 
   return (
-    <div className="app-surface rounded-3xl p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+    <div className="app-surface rounded-[1.75rem] p-6">
+      <div className="mb-5 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-emerald-500 to-sky-600 shadow-lg shadow-sky-100">
-            <span className="text-xl">🎯</span>
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
+            <Target className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-slate-950">Next Rank</h3>
-            <p className="text-sm font-semibold text-sky-700">{nextRank.name}</p>
+            <h3 className="text-xl font-semibold text-slate-950">Next rank focus</h3>
+            <p className="text-sm font-medium text-[#24584b]">{nextRank.name}</p>
           </div>
+        </div>
+        <div className="rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-semibold text-slate-700">
+          {Math.round(progressPercent)}%
         </div>
       </div>
 
-      {/* Progress Bar */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs text-slate-500">Progress</span>
-          <span className="text-xs font-medium text-slate-700">
-            {completedReqs}/{totalReqs}
-          </span>
+      <div className="mb-5">
+        <div className="mb-2 flex items-center justify-between text-xs uppercase tracking-[0.16em] text-slate-500">
+          <span>Requirements complete</span>
+          <span>{completedReqs}/{totalReqs}</span>
         </div>
         <div className="h-2 overflow-hidden rounded-full bg-slate-100">
           <div
-            className="h-full bg-linear-to-r from-emerald-500 to-sky-600 transition-all duration-500"
+            className="h-full bg-linear-to-r from-[#1f3448] via-[#24584b] to-[#c89b52] transition-all duration-500"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
       </div>
 
-      {/* Requirements List - Scrollable */}
-      <div className="max-h-[300px] space-y-2 overflow-y-auto pr-2">
+      <div className="max-h-[320px] space-y-2 overflow-y-auto pr-2">
         {allRequirements.map((req) => {
           const isCompleted = rankProgress[req.id];
           const hasSubRequirements = 'sub_requirements' in req && Array.isArray((req as any).sub_requirements);
           const isSubRequirement = req.id.length > 1 && req.id.includes('a');
-          
+
           return (
             <label
               key={req.id}
-              className={`group flex cursor-pointer items-start gap-3 rounded-xl p-2 transition-colors hover:bg-slate-50 ${
+              className={`group flex cursor-pointer items-start gap-3 rounded-2xl border border-transparent bg-white/78 p-3 transition-all hover:border-slate-200 hover:bg-white ${
                 isSubRequirement ? 'ml-6' : ''
               }`}
             >
-              <div className="relative flex-shrink-0 mt-0.5">
+              <div className="relative mt-0.5 flex-shrink-0">
                 <input
                   type="checkbox"
                   checked={!!isCompleted}
                   disabled={!!hasSubRequirements}
                   onChange={() => {
-                    if (hasSubRequirements) return; // Parent items can't be checked
-                    
-                    // Toggle requirement completion
+                    if (hasSubRequirements) return;
+
                     const newProgress = { ...rankProgress };
                     if (isCompleted) {
                       delete newProgress[req.id];
                     } else {
                       newProgress[req.id] = new Date().toISOString().split('T')[0];
                     }
-                    
+
                     const updatedUserData = {
                       ...userData,
                       rankProgress: {
@@ -136,50 +133,45 @@ export function RankAdvancement({ userData }: RankAdvancementProps) {
                   }}
                   className="peer sr-only"
                 />
-                <div className={`flex h-5 w-5 items-center justify-center rounded-md border-2 transition-all ${
-                  hasSubRequirements 
-                    ? 'cursor-not-allowed border-slate-200 bg-slate-50' 
-                    : isCompleted
-                    ? 'border-emerald-500 bg-emerald-500 shadow-lg shadow-emerald-100'
-                    : 'border-slate-300 bg-white group-hover:border-emerald-400 group-hover:bg-emerald-50'
-                }`}>
-                  {isCompleted && (
-                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
+                <div
+                  className={`flex h-5 w-5 items-center justify-center rounded-md border-2 transition-all ${
+                    hasSubRequirements
+                      ? 'cursor-not-allowed border-slate-200 bg-slate-50'
+                      : isCompleted
+                        ? 'border-[#24584b] bg-[#24584b]'
+                        : 'border-slate-300 bg-white group-hover:border-[#24584b]'
+                  }`}
+                >
+                  {isCompleted ? <CheckCircle2 className="h-3.5 w-3.5 text-white" /> : null}
                 </div>
               </div>
               <span
-                className={`text-xs leading-relaxed transition-colors ${
+                className={`text-sm leading-relaxed ${
                   isCompleted
                     ? 'text-slate-400 line-through'
                     : hasSubRequirements
-                    ? 'font-medium text-slate-900'
-                    : 'text-slate-600 group-hover:text-slate-900'
+                      ? 'font-medium text-slate-900'
+                      : 'text-slate-600 group-hover:text-slate-900'
                 }`}
               >
-                <span className={`font-semibold ${isCompleted ? 'text-slate-400' : 'text-sky-700'}`}>{req.id}.</span>{' '}
-                <span className={isCompleted ? 'text-slate-400' : 'text-slate-600 group-hover:text-slate-900'}>{req.text}</span>
-                {hasSubRequirements ? <span className="mt-1 block text-xs text-slate-400">(Choose one option below)</span> : null}
+                <span className={`font-semibold ${isCompleted ? 'text-slate-400' : 'text-[#1f3448]'}`}>{req.id}.</span>{' '}
+                <span>{req.text}</span>
+                {hasSubRequirements ? (
+                  <span className="mt-1 block text-xs uppercase tracking-[0.12em] text-slate-400">Choose one option below</span>
+                ) : null}
               </span>
             </label>
           );
         })}
       </div>
 
-      {/* Footer Action */}
-      <div className="mt-4 border-t border-slate-200 pt-4">
-        <button
-          onClick={() => {
-            // Future: Navigate to profile when route exists
-            console.log('Navigate to profile');
-          }}
-          className="flex items-center gap-1 text-xs font-medium text-sky-700 transition-colors hover:text-sky-600"
+      <div className="mt-5 border-t border-slate-200 pt-4">
+        <Link
+          to="/advancement"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-[#1f3448] transition-colors hover:text-[#24584b]"
         >
-          <span>View all ranks</span>
-          <span>→</span>
-        </button>
+          View full advancement tracker
+        </Link>
       </div>
     </div>
   );

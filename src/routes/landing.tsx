@@ -1,138 +1,147 @@
-import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
-import { useEffect } from 'react'
-import { useUserData } from '../hooks/useUserData'
-import { ScoutFleurDeLis, CompassIcon, TentIcon, EagleIcon } from '../components/ScoutIcons'
+import { createFileRoute, useNavigate, Link } from '@tanstack/react-router';
+import { useEffect } from 'react';
+import {
+  ArrowRight,
+  CalendarRange,
+  Route as RouteIcon,
+  ShieldCheck,
+} from 'lucide-react';
+import { useUserData } from '../hooks/useUserData';
+import { ScoutFleurDeLis } from '../components/ScoutIcons';
 
 export const Route = createFileRoute('/landing')({
   component: LandingPage,
-})
+});
 
 function LandingPage() {
-  const { userData, isLoading } = useUserData()
-  const navigate = useNavigate()
+  const { userData, isLoading } = useUserData();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // If user data is loaded and a profile exists, redirect to the dashboard
     if (!isLoading && userData?.profile?.name) {
-      navigate({ to: '/', replace: true })
+      navigate({ to: '/', replace: true });
     }
-  }, [userData, isLoading, navigate])
+  }, [userData, isLoading, navigate]);
 
-  // While loading, show a blank page to avoid flicker
   if (isLoading || (!isLoading && userData?.profile?.name)) {
-    return <div className="app-shell min-h-screen" />
+    return <div className="app-shell min-h-screen" />;
   }
+
+  const entryRoute = userData?.profile?.name ? '/' : '/onboarding';
 
   return (
     <div className="app-shell">
-      <div className="app-shell__grid" />
-      <div className="app-shell__glow app-shell__glow--top" />
-      <div className="app-shell__glow app-shell__glow--bottom" />
+      <div className="app-shell__grid fixed inset-0" />
+      <div className="app-shell__glow app-shell__glow--top fixed" />
+      <div className="app-shell__glow app-shell__glow--bottom fixed" />
 
-      <div className="app-shell__content flex min-h-screen flex-col items-center justify-center p-6">
-        {/* Header */}
-        <header className="mx-auto flex w-full max-w-6xl items-center justify-between py-4">
-          <div className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-emerald-500 to-sky-600 shadow-[0_12px_24px_rgba(14,165,233,0.22)]">
-              <ScoutFleurDeLis className="w-5 h-5 text-white" size={20} />
+      <div className="app-shell__content mx-auto max-w-6xl px-6 py-10">
+        <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+          <div className="app-surface rounded-2xl p-8">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1f3448] text-white">
+                <ScoutFleurDeLis className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-900">Scoutly</p>
+                <p className="text-xs text-slate-500">Eagle planning workspace</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-slate-950">Scoutly</h1>
-              <p className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">AI planning for Scouts</p>
+
+            <h1 className="max-w-3xl text-4xl font-semibold leading-tight text-slate-950 md:text-5xl">
+              Track rank progress, merit badges, and troop events in one place.
+            </h1>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
+              Built for Scouts and families who need a straightforward system for planning the path to Eagle.
+            </p>
+
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <Link
+                to={entryRoute}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1f3448] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#182b3b]"
+              >
+                Open Workspace
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                to="/merit-badges/"
+                className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 hover:text-slate-950"
+              >
+                Browse Merit Badges
+              </Link>
             </div>
           </div>
-          <Link
-            to={userData?.profile?.name ? '/' : '/onboarding'}
-            className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:border-emerald-200 hover:text-emerald-700"
-          >
-            Get Started
-          </Link>
-        </header>
 
-        {/* Hero Section */}
-  <main className="flex grow flex-col items-center justify-center py-20 text-center">
-          <div className="mb-5 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
-            Professional planning for the road to Eagle
+          <div className="app-surface rounded-2xl p-6">
+            <h2 className="text-lg font-semibold text-slate-950">Core functions</h2>
+            <div className="mt-4 space-y-3">
+              <PreviewRow
+                icon={<RouteIcon className="h-5 w-5" />}
+                title="Timeline planning"
+                description="See milestone dates, phase pacing, and what needs to be done next."
+              />
+              <PreviewRow
+                icon={<ShieldCheck className="h-5 w-5" />}
+                title="Merit badge tracking"
+                description="Review Eagle-required progress and manage badge completion status."
+              />
+              <PreviewRow
+                icon={<CalendarRange className="h-5 w-5" />}
+                title="Event coordination"
+                description="Use meetings, campouts, and service events to guide requirement planning."
+              />
+            </div>
           </div>
-          <h2 className="mb-6 max-w-4xl text-5xl font-bold tracking-tight text-slate-950 md:text-7xl">
-            Plan every badge, milestone, and deadline with confidence.
-          </h2>
-          <p className="mb-10 max-w-3xl text-lg leading-8 text-slate-600">
-            Scoutly brings progress tracking, troop events, and AI-guided recommendations into one polished workspace so Scouts and families can stay organized on the path to Eagle.
-          </p>
-
-          <div className="app-surface app-surface--soft mb-10 rounded-[2rem] p-4 sm:p-6">
-            <svg width="540" height="220" viewBox="0 0 540 220" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto">
-              <rect x="0" y="0" width="540" height="220" rx="20" fill="url(#g)" opacity="0.12" />
-              <defs>
-                <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#10B981" />
-                  <stop offset="100%" stopColor="#06B6D4" />
-                </linearGradient>
-              </defs>
-              <g transform="translate(40,32)">
-                <circle cx="60" cy="60" r="40" fill="#ecfdf5" stroke="#10B981" strokeWidth="3" />
-                <path d="M120 20 L200 20 L230 90 L180 140 L100 140 L60 90 Z" fill="#ecfeff" stroke="#06B6D4" strokeWidth="3" opacity="0.9" />
-                <g transform="translate(260,8)">
-                  <rect x="0" y="0" width="160" height="120" rx="12" fill="#ffffff" stroke="#0ea5a5" strokeWidth="2" />
-                  <path d="M14 28h132M14 52h132M14 76h80" stroke="#0f766e" strokeWidth="3" strokeLinecap="round" />
-                </g>
-              </g>
-            </svg>
-          </div>
-
-          <Link
-            to={userData?.profile?.name ? '/' : '/onboarding'}
-            className="rounded-2xl bg-linear-to-r from-emerald-600 to-sky-600 px-8 py-4 text-lg font-bold text-white shadow-[0_18px_40px_rgba(14,165,233,0.24)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_50px_rgba(14,165,233,0.28)]"
-          >
-            Get Started Today
-          </Link>
-        </main>
-
-        {/* Features Section */}
-        <section className="mx-auto grid w-full max-w-6xl gap-8 text-left md:grid-cols-3">
-          <FeatureCard
-            icon={<CompassIcon className="w-6 h-6 text-emerald-600" size={24} />}
-            title="AI-Powered Planning"
-            description="Our AI coach analyzes your progress and generates a weekly action plan to keep you on track for your Eagle goal."
-          />
-          <FeatureCard
-            icon={<TentIcon className="w-6 h-6 text-emerald-600" size={24} />}
-            title="Smart Event Sync"
-            description="Connect your troop calendar to get reminders and requirement suggestions tailored to upcoming campouts and meetings."
-          />
-          <FeatureCard
-            icon={<EagleIcon className="w-6 h-6 text-emerald-600" size={24} />}
-            title="Visual Progress Tracking"
-            description="See your entire journey at a glance, from your next requirement to your final Eagle-required merit badge."
-          />
         </section>
 
-        {/* Footer */}
-        <footer className="mx-auto mt-10 w-full max-w-6xl border-t border-slate-200 py-10 text-center">
-          <p className="text-sm text-slate-500">Built by Scouts, for Scouts.</p>
-        </footer>
+        <section className="mt-6 grid gap-4 md:grid-cols-3">
+          <MetricCard label="Planning" value="Direct" detail="Focused on requirements, dates, and progress." />
+          <MetricCard label="Interface" value="Clean" detail="Reduced visual noise and simplified actions." />
+          <MetricCard label="Use case" value="Practical" detail="Built to support real Scout advancement work." />
+        </section>
       </div>
     </div>
-  )
+  );
 }
 
-function FeatureCard({
+function MetricCard({
+  label,
+  value,
+  detail,
+}: {
+  label: string;
+  value: string;
+  detail: string;
+}) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</div>
+      <div className="mt-2 text-2xl font-semibold text-slate-950">{value}</div>
+      <div className="mt-2 text-sm leading-6 text-slate-600">{detail}</div>
+    </div>
+  );
+}
+
+function PreviewRow({
   icon,
   title,
   description,
 }: {
-  icon: React.ReactNode
-  title: string
-  description: string
+  icon: React.ReactNode;
+  title: string;
+  description: string;
 }) {
   return (
-    <div className="app-surface rounded-2xl p-6">
-      <div className="flex items-center gap-3 mb-3">
-        {icon}
-        <h3 className="font-semibold text-slate-900">{title}</h3>
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
+          {icon}
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-slate-950">{title}</h3>
+          <p className="text-sm leading-6 text-slate-600">{description}</p>
+        </div>
       </div>
-      <p className="text-sm leading-6 text-slate-600">{description}</p>
     </div>
-  )
+  );
 }

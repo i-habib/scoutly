@@ -85,7 +85,7 @@ function LoginPage() {
           </h1>
           <p className="mt-2 text-sm leading-6 text-slate-600">
             {mode === 'signin'
-              ? 'Sign in to sync your progress and unlock AI planning tools.'
+              ? 'Sign in to sync your progress and open your planning workspace.'
               : 'Create an account to sync your progress securely across devices.'}
           </p>
         </div>
