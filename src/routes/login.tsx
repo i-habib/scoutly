@@ -145,8 +145,8 @@ function LoginPage() {
             <div
               className={`rounded-xl border px-4 py-3 text-sm ${
                 error
-                  ? 'border-rose-500/30 bg-rose-500/10 text-rose-200'
-                  : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-200'
+                  ? 'border-rose-200 bg-rose-50 text-rose-700'
+                  : 'border-emerald-200 bg-emerald-50 text-emerald-700'
               }`}
             >
               {error ?? message}

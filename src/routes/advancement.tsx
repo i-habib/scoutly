@@ -6,30 +6,14 @@ import { useUserData } from '../hooks/useUserData';
 import rankRequirementsData from '../data/rank-reqs.json';
 import * as storage from '../services/storageService';
 import { EagleIcon, MeritBadgeIcon, CompassIcon } from '../components/ScoutIcons';
+import { RANK_ORDER, RANK_COLORS, getRankDisplayName, normalizeRankId } from '../lib/constants';
+import { useToast } from '../components/Toast';
 
 export const Route = createFileRoute('/advancement')({
   component: AdvancementPage,
 });
 
-const RANK_ORDER = [
-  'rank_scout',
-  'rank_tenderfoot',
-  'rank_second_class',
-  'rank_first_class',
-  'rank_star',
-  'rank_life',
-  'rank_eagle'
-];
-
-const RANK_COLORS: Record<string, string> = {
-  rank_scout: 'from-yellow-500 to-amber-600',
-  rank_tenderfoot: 'from-green-500 to-emerald-600',
-  rank_second_class: 'from-blue-500 to-cyan-600',
-  rank_first_class: 'from-red-500 to-rose-600',
-  rank_star: 'from-purple-500 to-violet-600',
-  rank_life: 'from-pink-500 to-fuchsia-600',
-  rank_eagle: 'from-amber-500 to-yellow-600',
-};
+// RANK_ORDER, RANK_COLORS, and display helpers imported from lib/constants.ts
 
 // Determine the highest rank for which ALL requirements are complete.
 // This represents the Scout's *current* rank; they are always working toward the NEXT rank.
@@ -69,15 +53,13 @@ const determineActiveRank = (rankProgress: Record<string, Record<string, string 
 function AdvancementPage() {
   const { userData } = useUserData();
   const queryClient = useQueryClient();
+  const { confirm } = useToast();
   
   // Get current rank from user profile, normalize format
-  let currentRankId = userData?.profile?.currentRank || 'rank_scout';
-  if (!currentRankId.startsWith('rank_')) {
-    currentRankId = `rank_${currentRankId}`;
-  }
+  const currentRankId = normalizeRankId(userData?.profile?.currentRank || 'rank_scout');
   
   // Find the current rank index, default to Scout if not found
-  const currentRankIndex = RANK_ORDER.indexOf(currentRankId);
+  const currentRankIndex = RANK_ORDER.indexOf(currentRankId as typeof RANK_ORDER[number]);
   const startIndex = currentRankIndex >= 0 ? currentRankIndex : 0;
   
   const [selectedRankIndex, setSelectedRankIndex] = useState(startIndex);
@@ -86,9 +68,9 @@ function AdvancementPage() {
    const inProgressRankId = currentRankIndex >= 0 && currentRankIndex < RANK_ORDER.length - 1
      ? RANK_ORDER[currentRankIndex + 1]
      : null;
-   const normalizedCurrentRankLabel = currentRankId.replace('rank_', '').replace(/_/g, ' ');
+   const normalizedCurrentRankLabel = getRankDisplayName(currentRankId);
    const inProgressRankLabel = inProgressRankId
-     ? inProgressRankId.replace('rank_', '').replace(/_/g, ' ')
+     ? getRankDisplayName(inProgressRankId)
      : null;
 
   const selectedRankId = RANK_ORDER[selectedRankIndex];
@@ -196,7 +178,8 @@ function AdvancementPage() {
   };
 
   const handleClearAllProgress = async () => {
-    if (!confirm(`Are you sure you want to clear all progress for ${rankData.name}?`)) return;
+    const confirmed = await confirm({ title: 'Clear Progress', message: `Are you sure you want to clear all progress for ${rankData.name}?`, destructive: true, confirmLabel: 'Clear All' });
+    if (!confirmed) return;
     
     const currentUserData = await storage.fetchUserData();
     

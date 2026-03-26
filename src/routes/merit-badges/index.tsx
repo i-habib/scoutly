@@ -176,6 +176,7 @@ function MeritBadgesList() {
                         src={badge.imageUrl as string} 
                         alt={badge.name}
                         className="w-full h-full object-cover"
+                        loading="lazy"
                         onError={(e) => {
                           e.currentTarget.style.display = 'none';
                           e.currentTarget.nextElementSibling?.classList.remove('hidden');

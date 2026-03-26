@@ -5,6 +5,7 @@ import { useUserData } from '../hooks/useUserData';
 import meritBadgesData from '../data/merit-badges.json';
 import { MeritBadgeIcon } from '../components/ScoutIcons';
 import { buildTimelineState } from '../lib/buildTimeline';
+import { getRankDisplayName } from '../lib/constants';
 import type { TimelineState } from '../lib/timelineTypes';
 
 const meritBadges = meritBadgesData.meritBadges;
@@ -17,7 +18,7 @@ export const Route = createFileRoute('/timeline')({
 
 function TimelinePage() {
   const navigate = useNavigate();
-  const { userData, updateProfile, updateProgress } = useUserData();
+  const { userData } = useUserData();
   const [timelineTab, setTimelineTab] = useState<'signoffs' | 'badges'>('signoffs');
 
   // Calculate timeline using the shared builder (DRY)
@@ -137,7 +138,9 @@ function TimelinePage() {
                   <span className="text-sm text-slate-600">Current Rank</span>
                 </div>
                 <p className="text-2xl font-bold text-slate-900">
-                  {userData.profile?.currentRank || 'Scout'}
+                  {userData.profile?.currentRank
+                    ? getRankDisplayName(userData.profile.currentRank)
+                    : 'Scout'}
                 </p>
               </div>
 

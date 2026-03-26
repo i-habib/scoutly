@@ -3,7 +3,6 @@ import { useState } from 'react';
 import {
   Award,
   CalendarRange,
-  Compass,
   LayoutDashboard,
   Menu,
   Route,
@@ -21,7 +20,6 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  { to: '/landing', label: 'Overview', icon: Compass },
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/timeline', label: 'Timeline', icon: Route },
   { to: '/advancement', label: 'Advancement', icon: Award },

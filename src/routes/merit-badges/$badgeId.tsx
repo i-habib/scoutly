@@ -190,6 +190,7 @@ function MeritBadgeDetail() {
                     src={badge.imageUrl as string} 
                     alt={badge.name}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                     onError={(e) => {
                       // Fallback to icon if image fails to load
                       e.currentTarget.style.display = 'none';

@@ -5,10 +5,11 @@ import type { UserData } from '../data/userData'
 import meritBadgesJSON from '../data/merit-badges.json'
 import rankRequirementsJSON from '../data/rank-reqs.json'
 import timeConsumingBadgesJSON from '../data/time-consuming-badges.json'
-import { writeFileSync } from 'fs'
-import { join } from 'path'
 import { EventAnalysesArraySchema } from '../lib/aiSchemas'
 import { buildTimelineState } from '../lib/buildTimeline'
+
+// Debug flag - set to true to enable verbose AI logging
+const DEBUG = process.env.NODE_ENV === 'development' && Boolean(process.env.DEBUG_AI)
 
 const meritBadgesData = meritBadgesJSON.meritBadges
 const rankRequirementsData = rankRequirementsJSON
@@ -27,7 +28,7 @@ const getApiKey = () => {
 const getModelName = () => {
   return process.env.GEMINI_MODEL || import.meta.env.VITE_GEMINI_MODEL || 'gemini-2.5-flash-latest'
 }
-console.log('Using Gemini Model:', import.meta.env.VITE_GEMINI_MODEL)
+if (DEBUG) console.log('Using Gemini Model:', import.meta.env.VITE_GEMINI_MODEL)
 
 // Initialize Google AI - this will be called at runtime, not at build time
 const getAI = () => {
@@ -78,13 +79,14 @@ async function callGemini(
   seed?: number
 ): Promise<string> {
   try {
-    console.log('=== CALL GEMINI START ===')
-    console.log('Model:', getModelName())
-    console.log('Temperature:', temperature)
-    console.log('Has schema:', !!schema)
-    console.log('Prompt length:', prompt.length)
-    
     const ai = getAI() // Get AI instance at runtime
+    if (DEBUG) {
+      console.log('=== CALL GEMINI START ===')
+      console.log('Model:', getModelName())
+      console.log('Temperature:', temperature)
+      console.log('Has schema:', !!schema)
+      console.log('Prompt length:', prompt.length)
+    }
     const config: any = {
       model: getModelName(),
       contents: prompt,
@@ -106,9 +108,11 @@ async function callGemini(
     
     const response = await ai.models.generateContent(config)
     
-    console.log('=== CALL GEMINI RESPONSE ===')
-    console.log('Response received, type:', typeof response.text)
-    console.log('Response length:', response.text?.length || 0)
+    if (DEBUG) {
+      console.log('=== CALL GEMINI RESPONSE ===')
+      console.log('Response received, type:', typeof response.text)
+      console.log('Response length:', response.text?.length || 0)
+    }
     
     return response.text || ''
   } catch (error) {
@@ -475,13 +479,13 @@ Return ONLY valid JSON array. No markdown, no explanations.`
   try {
   const response = await callGemini(prompt, 0.25, responseSchema, 4242)
     
-    console.log('=== GEMINI API RESPONSE ===')
-    console.log('Response type:', typeof response)
-    console.log('Response length:', response?.length)
-    console.log('First 500 chars:', response?.substring(0, 500))
-    console.log('Last 200 chars:', response?.substring(Math.max(0, response?.length - 200)))
-    console.log('Full response:', response)
-    console.log('=== END RESPONSE ===')
+    if (DEBUG) {
+      console.log('=== GEMINI API RESPONSE ===')
+      console.log('Response type:', typeof response)
+      console.log('Response length:', response?.length)
+      console.log('First 500 chars:', response?.substring(0, 500))
+      console.log('=== END RESPONSE ===')
+    }
     
     // DEBUG: Save raw response to file
    
@@ -504,9 +508,10 @@ Return ONLY valid JSON array. No markdown, no explanations.`
       cleanedResponse = cleanedResponse.substring(arrayStart, arrayEnd + 1)
     }
     
-    console.log('=== CLEANED RESPONSE ===')
-    console.log('Cleaned length:', cleanedResponse.length)
-    console.log('Cleaned response:', cleanedResponse)
+    if (DEBUG) {
+      console.log('=== CLEANED RESPONSE ===')
+      console.log('Cleaned length:', cleanedResponse.length)
+    }
     
     // Check if JSON is incomplete (doesn't end with ] or })
     const lastChar = cleanedResponse.trim().slice(-1)
@@ -521,8 +526,10 @@ Return ONLY valid JSON array. No markdown, no explanations.`
       const openBraces = (cleanedResponse.match(/\{/g) || []).length
       const closeBraces = (cleanedResponse.match(/\}/g) || []).length
       
-      console.log('Open [:', openBrackets, 'Close ]:', closeBrackets)
-      console.log('Open {:', openBraces, 'Close }:', closeBraces)
+      if (DEBUG) {
+        console.log('Open [:', openBrackets, 'Close ]:', closeBrackets)
+        console.log('Open {:', openBraces, 'Close }:', closeBraces)
+      }
       
       // Add missing closing brackets/braces
       let fixed = cleanedResponse
@@ -530,7 +537,7 @@ Return ONLY valid JSON array. No markdown, no explanations.`
       // Close incomplete strings if needed
       const quotes = (fixed.match(/"/g) || []).length
       if (quotes % 2 !== 0) {
-        console.log('Closing incomplete string')
+        if (DEBUG) console.log('Closing incomplete string')
         fixed += '"'
       }
       
@@ -545,10 +552,10 @@ Return ONLY valid JSON array. No markdown, no explanations.`
       }
       
       cleanedResponse = fixed
-      console.log('Fixed response:', cleanedResponse)
+      if (DEBUG) console.log('Fixed response length:', cleanedResponse.length)
     }
     
-    console.log('=== END CLEANED ===')
+    if (DEBUG) console.log('=== END CLEANED ===')
     
     // DEBUG: Save cleaned response to file
    
@@ -561,10 +568,11 @@ Return ONLY valid JSON array. No markdown, no explanations.`
     }
   let analyses = validation.data as EventAnalysis[]
     
-    console.log('=== PARSED ANALYSES ===')
-    console.log('Number of analyses:', analyses?.length)
-    console.log('Analyses:', JSON.stringify(analyses, null, 2))
-    console.log('=== END PARSED ===')
+    if (DEBUG) {
+      console.log('=== PARSED ANALYSES ===')
+      console.log('Number of analyses:', analyses?.length)
+      console.log('=== END PARSED ===')
+    }
     
     // Enforce exact signoffs count for meeting events when focusing on rank advancement
     try {
@@ -721,10 +729,11 @@ CRITICAL: Be concise (300-500 words max). Scouts have short attention spans. Use
       ? `${systemPrompt}\n\nConversation:\n${history.map((h) => `${h.role}: ${h.parts[0].text}`).join('\n')}\nuser: ${message}`
       : `${systemPrompt}\n\nuser: ${message}`
 
-    console.log('=== LONG-TERM CHAT REQUEST ===')
-    console.log('Model:', getModelName())
-    console.log('Message:', message)
-    console.log('History length:', history.length)
+    if (DEBUG) {
+      console.log('=== LONG-TERM CHAT REQUEST ===')
+      console.log('Message:', message)
+      console.log('History length:', history.length)
+    }
     
     const ai = getAI()
     const response = await ai.models.generateContent({
@@ -736,8 +745,10 @@ CRITICAL: Be concise (300-500 words max). Scouts have short attention spans. Use
       },
     })
     
-    console.log('=== LONG-TERM CHAT RESPONSE ===')
-    console.log('Response length:', response.text?.length)
+    if (DEBUG) {
+      console.log('=== LONG-TERM CHAT RESPONSE ===')
+      console.log('Response length:', response.text?.length)
+    }
     
     return {
       role: 'model' as const,
@@ -799,10 +810,11 @@ DETAILED and ACTIONABLE. Include checklists, preparation steps, and follow-up ac
       ? `${systemPrompt}\n\nConversation:\n${history.map((h) => `${h.role}: ${h.parts[0].text}`).join('\n')}\nuser: ${message}`
       : `${systemPrompt}\n\nuser: ${message}`
 
-    console.log('=== SHORT-TERM CHAT REQUEST ===')
-    console.log('Model:', getModelName())
-    console.log('Message:', message)
-    console.log('History length:', history.length)
+    if (DEBUG) {
+      console.log('=== SHORT-TERM CHAT REQUEST ===')
+      console.log('Message:', message)
+      console.log('History length:', history.length)
+    }
     
     const ai = getAI()
     const response = await ai.models.generateContent({
@@ -814,8 +826,10 @@ DETAILED and ACTIONABLE. Include checklists, preparation steps, and follow-up ac
       },
     })
     
-    console.log('=== SHORT-TERM CHAT RESPONSE ===')
-    console.log('Response length:', response.text?.length)
+    if (DEBUG) {
+      console.log('=== SHORT-TERM CHAT RESPONSE ===')
+      console.log('Response length:', response.text?.length)
+    }
     
     return {
       role: 'model' as const,

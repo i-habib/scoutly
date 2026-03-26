@@ -226,51 +226,5 @@ code {
   background-color: rgba(221, 239, 230, 0.8);
 }
 
-.neon-page {
-  position: relative;
-  min-height: 100vh;
-  color: #f7f8fb;
-  background:
-    radial-gradient(circle at top left, rgba(56, 189, 248, 0.16), transparent 24%),
-    radial-gradient(circle at top right, rgba(250, 204, 21, 0.1), transparent 20%),
-    linear-gradient(180deg, #102030 0%, #09131d 100%);
-  overflow: hidden;
-  isolation: isolate;
-}
 
-.neon-page__grid {
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(116, 160, 200, 0.14) 1px, transparent 1px);
-  background-size: 28px 28px;
-  opacity: 0.45;
-  mask-image: radial-gradient(circle at center, rgba(255, 255, 255, 0.92), transparent 74%);
-}
 
-.neon-page__glow {
-  position: absolute;
-  width: 40rem;
-  height: 40rem;
-  border-radius: 9999px;
-  filter: blur(100px);
-  opacity: 0.66;
-  pointer-events: none;
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.3), rgba(56, 189, 248, 0) 58%);
-  animation: pulseGlow 12s ease-in-out infinite;
-}
-
-.neon-page__glow--top {
-  top: -20rem;
-  left: -10rem;
-}
-
-.neon-page__glow--bottom {
-  bottom: -18rem;
-  right: -12rem;
-  animation-delay: 4s;
-}
-
-.neon-page__content {
-  position: relative;
-  z-index: 10;
-}

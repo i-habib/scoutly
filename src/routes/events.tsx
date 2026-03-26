@@ -1,11 +1,13 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Upload, Trash2, MapPin, Clock, Plus, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { useUserData } from '../hooks/useUserData';
 import { analyzeCalendarEvents, type EventAnalysis, EVENT_ANALYSIS_SCHEMA_VERSION } from '../services/aiService';
 import type { Event } from '../data/userData';
 import { TentIcon, CompassIcon } from '../components/ScoutIcons';
 import meritBadgesData from '../data/merit-badges.json';
+import { getUserTimezone } from '../lib/constants';
+import { useToast } from '../components/Toast';
 
 export const Route = createFileRoute('/events')({
   component: EventsPage,
@@ -159,6 +161,8 @@ function parseICSDate(dateStr: string): string {
 function EventsPage() {
   const navigate = useNavigate();
   const { userData, isLoading, updateProfile } = useUserData();
+  const { showToast, confirm } = useToast();
+  const userTimezone = useMemo(() => getUserTimezone(), []);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -315,9 +319,9 @@ function EventsPage() {
     } catch (error) {
       console.error('❌ Failed to analyze calendar:', error);
       if (error instanceof Error && error.message.includes('Rate limit')) {
-        alert('Too many requests. Please wait 10 seconds before analyzing again.');
+        showToast('warning', 'Too many requests. Please wait 10 seconds before analyzing again.');
       } else {
-        alert('Failed to analyze events. Please try again.');
+        showToast('error', 'Failed to analyze events. Please try again.');
       }
     } finally {
       setIsAnalyzing(false);
@@ -325,8 +329,9 @@ function EventsPage() {
     }
   };
 
-  const handleClearAllEvents = () => {
-    if (!confirm('Are you sure you want to delete ALL events? This cannot be undone.')) return;
+  const handleClearAllEvents = async () => {
+    const confirmed = await confirm({ title: 'Clear All Events', message: 'Are you sure you want to delete ALL events? This cannot be undone.', destructive: true, confirmLabel: 'Delete All' });
+    if (!confirmed) return;
 
     const currentUserData = JSON.parse(localStorage.getItem('scoutly_user_data') || '{}');
     currentUserData.events = [];
@@ -354,7 +359,7 @@ function EventsPage() {
       const parsedEvents = parseICSFile(text);
       
       if (parsedEvents.length === 0) {
-        alert('No events found in the ICS file. Please check the file format.');
+        showToast('warning', 'No events found in the ICS file. Please check the file format.');
         return;
       }
 
@@ -387,13 +392,13 @@ function EventsPage() {
       setShowMeetingsDetectedModal({ open: true, estimate: estimated });
     } catch (error) {
       console.error('Failed to parse ICS file:', error);
-      alert('Failed to parse ICS file. Please make sure it\'s a valid calendar file.');
+      showToast('error', 'Failed to parse ICS file. Please make sure it\'s a valid calendar file.');
     }
   };
 
   const handleAddEvent = () => {
     if (!newEvent.name || !newEvent.startTime) {
-      alert('Please fill in event name and start time');
+      showToast('warning', 'Please fill in event name and start time');
       return;
     }
 
@@ -419,8 +424,9 @@ function EventsPage() {
     setShowAddModal(false);
   };
 
-  const handleDeleteEvent = (eventId: string) => {
-    if (!confirm('Are you sure you want to delete this event?')) return;
+  const handleDeleteEvent = async (eventId: string) => {
+    const confirmed = await confirm({ title: 'Delete Event', message: 'Are you sure you want to delete this event?', destructive: true, confirmLabel: 'Delete' });
+    if (!confirmed) return;
 
     const currentUserData = JSON.parse(localStorage.getItem('scoutly_user_data') || '{}');
     currentUserData.events = currentUserData.events.filter((e: Event) => e.id !== eventId);
@@ -747,7 +753,7 @@ function EventsPage() {
                             weekday: 'short', 
                             month: 'short', 
                             day: 'numeric',
-                            timeZone: 'America/Los_Angeles'
+                            timeZone: userTimezone
                           })}
                         </div>
                         <div className="space-y-2">
@@ -772,7 +778,7 @@ function EventsPage() {
                                 {new Date(event.startTime).toLocaleTimeString('en-US', {
                                   hour: 'numeric',
                                   minute: '2-digit',
-                                  timeZone: 'America/Los_Angeles'
+                                  timeZone: userTimezone
                                 })}
                               </div>
                             </div>
@@ -794,7 +800,7 @@ function EventsPage() {
                       weekday: 'long', 
                       month: 'long', 
                       day: 'numeric',
-                      timeZone: 'America/Los_Angeles'
+                      timeZone: userTimezone
                     })}
                   </h3>
                   <button
@@ -823,7 +829,7 @@ function EventsPage() {
                             {new Date(event.startTime).toLocaleTimeString('en-US', { 
                               hour: 'numeric', 
                               minute: '2-digit',
-                              timeZone: 'America/Los_Angeles'
+                              timeZone: userTimezone
                             })} PST
                           </div>
                           {event.location && (

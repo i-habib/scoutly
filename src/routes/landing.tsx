@@ -27,7 +27,7 @@ function LandingPage() {
     return <div className="app-shell min-h-screen" />;
   }
 
-  const entryRoute = userData?.profile?.name ? '/' : '/onboarding';
+  const entryRoute = '/';
 
   return (
     <div className="app-shell">
