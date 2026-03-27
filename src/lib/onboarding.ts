@@ -29,8 +29,9 @@ function hasReturningUserActivity(userData: UserData) {
 export function isOnboardingComplete(userData: UserData | null | undefined) {
   if (!userData) return false;
 
-  if (typeof userData.profile.hasCompletedOnboarding === 'boolean') {
-    return userData.profile.hasCompletedOnboarding;
+  // Explicit opt-in from the new onboarding flow.
+  if (userData.profile.hasCompletedOnboarding === true) {
+    return true;
   }
 
   const hasCorePlanningFields =

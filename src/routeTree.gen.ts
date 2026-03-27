@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TimelineRouteImport } from './routes/timeline'
+import { Route as Profile2RouteImport } from './routes/profile 2'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as LoginRouteImport } from './routes/login'
@@ -24,6 +25,11 @@ import { Route as MeritBadgesBadgeIdRouteImport } from './routes/merit-badges/$b
 const TimelineRoute = TimelineRouteImport.update({
   id: '/timeline',
   path: '/timeline',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Profile2Route = Profile2RouteImport.update({
+  id: '/profile 2',
+  path: '/profile 2',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -86,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/profile': typeof ProfileRoute
+  '/profile 2': typeof Profile2Route
   '/timeline': typeof TimelineRoute
   '/merit-badges/$badgeId': typeof MeritBadgesBadgeIdRoute
   '/merit-badges/': typeof MeritBadgesIndexRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/profile': typeof ProfileRoute
+  '/profile 2': typeof Profile2Route
   '/timeline': typeof TimelineRoute
   '/merit-badges/$badgeId': typeof MeritBadgesBadgeIdRoute
   '/merit-badges': typeof MeritBadgesIndexRoute
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/profile': typeof ProfileRoute
+  '/profile 2': typeof Profile2Route
   '/timeline': typeof TimelineRoute
   '/merit-badges/$badgeId': typeof MeritBadgesBadgeIdRoute
   '/merit-badges/': typeof MeritBadgesIndexRoute
@@ -128,6 +137,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/onboarding'
     | '/profile'
+    | '/profile 2'
     | '/timeline'
     | '/merit-badges/$badgeId'
     | '/merit-badges/'
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/onboarding'
     | '/profile'
+    | '/profile 2'
     | '/timeline'
     | '/merit-badges/$badgeId'
     | '/merit-badges'
@@ -154,6 +165,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/onboarding'
     | '/profile'
+    | '/profile 2'
     | '/timeline'
     | '/merit-badges/$badgeId'
     | '/merit-badges/'
@@ -168,6 +180,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   OnboardingRoute: typeof OnboardingRoute
   ProfileRoute: typeof ProfileRoute
+  Profile2Route: typeof Profile2Route
   TimelineRoute: typeof TimelineRoute
   MeritBadgesBadgeIdRoute: typeof MeritBadgesBadgeIdRoute
   MeritBadgesIndexRoute: typeof MeritBadgesIndexRoute
@@ -180,6 +193,13 @@ declare module '@tanstack/react-router' {
       path: '/timeline'
       fullPath: '/timeline'
       preLoaderRoute: typeof TimelineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile 2': {
+      id: '/profile 2'
+      path: '/profile 2'
+      fullPath: '/profile 2'
+      preLoaderRoute: typeof Profile2RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -264,6 +284,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   OnboardingRoute: OnboardingRoute,
   ProfileRoute: ProfileRoute,
+  Profile2Route: Profile2Route,
   TimelineRoute: TimelineRoute,
   MeritBadgesBadgeIdRoute: MeritBadgesBadgeIdRoute,
   MeritBadgesIndexRoute: MeritBadgesIndexRoute,

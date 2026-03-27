@@ -12,8 +12,6 @@ import {
   CheckCircle2,
   Edit2,
   Gauge,
-  Link2,
-  RefreshCw,
   Save,
   Target,
   Users,
@@ -39,7 +37,6 @@ interface ProfileFormState {
   meetingReminders: boolean;
   eventReminders: boolean;
   progressUpdates: boolean;
-  scoutbookCalendarUrl: string;
 }
 
 const EMPTY_FORM: ProfileFormState = {
@@ -53,7 +50,6 @@ const EMPTY_FORM: ProfileFormState = {
   meetingReminders: true,
   eventReminders: true,
   progressUpdates: true,
-  scoutbookCalendarUrl: '',
 };
 
 const MEETING_DAY_OPTIONS = [
@@ -103,7 +99,6 @@ function createProfileFormState(profile?: {
     meetingDay: string | null;
     meetingTime: string | null;
   };
-  scoutbookCalendarUrl?: string | null;
 }): ProfileFormState {
   return {
     name: profile?.name || '',
@@ -119,7 +114,6 @@ function createProfileFormState(profile?: {
     meetingReminders: profile?.notificationPreferences?.meetingReminders ?? true,
     eventReminders: profile?.notificationPreferences?.eventReminders ?? true,
     progressUpdates: profile?.notificationPreferences?.progressUpdates ?? true,
-    scoutbookCalendarUrl: profile?.scoutbookCalendarUrl || '',
   };
 }
 
@@ -256,7 +250,6 @@ function Profile() {
   const [paceAssessment, setPaceAssessment] = useState('Calculating...');
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
   const [form, setForm] = useState<ProfileFormState>(EMPTY_FORM);
 
   useEffect(() => {
@@ -301,12 +294,6 @@ function Profile() {
       }
     }
 
-    const calUrl = form.scoutbookCalendarUrl.trim();
-    if (calUrl && !calUrl.startsWith('http')) {
-      showToast('error', 'Calendar URL must start with http:// or https://');
-      return;
-    }
-
     setIsSaving(true);
 
     try {
@@ -329,8 +316,6 @@ function Profile() {
         progressUpdates: form.progressUpdates,
       });
 
-      await storage.updateCalendarUrl(calUrl || null);
-
       await queryClient.invalidateQueries({ queryKey: ['userData'] });
       setIsEditing(false);
       showToast('success', 'Profile settings updated.');
@@ -338,26 +323,6 @@ function Profile() {
       showToast('error', 'Unable to save profile changes right now.');
     } finally {
       setIsSaving(false);
-    }
-  };
-
-  const handleSyncCalendar = async () => {
-    // If we're in edit mode and there's a URL in the form field,
-    // save it first before syncing so we always work from the latest value
-    const calUrl = form.scoutbookCalendarUrl.trim();
-    if (isEditing && calUrl) {
-      await storage.updateCalendarUrl(calUrl || null);
-    }
-    setIsSyncing(true);
-    try {
-      await storage.syncScoutbookCalendar();
-      await queryClient.invalidateQueries({ queryKey: ['userData'] });
-      showToast('success', 'Calendar synced! Events updated from Scoutbook.');
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Sync failed.';
-      showToast('error', msg);
-    } finally {
-      setIsSyncing(false);
     }
   };
 
@@ -534,48 +499,6 @@ function Profile() {
                   </section>
                 </div>
 
-                <section className="rounded-2xl border border-sky-200 bg-sky-50 p-5">
-                  <div className="mb-4 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-100 text-sky-700">
-                      <Link2 className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h2 className="text-lg font-semibold text-slate-950">Calendar sync</h2>
-                      <p className="text-sm text-slate-600">
-                        Auto-import events from your Scoutbook Plus calendar.
-                      </p>
-                    </div>
-                  </div>
-
-                  <Field
-                    label="Scoutbook Plus calendar URL"
-                    hint='In Scoutbook Plus → Calendar, scroll to the bottom and click "Copy url" next to your troop. Paste it here.'
-                  >
-                    <div className="flex gap-2">
-                      <input
-                        type="url"
-                        value={form.scoutbookCalendarUrl}
-                        onChange={(event) =>
-                          handleFieldChange('scoutbookCalendarUrl', event.target.value)
-                        }
-                        className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 focus:border-transparent focus:ring-4 focus:ring-sky-100"
-                        placeholder="https://api.scouting.org/advancements/events/calendar/…"
-                        spellCheck={false}
-                        autoComplete="off"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleSyncCalendar}
-                        disabled={isSyncing || (!form.scoutbookCalendarUrl.trim() && !userData?.profile.scoutbookCalendarUrl)}
-                        className="inline-flex items-center gap-2 rounded-xl bg-sky-600 px-4 py-3 font-semibold text-white transition-all hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        <RefreshCw size={16} className={isSyncing ? 'animate-spin' : ''} />
-                        {isSyncing ? 'Syncing…' : 'Sync Now'}
-                      </button>
-                    </div>
-                  </Field>
-                </section>
-
                 <section className="rounded-2xl border border-slate-200 bg-white p-5">
                   <div className="mb-4 flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
@@ -677,7 +600,7 @@ function Profile() {
                     Calendar sync
                   </div>
                   {userData.profile.scoutbookCalendarUrl ? (
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex flex-col gap-2">
                       <div>
                         <div className="text-sm font-semibold text-slate-900 break-all">
                           {userData.profile.scoutbookCalendarUrl.length > 60
@@ -690,25 +613,23 @@ function Profile() {
                             : 'Not yet synced'}
                         </div>
                       </div>
-                      <button
-                        onClick={handleSyncCalendar}
-                        disabled={isSyncing}
-                        className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-sky-600 px-3 py-2 text-sm font-semibold text-white transition-all hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-50"
+                      <Link
+                        to="/events"
+                        className="inline-flex w-fit items-center gap-1.5 rounded-xl border border-sky-200 bg-white px-3 py-2 text-sm font-semibold text-sky-700 transition-all hover:bg-sky-100"
                       >
-                        <RefreshCw size={14} className={isSyncing ? 'animate-spin' : ''} />
-                        {isSyncing ? 'Syncing…' : 'Sync Now'}
-                      </button>
+                        Manage in Events
+                      </Link>
                     </div>
                   ) : (
                     <div className="text-sm text-slate-500">
-                      No calendar URL set. Click{' '}
-                      <button
-                        onClick={handleStartEdit}
+                      No calendar source connected yet. Open{' '}
+                      <Link
+                        to="/events"
                         className="font-semibold text-sky-700 underline hover:text-sky-900"
                       >
-                        Edit Settings
-                      </button>{' '}
-                      to add your Scoutbook Plus URL.
+                        Events
+                      </Link>{' '}
+                      to connect Scoutbook or import a calendar file.
                     </div>
                   )}
                 </div>

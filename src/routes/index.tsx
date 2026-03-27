@@ -53,19 +53,19 @@ function Dashboard() {
     .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
     .slice(0, 5);
 
-  const missingSetupItems = [
+  const requiredProfileGaps = [
     !userData.profile.name ? 'Scout name' : null,
     !userData.profile.currentRank ? 'Current rank' : null,
-    !userData.profile.targetEagleDate ? 'Target Eagle date' : null,
   ].filter(Boolean) as string[];
+  const isTargetDateMissing = !userData.profile.targetEagleDate;
 
   const recommendedActions = [
     {
-      title: upcomingEvents.length === 0 ? 'Upload troop calendar' : 'Review troop calendar',
+      title: upcomingEvents.length === 0 ? 'Set up troop calendar' : 'Manage troop calendar',
       description:
         upcomingEvents.length === 0
-          ? 'Import an ICS calendar first so Scoutly can prioritize meetings, campouts, and service opportunities.'
-          : 'Keep your upcoming meetings, campouts, and service events current for better recommendations.',
+          ? 'Add or connect your troop calendar so Scoutly can prioritize meetings, campouts, and service opportunities.'
+          : 'Keep meetings, campouts, and service events current for better planning recommendations.',
       to: '/events',
     },
     {
@@ -81,6 +81,13 @@ function Dashboard() {
           : 'Update in-progress badges to keep momentum between meetings.',
       to: '/merit-badges/',
     },
+    isTargetDateMissing
+      ? {
+          title: 'Set target Eagle date',
+          description: 'Add your target date in Profile to unlock full pacing and timeline guidance.',
+          to: '/profile',
+        }
+      : null,
     !userData.profile.meetingsPerMonthOverride && upcomingEvents.length === 0
           ? {
               title: 'Set meeting cadence',
@@ -88,10 +95,10 @@ function Dashboard() {
               to: '/profile',
             }
       : null,
-    missingSetupItems.length > 0
+    requiredProfileGaps.length > 0
       ? {
           title: 'Finish profile setup',
-          description: 'Add your name, current rank, and Eagle target date.',
+          description: 'Add your Scout name and current rank details.',
           to: '/profile',
         }
       : null,
@@ -130,13 +137,13 @@ function Dashboard() {
           </div>
         </section>
 
-        {missingSetupItems.length > 0 && (
+        {requiredProfileGaps.length > 0 && (
           <section className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
                 <h2 className="text-base font-semibold text-amber-900">Profile setup needed</h2>
                 <p className="mt-1 text-sm text-amber-800">
-                  Missing: {missingSetupItems.join(', ')}.
+                  Missing: {requiredProfileGaps.join(', ')}.
                 </p>
               </div>
               <Link
@@ -219,7 +226,7 @@ function Dashboard() {
 
               {upcomingEvents.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-sm text-slate-600">
-                  No upcoming events yet. Add events or import an ICS calendar in the Events section.
+                  No upcoming events yet. Add events or connect a calendar in the Events section.
                 </div>
               ) : (
                 <div className="space-y-3">

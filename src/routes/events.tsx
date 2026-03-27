@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import React, { useState, useEffect, useMemo } from 'react';
-import { Upload, Trash2, MapPin, Clock, Plus, X, ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
+import { Upload, Trash2, MapPin, Clock, Plus, X, RefreshCw } from 'lucide-react';
 import { useUserData } from '../hooks/useUserData';
 import type { EventAnalysis } from '../services/aiService';
 import { generateEventRecommendations } from '../lib/calendarRecommendations';
@@ -9,7 +9,7 @@ import { TentIcon, CompassIcon } from '../components/ScoutIcons';
 import meritBadgesData from '../data/merit-badges.json';
 import { getUserTimezone } from '../lib/constants';
 import { useToast } from '../components/Toast';
-import { syncScoutbookCalendar } from '../services/storageService';
+import { syncScoutbookCalendar, updateCalendarUrl } from '../services/storageService';
 
 export const Route = createFileRoute('/events')({
   component: EventsPage,
@@ -194,18 +194,31 @@ function computeMeetingsPerMonthFrom(events: Event[]) {
   return Math.max(1, Math.round(totalMeetings / meetingsByMonth.size));
 }
 
+function dispatchStorageRefresh() {
+  window.dispatchEvent(
+    new StorageEvent('storage', {
+      key: 'scoutly_user_data',
+      newValue: localStorage.getItem('scoutly_user_data'),
+      url: window.location.href,
+      storageArea: localStorage,
+    }),
+  );
+}
+
 function EventsPage() {
   const navigate = useNavigate();
   const { userData, isLoading, updateProfile } = useUserData();
   const { showToast, confirm } = useToast();
   const userTimezone = useMemo(() => getUserTimezone(), []);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isSavingCalendarUrl, setIsSavingCalendarUrl] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
   const [hoverTimer, setHoverTimer] = useState<NodeJS.Timeout | null>(null);
+  const [calendarUrlDraft, setCalendarUrlDraft] = useState('');
   const [newEvent, setNewEvent] = useState({
     name: '',
     startTime: '',
@@ -216,6 +229,10 @@ function EventsPage() {
   const [showMeetingsDetectedModal, setShowMeetingsDetectedModal] = useState<{ open: boolean; estimate: number }>(() => ({ open: false, estimate: 0 }));
 
   const events = userData?.events || [];
+
+  useEffect(() => {
+    setCalendarUrlDraft(userData?.profile?.scoutbookCalendarUrl || '');
+  }, [userData?.profile?.scoutbookCalendarUrl]);
   
   // Calculate analysis automatically without AI
   const eventAnalysis = useMemo(() => {
@@ -238,7 +255,6 @@ function EventsPage() {
   };
 
   const autoMeetingsPerMonth = computeAutoMeetingsPerMonth();
-  const meetingsPerMonthOverride = userData?.profile?.meetingsPerMonthOverride ?? null;
   
   // Sort events by priority score (highest first), then by date
   const priorityValue = (p: string | undefined): number => {
@@ -281,13 +297,7 @@ function EventsPage() {
     (async () => {
       try {
         await syncScoutbookCalendar();
-        // Trigger storage event so the calendar re-renders with fresh events
-        window.dispatchEvent(new StorageEvent('storage', {
-          key: 'scoutly_user_data',
-          newValue: localStorage.getItem('scoutly_user_data'),
-          url: window.location.href,
-          storageArea: localStorage,
-        }));
+        dispatchStorageRefresh();
       } catch {
         // Silent on auto-sync; user can manually sync if needed
       }
@@ -297,17 +307,68 @@ function EventsPage() {
 
   // handleManualAnalysis replaced by generateEventRecommendations
 
+  const validateCalendarUrl = (value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed) return { ok: true as const, value: '' };
+    if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
+      return { ok: false as const, message: 'Calendar URL must start with http:// or https://' };
+    }
+
+    return { ok: true as const, value: trimmed };
+  };
+
+  const saveCalendarUrl = async (silent = false) => {
+    const validation = validateCalendarUrl(calendarUrlDraft);
+    if (!validation.ok) {
+      if (!silent) showToast('error', validation.message);
+      return null;
+    }
+
+    setIsSavingCalendarUrl(true);
+    try {
+      await updateCalendarUrl(validation.value || null);
+      dispatchStorageRefresh();
+      if (!silent) {
+        showToast(
+          'success',
+          validation.value ? 'Calendar URL saved.' : 'Calendar URL removed.',
+        );
+      }
+      return validation.value;
+    } catch {
+      if (!silent) showToast('error', 'Unable to save calendar URL right now.');
+      return null;
+    } finally {
+      setIsSavingCalendarUrl(false);
+    }
+  };
+
   const handleSyncScoutbook = async () => {
+    const validation = validateCalendarUrl(calendarUrlDraft);
+    if (!validation.ok) {
+      showToast('error', validation.message);
+      return;
+    }
+
+    const draftChanged =
+      validation.value !== (userData?.profile.scoutbookCalendarUrl || '');
+    const syncSourceUrl = draftChanged ? await saveCalendarUrl(true) : validation.value;
+    if (draftChanged && syncSourceUrl === null) {
+      showToast('error', 'Unable to save calendar URL right now.');
+      return;
+    }
+
+    const hasUrlToSync = Boolean(syncSourceUrl || userData?.profile.scoutbookCalendarUrl);
+
+    if (!hasUrlToSync) {
+      showToast('warning', 'Add a Scoutbook calendar URL before syncing.');
+      return;
+    }
+
     setIsSyncing(true);
     try {
       await syncScoutbookCalendar();
-      // Trigger storage event so event list re-renders
-      window.dispatchEvent(new StorageEvent('storage', {
-        key: 'scoutly_user_data',
-        newValue: localStorage.getItem('scoutly_user_data'),
-        url: window.location.href,
-        storageArea: localStorage,
-      }));
+      dispatchStorageRefresh();
       showToast('success', 'Calendar synced! Events updated from Scoutbook.');
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Sync failed.';
@@ -325,13 +386,7 @@ function EventsPage() {
     currentUserData.events = [];
     localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
 
-    // Trigger storage event to update UI
-    window.dispatchEvent(new StorageEvent('storage', {
-      key: 'scoutly_user_data',
-      newValue: JSON.stringify(currentUserData),
-      url: window.location.href,
-      storageArea: localStorage
-    }));
+    dispatchStorageRefresh();
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -361,15 +416,9 @@ function EventsPage() {
   currentUserData.events = [...existingEvents, ...newEvents];
       localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
       
-      // Trigger storage event to update UI
-      window.dispatchEvent(new StorageEvent('storage', {
-        key: 'scoutly_user_data',
-        newValue: JSON.stringify(currentUserData),
-        url: window.location.href,
-        storageArea: localStorage
-      }));
-      
-      setShowUploadModal(false);
+      dispatchStorageRefresh();
+
+      setShowCalendarModal(false);
       e.target.value = ''; // Reset file input
 
       // After importing, estimate meetings/month once and prompt the user to accept or edit
@@ -397,13 +446,7 @@ function EventsPage() {
     currentUserData.events = [...(currentUserData.events || []), event];
     localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
     
-    // Trigger storage event to update UI
-    window.dispatchEvent(new StorageEvent('storage', {
-      key: 'scoutly_user_data',
-      newValue: JSON.stringify(currentUserData),
-      url: window.location.href,
-      storageArea: localStorage
-    }));
+    dispatchStorageRefresh();
 
     setNewEvent({ name: '', startTime: '', endTime: '', location: '', type: 'other' });
     setShowAddModal(false);
@@ -417,13 +460,7 @@ function EventsPage() {
     currentUserData.events = currentUserData.events.filter((e: Event) => e.id !== eventId);
     localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
 
-    // Trigger storage event to update UI
-    window.dispatchEvent(new StorageEvent('storage', {
-      key: 'scoutly_user_data',
-      newValue: JSON.stringify(currentUserData),
-      url: window.location.href,
-      storageArea: localStorage
-    }));
+    dispatchStorageRefresh();
   };
 
   const getEventTypeColor = (type: Event['type']) => {
@@ -520,7 +557,7 @@ function EventsPage() {
       <div className="app-shell__content max-w-6xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+          <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-linear-to-br from-emerald-600 to-sky-600 rounded-xl flex items-center justify-center shadow-[0_10px_24px_rgba(14,165,233,0.22)]">
                 <TentIcon className="w-6 h-6 text-white" size={24} />
@@ -531,7 +568,7 @@ function EventsPage() {
               </div>
             </div>
 
-            <div className="flex gap-3 items-center">
+            <div className="flex flex-wrap items-center gap-3">
               {/* Meetings/Month display */}
               <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-2 py-1 shadow-sm">
                 <span className="text-xs text-slate-500">Meetings/mo</span>
@@ -539,51 +576,34 @@ function EventsPage() {
                   {autoMeetingsPerMonth.toString()}
                 </span>
               </div>
-              {/* Removed Build Recommendations Button and Analyzing Spinner */}
-              
-              {/* Scoutbook Sync button — shown when a URL is saved */}
-              {userData?.profile.scoutbookCalendarUrl && (
-                <div className="flex flex-col items-end">
-                  <button
-                    onClick={handleSyncScoutbook}
-                    disabled={isSyncing}
-                    className="px-4 py-2 bg-sky-50 hover:bg-sky-100 border border-sky-300 rounded-lg text-sky-700 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
-                    {isSyncing ? 'Syncing…' : 'Sync Scoutbook'}
-                  </button>
-                  {userData.profile.lastCalendarSync && (
-                    <span className="text-[10px] text-slate-400 mt-0.5 pr-1">
-                      Last synced {new Date(userData.profile.lastCalendarSync).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
-                    </span>
-                  )}
-                </div>
-              )}
               <button
-                onClick={() => setShowUploadModal(true)}
-                className="px-4 py-2 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-lg text-sky-700 transition-all flex items-center gap-2"
+                onClick={() => setShowCalendarModal(true)}
+                className="px-4 py-2 bg-linear-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 rounded-lg text-white font-semibold transition-all flex items-center gap-2"
               >
                 <Upload className="w-4 h-4" />
-                Import ICS
+                Manage Calendar
               </button>
               <button
                 onClick={() => setShowAddModal(true)}
-                className="px-4 py-2 bg-linear-to-r from-emerald-600 to-sky-600 hover:from-emerald-500 hover:to-sky-500 rounded-lg text-white font-semibold transition-all flex items-center gap-2"
+                className="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-slate-700 transition-all flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
                 Add Event
               </button>
-              {events.length > 0 && (
-                <button
-                  onClick={handleClearAllEvents}
-                  className="px-4 py-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg text-rose-700 transition-all flex items-center gap-2"
-                >
-                  <X className="w-4 h-4" />
-                  Clear All
-                </button>
-              )}
             </div>
           </div>
+
+          {events.length > 0 && (
+            <div className="mb-6 flex justify-end">
+              <button
+                onClick={handleClearAllEvents}
+                className="inline-flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-sm font-medium text-rose-700 transition-all hover:bg-rose-100"
+              >
+                <X className="w-4 h-4" />
+                Clear all events
+              </button>
+            </div>
+          )}
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4">
@@ -831,7 +851,7 @@ function EventsPage() {
           {upcomingEvents.length === 0 ? (
             <div className="app-surface rounded-xl p-8 text-center">
               <TentIcon className="w-12 h-12 text-slate-600 mx-auto mb-3" size={48} />
-              <p className="text-slate-600">No upcoming events. Add one or import from ICS file!</p>
+              <p className="text-slate-600">No upcoming events. Add one or connect a calendar to get started.</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -942,42 +962,104 @@ function EventsPage() {
         </div>
       )}
 
-      {/* Upload ICS Modal */}
-      {showUploadModal && (
+      {/* Manage Calendar Modal */}
+      {showCalendarModal && (
         <div className="fixed inset-0 bg-slate-900/35 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-xl w-full shadow-2xl">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-slate-900">Import Calendar</h3>
-              <button onClick={() => setShowUploadModal(false)} className="text-slate-500 hover:text-slate-900">
+              <h3 className="text-xl font-bold text-slate-900">Manage Calendar</h3>
+              <button onClick={() => setShowCalendarModal(false)} className="text-slate-500 hover:text-slate-900">
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             <div className="space-y-4">
               <p className="text-slate-600 text-sm">
-                Upload an ICS (iCalendar) file to import events from your troop calendar, Google Calendar, or other calendar apps.
+                Keep your troop schedule current by syncing Scoutbook and optionally importing
+                calendar files.
               </p>
 
-              <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-emerald-400 transition-colors bg-slate-50">
-                <input
-                  type="file"
-                  accept=".ics,.ical"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                  id="ics-upload"
-                />
-                <label htmlFor="ics-upload" className="cursor-pointer">
-                  <Upload className="w-12 h-12 text-emerald-600 mx-auto mb-3" />
-                  <p className="text-slate-900 font-medium mb-1">Click to upload</p>
-                  <p className="text-sm text-slate-600">or drag and drop ICS file</p>
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <label className="block text-sm font-semibold text-slate-900 mb-2">
+                  Scoutbook calendar URL
                 </label>
+                <input
+                  type="url"
+                  value={calendarUrlDraft}
+                  onChange={(event) => setCalendarUrlDraft(event.target.value)}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 focus:border-transparent focus:ring-4 focus:ring-sky-100"
+                  placeholder="https://api.scouting.org/advancements/events/calendar/..."
+                  spellCheck={false}
+                  autoComplete="off"
+                />
+                <p className="mt-2 text-xs text-slate-500">
+                  In Scoutbook Plus Calendar, use Copy url for your troop calendar.
+                </p>
+
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button
+                    onClick={() => {
+                      void saveCalendarUrl();
+                    }}
+                    disabled={isSavingCalendarUrl || isSyncing}
+                    className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {isSavingCalendarUrl ? 'Saving...' : 'Save URL'}
+                  </button>
+                  <button
+                    onClick={handleSyncScoutbook}
+                    disabled={isSyncing || isSavingCalendarUrl}
+                    className="inline-flex items-center gap-2 rounded-lg bg-sky-600 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
+                    {isSyncing ? 'Syncing…' : 'Sync now'}
+                  </button>
+                </div>
+
+                <p className="mt-2 text-xs text-slate-500">
+                  {userData?.profile.lastCalendarSync
+                    ? `Last synced ${new Date(userData.profile.lastCalendarSync).toLocaleString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                      })}`
+                    : 'No successful sync yet.'}
+                </p>
               </div>
 
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <h4 className="text-sm font-semibold text-slate-900">Import calendar file (optional)</h4>
+                <p className="text-xs text-slate-500 mt-1 mb-3">
+                  Upload an ICS file from troop, Google, or Apple calendars.
+                </p>
+
+                <div className="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:border-emerald-400 transition-colors bg-white">
+                  <input
+                    type="file"
+                    accept=".ics,.ical"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    id="ics-upload"
+                  />
+                  <label htmlFor="ics-upload" className="cursor-pointer">
+                    <Upload className="w-10 h-10 text-emerald-600 mx-auto mb-2" />
+                    <p className="text-slate-900 font-medium mb-1">Click to upload ICS</p>
+                    <p className="text-sm text-slate-600">or drag and drop file</p>
+                  </label>
+                </div>
+              </div>
+
+              <p className="text-slate-600 text-sm">
+                Calendar connections stay managed here. Manual events can still be added from the
+                main Events page.
+              </p>
+
               <button
-                onClick={() => setShowUploadModal(false)}
+                onClick={() => setShowCalendarModal(false)}
                 className="w-full px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 font-semibold transition-all"
               >
-                Cancel
+                Done
               </button>
             </div>
           </div>
@@ -1043,7 +1125,7 @@ function EventCard({
   isPast?: boolean;
   analysis?: EventAnalysis;
 }) {
-  const [showDetails, setShowDetails] = React.useState(false);
+  const [showDetails] = React.useState(false);
   const [showTooltip, setShowTooltip] = React.useState(false);
   
   const startDate = new Date(event.startTime);
