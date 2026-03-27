@@ -6,9 +6,24 @@ export interface OnboardingFormState {
   troopNumber: string;
   meetingDay: string;
   meetingTime: string;
+  scoutbookCalendarUrl: string;
 }
 
 export type OnboardingErrors = Partial<Record<keyof OnboardingFormState, string>>;
+
+export function validateCalendarUrl(value: string) {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return null;
+  }
+
+  if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
+    return 'Calendar URL must start with http:// or https://.';
+  }
+
+  return null;
+}
 
 export function validateStepOne(form: OnboardingFormState): OnboardingErrors {
   const errors: OnboardingErrors = {};
@@ -27,6 +42,7 @@ export function validateStepOne(form: OnboardingFormState): OnboardingErrors {
 export function validateStepTwo(form: OnboardingFormState): OnboardingErrors {
   const errors: OnboardingErrors = {};
   const meetingsOverride = form.meetingsPerMonthOverride.trim();
+  const calendarUrlError = validateCalendarUrl(form.scoutbookCalendarUrl);
 
   if (meetingsOverride) {
     const meetingsValue = Number(meetingsOverride);
@@ -34,6 +50,10 @@ export function validateStepTwo(form: OnboardingFormState): OnboardingErrors {
       errors.meetingsPerMonthOverride =
         'Meetings per month must be a whole number between 1 and 31.';
     }
+  }
+
+  if (calendarUrlError) {
+    errors.scoutbookCalendarUrl = calendarUrlError;
   }
 
   return errors;

@@ -1,7 +1,15 @@
 import { Link } from '@tanstack/react-router';
-import { Award, CheckCircle2, Target } from 'lucide-react';
+import { Award, CheckCircle2, ShieldCheck, Target } from 'lucide-react';
 import type { UserData } from '../data/userData';
 import rankRequirementsData from '../data/rank-reqs.json';
+import {
+  getMeritBadgeFocusSummary,
+  getMeritBadgePaceSummary,
+  getRankProgressSummary,
+  getSignoffPaceSummary,
+  getUserFocusTrack,
+  getWorkingRankId,
+} from '../lib/scoutFocus';
 
 const RANK_PROGRESSION = [
   'rank_scout',
@@ -24,6 +32,11 @@ export function RankAdvancement({ userData }: RankAdvancementProps) {
   if (!currentRankId.startsWith('rank_')) {
     currentRankId = `rank_${currentRankId}`;
   }
+
+  const focusTrack = getUserFocusTrack(userData);
+  const workingRankId = getWorkingRankId(currentRankId);
+  const workingRankProgress = getRankProgressSummary(userData, workingRankId);
+  const meritBadgeFocus = getMeritBadgeFocusSummary(userData);
 
   const currentRankIndex = RANK_PROGRESSION.indexOf(currentRankId as typeof RANK_PROGRESSION[number]);
   const nextRankIndex = currentRankIndex + 1;
@@ -63,6 +76,80 @@ export function RankAdvancement({ userData }: RankAdvancementProps) {
   const totalReqs = allRequirements.length;
   const progressPercent = (completedReqs / totalReqs) * 100;
 
+  if (focusTrack === 'meritBadges') {
+    return (
+      <div className="app-surface rounded-[1.75rem] p-6">
+        <div className="mb-5 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-700">
+              <ShieldCheck className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-slate-950">Merit badge focus</h3>
+              <p className="text-sm font-medium text-sky-700">
+                Primary push for {workingRankProgress.rankName}
+              </p>
+            </div>
+          </div>
+          <div className="rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-semibold text-slate-700">
+            {meritBadgeFocus.completedRequiredCount}/21
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-sky-100 bg-linear-to-r from-sky-50 via-white to-emerald-50 p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                Eagle-required progress
+              </p>
+              <p className="mt-1 text-lg font-semibold text-slate-950">
+                {meritBadgeFocus.inProgressCount} in progress, {meritBadgeFocus.notStartedCount} not started
+              </p>
+            </div>
+            <div className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-slate-700 shadow-sm">
+              {meritBadgeFocus.remainingRequirements} reqs left
+            </div>
+          </div>
+          <p className="mt-2 text-sm leading-6 text-slate-600">
+            {getMeritBadgePaceSummary(userData)}
+          </p>
+        </div>
+
+        <div className="mt-5 space-y-3">
+          {meritBadgeFocus.recommended.map((badge) => (
+            <Link
+              key={badge.id}
+              to="/merit-badges/$badgeId"
+              params={{ badgeId: badge.id }}
+              className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-slate-300"
+            >
+              <div>
+                <p className="text-base font-semibold text-slate-950">{badge.name}</p>
+                <p className="mt-1 text-sm text-slate-600">
+                  {badge.state === 'inProgress'
+                    ? `Already moving. Keep momentum and close the next requirement.`
+                    : 'Not started yet. Good candidate to begin next.'}
+                </p>
+              </div>
+              <div className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm font-semibold text-slate-700">
+                {badge.state === 'inProgress' ? `${badge.percentage}%` : 'Start'}
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        <div className="mt-5 border-t border-slate-200 pt-4">
+          <Link
+            to="/merit-badges/"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-[#1f3448] transition-colors hover:text-[#24584b]"
+          >
+            Open merit badge tracker
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="app-surface rounded-[1.75rem] p-6">
       <div className="mb-5 flex items-center justify-between gap-3">
@@ -71,7 +158,7 @@ export function RankAdvancement({ userData }: RankAdvancementProps) {
             <Target className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="text-xl font-semibold text-slate-950">Next rank focus</h3>
+            <h3 className="text-xl font-semibold text-slate-950">Signoff focus</h3>
             <p className="text-sm font-medium text-[#24584b]">{nextRank.name}</p>
           </div>
         </div>
@@ -91,6 +178,13 @@ export function RankAdvancement({ userData }: RankAdvancementProps) {
             style={{ width: `${progressPercent}%` }}
           />
         </div>
+      </div>
+
+      <div className="mb-5 rounded-2xl border border-emerald-100 bg-linear-to-r from-emerald-50 via-white to-sky-50 p-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+          Scout through First Class
+        </p>
+        <p className="mt-1 text-sm leading-6 text-slate-600">{getSignoffPaceSummary(userData)}</p>
       </div>
 
       <div className="max-h-[320px] space-y-2 overflow-y-auto pr-2">

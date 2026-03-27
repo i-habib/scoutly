@@ -14,6 +14,7 @@ function makeForm(overrides: Partial<OnboardingFormState> = {}): OnboardingFormS
     troopNumber: '',
     meetingDay: '',
     meetingTime: '',
+    scoutbookCalendarUrl: '',
     ...overrides,
   };
 }
@@ -44,5 +45,17 @@ describe('onboarding validation helpers', () => {
   it('rejects invalid meetings-per-month values on step two', () => {
     const errors = validateStepTwo(makeForm({ meetingsPerMonthOverride: '0' }));
     expect(errors.meetingsPerMonthOverride).toBeDefined();
+  });
+
+  it('rejects invalid calendar urls on step two', () => {
+    const errors = validateStepTwo(makeForm({ scoutbookCalendarUrl: 'calendar.local/feed.ics' }));
+    expect(errors.scoutbookCalendarUrl).toBeDefined();
+  });
+
+  it('accepts valid calendar urls on step two', () => {
+    const errors = validateStepTwo(
+      makeForm({ scoutbookCalendarUrl: 'https://api.scouting.org/feed.ics' }),
+    );
+    expect(errors.scoutbookCalendarUrl).toBeUndefined();
   });
 });

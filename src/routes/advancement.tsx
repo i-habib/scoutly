@@ -1,12 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 import { useState } from 'react';
-import { CheckCircle2, Circle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowUpRight, CheckCircle2, Circle, ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useUserData } from '../hooks/useUserData';
 import rankRequirementsData from '../data/rank-reqs.json';
 import * as storage from '../services/storageService';
 import { EagleIcon, MeritBadgeIcon, CompassIcon } from '../components/ScoutIcons';
 import { RANK_ORDER, RANK_COLORS, getRankDisplayName, normalizeRankId } from '../lib/constants';
+import { getMeritBadgePaceSummary, getUserFocusTrack, getWorkingRankId } from '../lib/scoutFocus';
 import { useToast } from '../components/Toast';
 
 export const Route = createFileRoute('/advancement')({
@@ -63,6 +65,9 @@ function AdvancementPage() {
   const startIndex = currentRankIndex >= 0 ? currentRankIndex : 0;
   
   const [selectedRankIndex, setSelectedRankIndex] = useState(startIndex);
+  const focusTrack = userData ? getUserFocusTrack(userData) : 'signoffs';
+  const workingRankId = userData ? getWorkingRankId(userData.profile.currentRank) : 'rank_tenderfoot';
+  const workingRankLabel = getRankDisplayName(workingRankId);
   
    // In-progress rank is always the next rank after the current completed rank
    const inProgressRankId = currentRankIndex >= 0 && currentRankIndex < RANK_ORDER.length - 1
@@ -226,6 +231,11 @@ function AdvancementPage() {
             <div>
               <h1 className="text-3xl font-bold text-slate-950">Rank Advancement</h1>
               <p className="text-slate-600">
+                {focusTrack === 'signoffs'
+                  ? 'Which signoffs are still open for your next rank?'
+                  : 'Rank requirements matter, but merit badges are the main priority now.'}
+              </p>
+              <p className="text-slate-500">
                 Current rank: <span className="font-semibold capitalize text-emerald-700">{normalizedCurrentRankLabel}</span>
                 {inProgressRankLabel && (
                   <>
@@ -236,6 +246,34 @@ function AdvancementPage() {
             </div>
           </div>
         </div>
+
+        {focusTrack === 'meritBadges' && (
+          <div className="mb-6 rounded-3xl border border-sky-100 bg-linear-to-r from-sky-50 via-white to-emerald-50 p-5 shadow-[0_18px_40px_rgba(14,165,233,0.08)]">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex items-start gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-sky-700 shadow-sm">
+                  <ShieldCheck className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-slate-950">
+                    Merit badges are the real focus for {workingRankLabel}
+                  </h2>
+                  <p className="mt-1 text-sm leading-6 text-slate-600">
+                    {getMeritBadgePaceSummary(userData)}
+                  </p>
+                </div>
+              </div>
+
+              <Link
+                to="/merit-badges/"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-sky-600 to-emerald-500 px-4 py-3 text-sm font-semibold text-white shadow-[0_16px_30px_rgba(14,165,233,0.18)] transition-all hover:-translate-y-0.5 hover:brightness-105"
+              >
+                Open merit badges
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Rank Navigation */}
         <div className="app-surface mb-6 rounded-3xl p-6">
@@ -354,7 +392,9 @@ function AdvancementPage() {
 
         {/* Requirements List */}
         <div className="space-y-4">
-          <h3 className="mb-4 text-xl font-bold text-slate-950">Requirements</h3>
+          <h3 className="mb-4 text-xl font-bold text-slate-950">
+            {focusTrack === 'signoffs' ? 'Requirements to sign off' : 'Rank requirements sidecar'}
+          </h3>
 
           {rankData.requirements.map((req, index) => {
             const hasSubReqs = req.sub_requirements && req.sub_requirements.length > 0;

@@ -8,15 +8,47 @@ interface IconProps {
 export const ScoutFleurDeLis: React.FC<IconProps> = ({ className = '', size = 24 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
     <path
-      d="M12 2.5C9.85 4.5 8.82 7.05 8.92 9.56C6.75 8.69 4.71 8.94 3.5 10.12C5.36 10.72 6.93 12.16 8.02 14.23C8.56 15.26 8.94 16.39 9.17 17.55H7.46L6.08 20.5H10.19L12 17.89L13.81 20.5H17.92L16.54 17.55H14.83C15.06 16.39 15.44 15.26 15.98 14.23C17.07 12.16 18.64 10.72 20.5 10.12C19.29 8.94 17.25 8.69 15.08 9.56C15.18 7.05 14.15 4.5 12 2.5Z"
+      d="M12 2.2C10.17 3.84 9.09 6.12 9.22 8.45C7.2 7.64 5.16 7.89 3.9 9.15C5.39 9.68 6.84 10.99 7.92 12.93C8.62 14.18 9.08 15.67 9.31 17.3H7.21L5.8 20.3H10.38L12 17.92L13.62 20.3H18.2L16.79 17.3H14.69C14.92 15.67 15.38 14.18 16.08 12.93C17.16 10.99 18.61 9.68 20.1 9.15C18.84 7.89 16.8 7.64 14.78 8.45C14.91 6.12 13.83 3.84 12 2.2Z"
       fill="currentColor"
     />
     <path
-      d="M12 7.45C11.04 8.47 10.52 9.69 10.45 10.94C10.38 12.25 10.77 13.69 12 15.27C13.23 13.69 13.62 12.25 13.55 10.94C13.48 9.69 12.96 8.47 12 7.45Z"
+      d="M12 3.5C11 4.57 10.45 5.95 10.45 7.39C10.45 8.94 11.08 10.64 12 12.28C12.92 10.64 13.55 8.94 13.55 7.39C13.55 5.95 13 4.57 12 3.5Z"
       fill="white"
-      fillOpacity="0.22"
+      fillOpacity="0.24"
     />
-    <path d="M10.87 17.55H13.13" stroke="white" strokeOpacity="0.34" strokeWidth="1.2" strokeLinecap="round" />
+    <path
+      d="M9.16 9.86C8.14 9.57 7.07 9.64 6.06 10.08C6.88 10.79 7.61 11.84 8.16 13.15C8.56 14.11 8.82 15.16 8.96 16.3H9.95C9.73 14.66 9.45 12.58 9.16 9.86Z"
+      fill="white"
+      fillOpacity="0.14"
+    />
+    <path
+      d="M14.84 9.86C15.86 9.57 16.93 9.64 17.94 10.08C17.12 10.79 16.39 11.84 15.84 13.15C15.44 14.11 15.18 15.16 15.04 16.3H14.05C14.27 14.66 14.55 12.58 14.84 9.86Z"
+      fill="white"
+      fillOpacity="0.14"
+    />
+    <path
+      d="M8.82 11.42C9.88 11.93 10.76 12.86 11.35 14.03"
+      stroke="white"
+      strokeOpacity="0.28"
+      strokeWidth="1.15"
+      strokeLinecap="round"
+    />
+    <path
+      d="M15.18 11.42C14.12 11.93 13.24 12.86 12.65 14.03"
+      stroke="white"
+      strokeOpacity="0.28"
+      strokeWidth="1.15"
+      strokeLinecap="round"
+    />
+    <path
+      d="M12 11.95V17.2"
+      stroke="white"
+      strokeOpacity="0.18"
+      strokeWidth="1.1"
+      strokeLinecap="round"
+    />
+    <circle cx="12" cy="16.24" r="1.05" fill="white" fillOpacity="0.36" />
+    <circle cx="12" cy="7.2" r="0.7" fill="white" fillOpacity="0.2" />
   </svg>
 );
 

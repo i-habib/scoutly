@@ -255,6 +255,7 @@ function EventsPage() {
   };
 
   const autoMeetingsPerMonth = computeAutoMeetingsPerMonth();
+  const hasCalendarConnection = Boolean(userData?.profile?.scoutbookCalendarUrl);
   
   // Sort events by priority score (highest first), then by date
   const priorityValue = (p: string | undefined): number => {
@@ -280,6 +281,7 @@ function EventsPage() {
       return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
     })
     .slice(0, 15); // Limit to 15 upcoming events
+  const nextUpcomingEvent = upcomingEvents[0];
     
   const pastEvents = events
     .filter(e => new Date(e.startTime) < new Date())
@@ -564,7 +566,11 @@ function EventsPage() {
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-slate-900">Troop Events</h1>
-                <p className="text-slate-600">Manage your scouting calendar</p>
+                <p className="text-slate-600">
+                  {nextUpcomingEvent
+                    ? 'What is coming up next, and is the calendar helping you plan for it?'
+                    : 'Get the troop calendar connected so upcoming dates can drive the rest of the plan.'}
+                </p>
               </div>
             </div>
 
@@ -590,6 +596,38 @@ function EventsPage() {
                 <Plus className="w-4 h-4" />
                 Add Event
               </button>
+            </div>
+          </div>
+
+          <div className="mb-6 grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(16rem,0.85fr)]">
+            <div className="rounded-2xl border border-slate-200 bg-linear-to-r from-sky-50 via-white to-emerald-50 p-4 shadow-[0_14px_30px_rgba(24,35,47,0.05)]">
+              <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                Calendar focus
+              </div>
+              <div className="mt-1 text-lg font-semibold text-slate-950">
+                {nextUpcomingEvent ? nextUpcomingEvent.name : hasCalendarConnection ? 'Calendar is connected' : 'Calendar setup still needed'}
+              </div>
+              <div className="mt-2 text-sm leading-6 text-slate-600">
+                {nextUpcomingEvent
+                  ? `${new Date(nextUpcomingEvent.startTime).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: userTimezone })}${nextUpcomingEvent.location ? ` • ${nextUpcomingEvent.location}` : ''}`
+                  : hasCalendarConnection
+                    ? 'Your Scoutbook link is saved. Use Manage Calendar to refresh imported events and keep planning current.'
+                    : 'Attach Scoutbook or import ICS so Scoutly can plan around meetings, campouts, and service dates.'}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_10px_24px_rgba(24,35,47,0.04)]">
+              <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                Connection status
+              </div>
+              <div className="mt-1 text-lg font-semibold text-slate-950">
+                {hasCalendarConnection ? 'Scoutbook attached' : 'No live calendar'}
+              </div>
+              <div className="mt-2 text-sm text-slate-600">
+                {userData?.profile.lastCalendarSync
+                  ? `Last synced ${new Date(userData.profile.lastCalendarSync).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}`
+                  : 'No successful sync recorded yet.'}
+              </div>
             </div>
           </div>
 

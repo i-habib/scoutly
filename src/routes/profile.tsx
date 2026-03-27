@@ -17,8 +17,14 @@ import {
   Users,
   X,
 } from 'lucide-react';
-import { computeBadgeProgressByMeta, splitEagleRequiredByStatus } from '../lib/progress';
+import { splitEagleRequiredByStatus } from '../lib/progress';
 import { RANK_ORDER, getRankDisplayName, normalizeRankId } from '../lib/constants';
+import {
+  getMeritBadgePaceSummary,
+  getSignoffPaceSummary,
+  getUserFocusTrack,
+  getWorkingRankId,
+} from '../lib/scoutFocus';
 import { useToast } from '../components/Toast';
 import * as storage from '../services/storageService';
 
@@ -118,57 +124,9 @@ function createProfileFormState(profile?: {
 }
 
 function calculatePaceAssessment(userData: NonNullable<ReturnType<typeof useUserData>['userData']>) {
-  if (!userData.profile.targetEagleDate) {
-    return 'Set a target Eagle date to calculate your current pace.';
-  }
-
-  const today = new Date();
-  const targetDate = new Date(userData.profile.targetEagleDate);
-  const daysRemaining = Math.ceil((targetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-
-  const eagleRequiredBadges = meritBadgesData.meritBadges.filter((badge) => badge.eagleRequired);
-  let completedBadges = 0;
-
-  eagleRequiredBadges.forEach((badge) => {
-    const { total, completed } = computeBadgeProgressByMeta(badge as any, userData.progress[badge.id]);
-    if (completed >= total && total > 0) completedBadges++;
-  });
-
-  const incompleteBadges = eagleRequiredBadges.filter((badge) => {
-    const { total, completed } = computeBadgeProgressByMeta(badge as any, userData.progress[badge.id]);
-    return completed < total;
-  });
-
-  let remainingRequirements = 0;
-  incompleteBadges.forEach((badge) => {
-    const { total, completed } = computeBadgeProgressByMeta(badge as any, userData.progress[badge.id]);
-    remainingRequirements += Math.max(0, total - completed);
-  });
-
-  if (daysRemaining <= 0) {
-    return 'Your target date has already passed. Update the goal to rebuild a realistic plan.';
-  }
-
-  const badgesNeeded = 21 - completedBadges;
-  const badgesPerMonth = badgesNeeded / (daysRemaining / 30);
-  const requirementsPerWeek = (remainingRequirements / (daysRemaining / 7)).toFixed(1);
-  const priorityBadges = incompleteBadges.slice(0, 3).map((badge) => badge.name).join(', ');
-  const remainingBadgeNote =
-    incompleteBadges.length > 3 ? ` +${incompleteBadges.length - 3} more` : '';
-
-  if (badgesPerMonth < 0.5) {
-    return `Ahead of schedule. ${badgesNeeded} badges remain, with about ${requirementsPerWeek} sign-offs needed each week. Priority badges: ${priorityBadges}${remainingBadgeNote}.`;
-  }
-
-  if (badgesPerMonth < 1) {
-    return `On track. Plan for about one badge each month and roughly ${requirementsPerWeek} sign-offs each week. Priority badges: ${priorityBadges}${remainingBadgeNote}.`;
-  }
-
-  if (badgesPerMonth < 2) {
-    return `A faster pace is needed. Plan for about ${badgesPerMonth.toFixed(1)} badges each month and ${requirementsPerWeek} sign-offs each week. Focus on: ${priorityBadges}${remainingBadgeNote}.`;
-  }
-
-  return `This target is very aggressive. You need about ${badgesPerMonth.toFixed(1)} badges each month and ${requirementsPerWeek} sign-offs each week. Immediate focus: ${priorityBadges}${remainingBadgeNote}.`;
+  return getUserFocusTrack(userData) === 'signoffs'
+    ? getSignoffPaceSummary(userData)
+    : getMeritBadgePaceSummary(userData);
 }
 
 function formatLongDate(value: string | null | undefined) {
@@ -339,6 +297,15 @@ function Profile() {
 
   const rankInfo = getRankInfo(userData);
   const { completed, inProgress, notStarted } = splitEagleRequiredByStatus(userData);
+  const focusTrack = getUserFocusTrack(userData);
+  const workingRankId = getWorkingRankId(userData.profile.currentRank);
+  const workingRankLabel = getRankDisplayName(workingRankId);
+  const planningQuestion =
+    focusTrack === 'signoffs'
+      ? `Is your plan realistic for ${workingRankLabel} signoffs?`
+      : `Is your plan realistic for ${workingRankLabel} merit badge work?`;
+  const planningLensLabel =
+    focusTrack === 'signoffs' ? 'Signoff-first planning' : 'Merit-badge-first planning';
 
   return (
     <div className="app-shell">
@@ -357,7 +324,7 @@ function Profile() {
                 <div>
                   <h1 className="text-3xl font-bold text-slate-950">Profile Settings</h1>
                   <p className="text-slate-600">
-                    Manage the planning data used by your dashboard, events, and timeline.
+                    Source of truth for the plan behind your dashboard, events, and timeline.
                   </p>
                 </div>
               </div>
@@ -372,6 +339,38 @@ function Profile() {
                     Edit Settings
                   </button>
                 ) : null}
+              </div>
+            </div>
+
+            <div className="mb-6 grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(17rem,0.7fr)]">
+              <div className="rounded-3xl border border-slate-200 bg-linear-to-r from-[#f2f6f3] via-white to-[#eef7fb] p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-slate-700 shadow-sm">
+                    <Gauge className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                      {planningLensLabel}
+                    </p>
+                    <h2 className="text-xl font-bold text-slate-950">{planningQuestion}</h2>
+                  </div>
+                </div>
+                <p className="text-lg font-semibold text-slate-900">{paceAssessment}</p>
+                <p className="mt-2 text-sm text-slate-600">
+                  This page exists to keep your plan realistic, not just store account settings.
+                </p>
+              </div>
+
+              <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_10px_24px_rgba(24,35,47,0.05)]">
+                <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                  Current planning lens
+                </div>
+                <div className="mt-2 text-lg font-semibold text-slate-950">{workingRankLabel}</div>
+                <div className="mt-1 text-sm leading-6 text-slate-600">
+                  {focusTrack === 'signoffs'
+                    ? 'Scoutly is prioritizing rank signoffs and next-rank requirements right now.'
+                    : 'Scoutly is prioritizing Eagle-required merit badge momentum right now.'}
+                </div>
               </div>
             </div>
 
@@ -693,19 +692,6 @@ function Profile() {
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="mb-6 rounded-3xl border border-slate-200 bg-linear-to-r from-[#f2f6f3] via-white to-[#f3eee4] p-6 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-slate-700 shadow-sm">
-              <Gauge className="h-5 w-5" />
-            </div>
-            <h2 className="text-xl font-bold text-slate-950">Pace Assessment</h2>
-          </div>
-          <p className="text-lg font-semibold text-slate-900">{paceAssessment}</p>
-          <p className="mt-2 text-sm text-slate-600">
-            Based on your target date, current badge progress, and saved planning settings.
-          </p>
         </div>
 
         {completed.length > 0 && (

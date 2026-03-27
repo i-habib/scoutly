@@ -50,7 +50,7 @@ export default function Header() {
             </button>
 
             <Link to="/" preload="intent" className="flex min-w-0 items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1f3448] shadow-[0_10px_18px_rgba(31,52,72,0.16)]">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/50 bg-linear-to-br from-[#285746] via-[#1f3448] to-[#12212f] shadow-[0_14px_28px_rgba(18,33,47,0.22)] ring-1 ring-slate-200/70">
                 <ScoutFleurDeLis className="h-5 w-5 text-white" />
               </div>
               <div className="min-w-0">
@@ -101,7 +101,7 @@ export default function Header() {
       >
         <div className="flex items-center justify-between border-b border-slate-200/80 p-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1f3448]">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/50 bg-linear-to-br from-[#285746] via-[#1f3448] to-[#12212f] shadow-[0_14px_28px_rgba(18,33,47,0.22)] ring-1 ring-slate-200/70">
               <ScoutFleurDeLis className="h-5 w-5 text-white" />
             </div>
             <div>

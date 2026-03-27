@@ -1,12 +1,16 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { lazy, Suspense, useEffect } from 'react';
 import {
+  ArrowUpRight,
   Award,
   CalendarRange,
+  CheckCircle2,
   ChevronRight,
   Clock3,
-  LayoutDashboard,
+  Link2,
+  Sparkles,
   ShieldCheck,
+  Target,
   UserRound,
 } from 'lucide-react';
 import { useUserData } from '../hooks/useUserData';
@@ -52,57 +56,21 @@ function Dashboard() {
     .filter((event) => new Date(event.startTime).getTime() >= Date.now())
     .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
     .slice(0, 5);
+  const nextEvent = upcomingEvents[0] || null;
+  const hasCalendarConnection = Boolean(userData.profile.scoutbookCalendarUrl);
 
   const requiredProfileGaps = [
     !userData.profile.name ? 'Scout name' : null,
     !userData.profile.currentRank ? 'Current rank' : null,
   ].filter(Boolean) as string[];
-  const isTargetDateMissing = !userData.profile.targetEagleDate;
-
-  const recommendedActions = [
-    {
-      title: upcomingEvents.length === 0 ? 'Set up troop calendar' : 'Manage troop calendar',
-      description:
-        upcomingEvents.length === 0
-          ? 'Add or connect your troop calendar so Scoutly can prioritize meetings, campouts, and service opportunities.'
-          : 'Keep meetings, campouts, and service events current for better planning recommendations.',
-      to: '/events',
-    },
-    {
-      title: 'Review advancement progress',
-      description: 'Check rank requirements and mark completed sign-offs.',
-      to: '/advancement',
-    },
-    {
-      title: stats.inProgress.length === 0 ? 'Start an Eagle-required merit badge' : 'Continue merit badge progress',
-      description:
-        stats.inProgress.length === 0
-          ? 'Choose a badge and begin logging requirement work.'
-          : 'Update in-progress badges to keep momentum between meetings.',
-      to: '/merit-badges/',
-    },
-    isTargetDateMissing
-      ? {
-          title: 'Set target Eagle date',
-          description: 'Add your target date in Profile to unlock full pacing and timeline guidance.',
-          to: '/profile',
-        }
-      : null,
-    !userData.profile.meetingsPerMonthOverride && upcomingEvents.length === 0
-          ? {
-              title: 'Set meeting cadence',
-              description: 'Add meetings per month in your profile until your troop calendar is loaded.',
-              to: '/profile',
-            }
-      : null,
-    requiredProfileGaps.length > 0
-      ? {
-          title: 'Finish profile setup',
-          description: 'Add your Scout name and current rank details.',
-          to: '/profile',
-        }
-      : null,
-  ].filter(Boolean) as Array<{ title: string; description: string; to: string }>;
+  const profileSignals = [
+    Boolean(userData.profile.name),
+    Boolean(userData.profile.currentRank),
+    Boolean(userData.profile.targetEagleDate),
+    Boolean(userData.profile.troopInfo?.troopNumber),
+    hasCalendarConnection,
+  ];
+  const profileReadiness = profileSignals.filter(Boolean).length;
 
   return (
     <div className="app-shell">
@@ -111,34 +79,122 @@ function Dashboard() {
       <div className="app-shell__glow app-shell__glow--bottom fixed" />
 
       <div className="app-shell__content mx-auto max-w-7xl px-6 py-8">
-        <section className="app-surface mb-6 rounded-2xl p-6">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+        <section className="app-surface relative mb-6 overflow-hidden rounded-[2rem] p-6 md:p-8">
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute -left-16 top-0 h-48 w-48 rounded-full bg-emerald-200/30 blur-3xl" />
+            <div className="absolute right-0 top-10 h-56 w-56 rounded-full bg-sky-200/30 blur-3xl" />
+            <div className="absolute inset-y-0 right-[34%] w-px bg-linear-to-b from-transparent via-slate-200/70 to-transparent" />
+          </div>
+
+          <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.9fr)]">
             <div>
-              <div className="mb-3 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1f3448] text-white">
-                  <ScoutFleurDeLis className="h-5 w-5" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/85 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600">
+                <Sparkles className="h-3.5 w-3.5 text-emerald-600" />
+                Scout dashboard
+              </div>
+
+              <div className="mt-5 flex items-start gap-4">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.4rem] border border-white/60 bg-linear-to-br from-[#285746] via-[#1f3448] to-[#12212f] text-white shadow-[0_18px_40px_rgba(18,33,47,0.24)] ring-1 ring-slate-200/70">
+                  <ScoutFleurDeLis className="h-8 w-8" />
                 </div>
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Dashboard</p>
-                  <p className="text-sm text-slate-500">Scouting workspace</p>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-slate-500">Scouting workspace</p>
+                  <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-950 md:text-4xl">
+                    {userName}
+                  </h1>
+                  <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 md:text-base">
+                    Keep advancement, merit badges, and troop plans aligned in one clean place,
+                    with the next best move always close by.
+                  </p>
                 </div>
               </div>
-              <h1 className="text-3xl font-semibold text-slate-950">{userName}</h1>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Use this dashboard to manage profile setup, badge progress, events, and rank advancement from one place.
-              </p>
+
+              <div className="mt-5 flex flex-wrap gap-2">
+                <HeroPill label="Current rank" value={currentRankLabel} />
+                <HeroPill label="Next rank" value={nextRankLabel} />
+                <HeroPill label="Target date" value={targetDateLabel} />
+              </div>
+
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                <SummaryTile
+                  label="Profile readiness"
+                  value={`${profileReadiness}/5`}
+                  detail="Core planning signals connected"
+                />
+                <SummaryTile
+                  label="Next troop event"
+                  value={nextEvent ? formatShortDate(nextEvent.startTime) : 'None yet'}
+                  detail={nextEvent ? nextEvent.name : 'Connect or add events to populate'}
+                />
+                <SummaryTile
+                  label="Calendar status"
+                  value={hasCalendarConnection ? 'Connected' : 'Needs setup'}
+                  detail={
+                    hasCalendarConnection
+                      ? 'Scoutbook link is attached to this account'
+                      : 'Add a Scoutbook link for smarter planning'
+                  }
+                />
+              </div>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-3 lg:min-w-[30rem]">
-              <SummaryTile label="Current rank" value={currentRankLabel} />
-              <SummaryTile label="Next rank" value={nextRankLabel} />
-              <SummaryTile label="Target date" value={targetDateLabel} />
+            <div className="rounded-[1.8rem] border border-white/70 bg-white/85 p-5 shadow-[0_20px_40px_rgba(24,35,47,0.08)] backdrop-blur">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-[0_10px_18px_rgba(24,35,47,0.18)]">
+                  <Target className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-950">Focus now</p>
+                  <p className="text-sm text-slate-500">Best next step based on your current data.</p>
+                </div>
+              </div>
+
+              <div className="mt-5 rounded-2xl border border-slate-200 bg-linear-to-br from-slate-50 to-white p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                      {nextEvent ? 'Upcoming event' : 'Calendar'}
+                    </p>
+                    <p className="mt-1 text-lg font-semibold text-slate-950">
+                      {nextEvent ? nextEvent.name : hasCalendarConnection ? 'Ready to sync' : 'Connect Scoutbook'}
+                    </p>
+                  </div>
+                  <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600">
+                    {hasCalendarConnection ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> : <Link2 className="h-3.5 w-3.5 text-sky-600" />}
+                    {hasCalendarConnection ? 'Attached' : 'Open setup'}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  {nextEvent
+                    ? `${formatDateTime(nextEvent.startTime)}${nextEvent.location ? ` • ${nextEvent.location}` : ''}`
+                    : hasCalendarConnection
+                      ? 'Your calendar link is saved. Open Events to refresh and manage imported troop dates.'
+                      : 'Attach a Scoutbook calendar to pull meetings, campouts, and service events into your plan.'}
+                </p>
+              </div>
+
+              <div className="mt-4 grid gap-3">
+                <Link
+                  to={hasCalendarConnection ? '/events' : '/events'}
+                  className="inline-flex items-center justify-between rounded-2xl bg-linear-to-r from-sky-600 via-cyan-500 to-emerald-500 px-4 py-3 text-sm font-semibold text-white shadow-[0_16px_32px_rgba(14,165,233,0.22)] transition-all hover:-translate-y-0.5 hover:brightness-105"
+                >
+                  {hasCalendarConnection ? 'Open event sync' : 'Connect calendar'}
+                  <ArrowUpRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  to="/advancement"
+                  className="inline-flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition-all hover:-translate-y-0.5 hover:border-slate-300 hover:text-slate-950"
+                >
+                  Review advancement
+                  <ChevronRight className="h-4 w-4" />
+                </Link>
+              </div>
             </div>
           </div>
         </section>
 
         {requiredProfileGaps.length > 0 && (
-          <section className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4">
+          <section className="mb-6 rounded-[1.6rem] border border-amber-200 bg-linear-to-r from-amber-50 to-orange-50 px-5 py-4 shadow-[0_14px_28px_rgba(180,83,9,0.06)]">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
                 <h2 className="text-base font-semibold text-amber-900">Profile setup needed</h2>
@@ -162,60 +218,46 @@ function Dashboard() {
             label="Eagle-required complete"
             value={`${completedRequired}/21`}
             detail={`${stats.inProgress.length} in progress`}
+            tone="emerald"
           />
           <StatCard
             icon={<ShieldCheck className="h-5 w-5" />}
             label="Not started"
             value={`${stats.notStarted.length}`}
             detail="Eagle-required badges not yet started"
+            tone="slate"
           />
           <StatCard
             icon={<CalendarRange className="h-5 w-5" />}
             label="Upcoming events"
             value={`${upcomingEvents.length}`}
             detail="Next troop items on the calendar"
+            tone="sky"
           />
           <StatCard
             icon={<Clock3 className="h-5 w-5" />}
             label="Days to goal"
             value={daysToGoal}
             detail="Based on your target Eagle date"
+            tone="amber"
           />
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
           <div className="space-y-6 lg:col-span-3">
-            <section className="app-surface rounded-2xl p-6">
-              <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
-                  <LayoutDashboard className="h-5 w-5" />
+            <Suspense
+              fallback={
+                <div className="app-surface rounded-[1.8rem] p-6">
+                  <p className="text-sm text-slate-500">Loading rank advancement...</p>
                 </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-slate-950">Action center</h2>
-                  <p className="text-sm text-slate-600">Recommended next steps based on your current data.</p>
-                </div>
-              </div>
+              }
+            >
+              <RankAdvancement userData={userData} />
+            </Suspense>
 
-              <div className="space-y-3">
-                {recommendedActions.map((action) => (
-                  <Link
-                    key={`${action.to}-${action.title}`}
-                    to={action.to}
-                    className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 transition-colors hover:border-slate-300 hover:bg-slate-50"
-                  >
-                    <div>
-                      <p className="text-sm font-semibold text-slate-950">{action.title}</p>
-                      <p className="text-sm text-slate-600">{action.description}</p>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-slate-400" />
-                  </Link>
-                ))}
-              </div>
-            </section>
-
-            <section className="app-surface rounded-2xl p-6">
+            <section className="app-surface rounded-[1.8rem] p-6">
               <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-linear-to-br from-sky-600 to-cyan-500 text-white shadow-[0_12px_24px_rgba(14,165,233,0.22)]">
                   <CalendarRange className="h-5 w-5" />
                 </div>
                 <div>
@@ -225,27 +267,13 @@ function Dashboard() {
               </div>
 
               {upcomingEvents.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-sm text-slate-600">
+                <div className="rounded-[1.4rem] border border-dashed border-slate-300 bg-linear-to-br from-slate-50 to-white px-5 py-6 text-sm text-slate-600">
                   No upcoming events yet. Add events or connect a calendar in the Events section.
                 </div>
               ) : (
                 <div className="space-y-3">
                   {upcomingEvents.map((event) => (
-                    <div
-                      key={event.id}
-                      className="flex flex-col gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 md:flex-row md:items-center md:justify-between"
-                    >
-                      <div>
-                        <p className="text-sm font-semibold text-slate-950">{event.name}</p>
-                        <p className="text-sm text-slate-600">
-                          {formatDateTime(event.startTime)}
-                          {event.location ? ` • ${event.location}` : ''}
-                        </p>
-                      </div>
-                      <span className="inline-flex w-fit rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-slate-600">
-                        {event.type}
-                      </span>
-                    </div>
+                    <EventCard key={event.id} event={event} />
                   ))}
                 </div>
               )}
@@ -253,9 +281,9 @@ function Dashboard() {
           </div>
 
           <div className="space-y-6 lg:col-span-2">
-            <section className="app-surface rounded-2xl p-6">
+            <section className="app-surface rounded-[1.8rem] p-6">
               <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-linear-to-br from-[#285746] to-[#1f3448] text-white shadow-[0_12px_24px_rgba(31,52,72,0.18)]">
                   <UserRound className="h-5 w-5" />
                 </div>
                 <div>
@@ -290,16 +318,16 @@ function Dashboard() {
 
               <Link
                 to="/profile"
-                className="mt-4 inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-100"
+                className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-all hover:-translate-y-0.5 hover:bg-slate-100"
               >
                 Manage profile settings
                 <ChevronRight className="h-4 w-4" />
               </Link>
             </section>
 
-            <section className="app-surface rounded-2xl p-6">
+            <section className="app-surface rounded-[1.8rem] p-6">
               <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-600 to-emerald-500 text-white shadow-[0_12px_24px_rgba(16,185,129,0.2)]">
                   <ShieldCheck className="h-5 w-5" />
                 </div>
                 <div>
@@ -314,16 +342,6 @@ function Dashboard() {
                 <StatusCard label="Not started" value={`${stats.notStarted.length}`} tone="slate" />
               </div>
             </section>
-
-            <Suspense
-              fallback={
-                <div className="app-surface rounded-2xl p-6">
-                  <p className="text-sm text-slate-500">Loading rank advancement...</p>
-                </div>
-              }
-            >
-              <RankAdvancement userData={userData} />
-            </Suspense>
           </div>
         </div>
       </div>
@@ -374,6 +392,13 @@ function formatDateTime(value: string) {
   });
 }
 
+function formatShortDate(value: string) {
+  return new Date(value).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
 function getDaysToGoal(value: string | null | undefined) {
   if (!value) return 'Not set';
 
@@ -387,14 +412,32 @@ function getDaysToGoal(value: string | null | undefined) {
 function SummaryTile({
   label,
   value,
+  detail,
+}: {
+  label: string;
+  value: string;
+  detail: string;
+}) {
+  return (
+    <div className="rounded-[1.35rem] border border-white/80 bg-white/80 px-4 py-4 shadow-[0_14px_30px_rgba(24,35,47,0.06)] backdrop-blur">
+      <div className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{label}</div>
+      <div className="mt-2 text-lg font-semibold text-slate-950">{value}</div>
+      <div className="mt-1 text-sm leading-6 text-slate-600">{detail}</div>
+    </div>
+  );
+}
+
+function HeroPill({
+  label,
+  value,
 }: {
   label: string;
   value: string;
 }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-      <div className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{label}</div>
-      <div className="mt-1 text-base font-semibold text-slate-950">{value}</div>
+    <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/85 px-3 py-2 text-sm text-slate-700 shadow-sm">
+      <span className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{label}</span>
+      <span className="font-semibold text-slate-950">{value}</span>
     </div>
   );
 }
@@ -404,16 +447,37 @@ function StatCard({
   label,
   value,
   detail,
+  tone,
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
   detail: string;
+  tone: 'emerald' | 'sky' | 'slate' | 'amber';
 }) {
+  const styles = {
+    emerald: {
+      shell: 'from-emerald-50 via-white to-white',
+      icon: 'bg-emerald-600 text-white shadow-[0_12px_24px_rgba(16,185,129,0.22)]',
+    },
+    sky: {
+      shell: 'from-sky-50 via-white to-white',
+      icon: 'bg-sky-600 text-white shadow-[0_12px_24px_rgba(14,165,233,0.22)]',
+    },
+    slate: {
+      shell: 'from-slate-100 via-white to-white',
+      icon: 'bg-slate-900 text-white shadow-[0_12px_24px_rgba(24,35,47,0.18)]',
+    },
+    amber: {
+      shell: 'from-amber-50 via-white to-white',
+      icon: 'bg-amber-600 text-white shadow-[0_12px_24px_rgba(217,119,6,0.18)]',
+    },
+  };
+
   return (
-    <div className="app-surface rounded-xl p-5">
+    <div className={`app-surface rounded-[1.5rem] bg-linear-to-br p-5 ${styles[tone].shell}`}>
       <div className="mb-4 flex items-center justify-between">
-        <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
+        <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${styles[tone].icon}`}>
           {icon}
         </div>
         <div className="text-3xl font-semibold text-slate-950">{value}</div>
@@ -432,7 +496,7 @@ function DetailRow({
   value: string;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white px-4 py-3">
+    <div className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-3">
       <span className="text-sm text-slate-600">{label}</span>
       <span className="text-sm font-semibold text-slate-950 text-right">{value}</span>
     </div>
@@ -458,6 +522,50 @@ function StatusCard({
     <div className={`rounded-xl border px-4 py-3 ${styles[tone]}`}>
       <div className="text-xs font-semibold uppercase tracking-[0.12em]">{label}</div>
       <div className="mt-1 text-2xl font-semibold">{value}</div>
+    </div>
+  );
+}
+
+function EventCard({
+  event,
+}: {
+  event: {
+    id: string;
+    name: string;
+    startTime: string;
+    location?: string;
+    type: string;
+  };
+}) {
+  const typeStyles = {
+    meeting: 'border-sky-200 bg-sky-50 text-sky-700',
+    campout: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+    service: 'border-amber-200 bg-amber-50 text-amber-700',
+    other: 'border-slate-200 bg-slate-100 text-slate-700',
+  };
+
+  const style = typeStyles[event.type as keyof typeof typeStyles] || typeStyles.other;
+
+  return (
+    <div className="flex flex-col gap-4 rounded-[1.45rem] border border-slate-200 bg-white px-4 py-4 shadow-[0_10px_24px_rgba(24,35,47,0.04)] md:flex-row md:items-center md:justify-between">
+      <div className="flex items-start gap-4">
+        <div className="min-w-[4.5rem] rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-center">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+            {new Date(event.startTime).toLocaleDateString('en-US', { month: 'short' })}
+          </div>
+          <div className="mt-1 text-2xl font-semibold text-slate-950">
+            {new Date(event.startTime).toLocaleDateString('en-US', { day: 'numeric' })}
+          </div>
+        </div>
+        <div>
+          <p className="text-base font-semibold text-slate-950">{event.name}</p>
+          <p className="mt-1 text-sm text-slate-600">{formatDateTime(event.startTime)}</p>
+          {event.location ? <p className="mt-1 text-sm text-slate-500">{event.location}</p> : null}
+        </div>
+      </div>
+      <span className={`inline-flex w-fit rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] ${style}`}>
+        {event.type}
+      </span>
     </div>
   );
 }
