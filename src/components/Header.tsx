@@ -34,11 +34,11 @@ export default function Header() {
   const navBaseClass =
     'group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900';
   const navActiveClass =
-    'group flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-950 shadow-[0_8px_18px_rgba(24,35,47,0.06)]';
+    'group flex items-center gap-3 rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-3.5 py-2.5 text-sm font-semibold text-slate-950 shadow-[0_8px_18px_rgba(24,35,47,0.06)]';
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/92 px-4 py-3 text-slate-900 shadow-[0_8px_24px_rgba(24,35,47,0.04)] backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-white/40 bg-white/70 px-4 py-3 text-slate-900 shadow-[0_4px_30px_rgb(0,0,0,0.03)] backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
             <button

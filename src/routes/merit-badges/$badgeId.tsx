@@ -225,7 +225,7 @@ function MeritBadgeDetail() {
                 </div>
                 <button
                   onClick={handleToggleAll}
-                  className="mt-3 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 transition-colors hover:bg-slate-50"
+                  className="mt-3 rounded-xl bg-linear-to-r from-[#1f3448] to-[#2f4f6f] px-3 py-2 text-xs font-semibold text-white shadow-[0_10px_20px_rgba(24,35,47,0.2)] transition-all hover:brightness-105"
                 >
                   {isFullyCompleted ? 'Unmark All' : 'Mark All Complete'}
                 </button>

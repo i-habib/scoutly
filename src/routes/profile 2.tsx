@@ -231,7 +231,7 @@ function Profile() {
                     type="text"
                     value={editedName}
                     onChange={(e) => setEditedName(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-lg text-white shadow-[0_8px_16px_rgba(15,23,42,0.2)] hover:shadow-[0_8px_20px_rgba(15,23,42,0.3)] hover:-translate-y-0.5 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="Your name"
                   />
                 </div>
@@ -244,7 +244,7 @@ function Profile() {
                     type="date"
                     value={editedTargetDate}
                     onChange={(e) => setEditedTargetDate(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-lg text-white shadow-[0_8px_16px_rgba(15,23,42,0.2)] hover:shadow-[0_8px_20px_rgba(15,23,42,0.3)] hover:-translate-y-0.5 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                   <p className="text-xs text-slate-400 mt-2">
                     Set your goal date to track your progress and pace
@@ -364,7 +364,7 @@ function Profile() {
                   params={{ badgeId: badge.id }}
                   className="group"
                 >
-                  <div className="bg-emerald-500/20 border-2 border-emerald-500 rounded-lg p-3 text-center hover:bg-emerald-500/30 transition-all hover:scale-105 cursor-pointer">
+                  <div className="bg-emerald-500/20 border-2 border-emerald-500 rounded-lg p-3 text-center hover:bg-emerald-500/30 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] hover:border-emerald-200 cursor-pointer">
                     {badge.imageUrl ? (
                       <img 
                         src={badge.imageUrl} 
@@ -402,7 +402,7 @@ function Profile() {
                   params={{ badgeId: badge.id }}
                   className="group"
                 >
-                  <div className="bg-white/10/50 border-2 border-cyan-500/50 rounded-lg p-3 text-center hover:bg-white/10 hover:border-cyan-500 transition-all hover:scale-105 cursor-pointer">
+                  <div className="bg-white/10/50 border-2 border-cyan-500/50 rounded-lg p-3 text-center hover:bg-white/10 hover:border-cyan-500 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] hover:border-emerald-200 cursor-pointer">
                     {badge.imageUrl ? (
                       <img 
                         src={badge.imageUrl} 
@@ -447,7 +447,7 @@ function Profile() {
                     params={{ badgeId: badge.id }}
                     className="group"
                   >
-                    <div className="bg-slate-800/50 border-2 border-slate-600/50 rounded-lg p-3 text-center hover:bg-slate-700/50 hover:border-slate-500 transition-all hover:scale-105 cursor-pointer">
+                    <div className="bg-slate-800/50 border-2 border-slate-600/50 rounded-lg p-3 text-center hover:bg-slate-700/50 hover:border-slate-500 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] hover:border-emerald-200 cursor-pointer">
                       {badge.imageUrl ? (
                         <img 
                           src={badge.imageUrl} 

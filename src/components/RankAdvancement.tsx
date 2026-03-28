@@ -121,7 +121,7 @@ export function RankAdvancement({ userData }: RankAdvancementProps) {
               key={badge.id}
               to="/merit-badges/$badgeId"
               params={{ badgeId: badge.id }}
-              className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-slate-300"
+              className="flex items-center justify-between rounded-[1.45rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-4 transition-all hover:-translate-y-0.5 hover:border-slate-300"
             >
               <div>
                 <p className="text-base font-semibold text-slate-950">{badge.name}</p>

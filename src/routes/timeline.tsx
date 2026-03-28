@@ -112,7 +112,7 @@ function TimelinePage() {
             </p>
             <button
               onClick={() => navigate({ to: '/profile' })}
-              className="px-6 py-3 bg-linear-to-r from-emerald-600 to-sky-600 text-white font-semibold rounded-xl hover:from-emerald-500 hover:to-sky-500 transition-all"
+              className="px-6 py-3 bg-linear-to-r from-emerald-600 to-sky-600 text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)] hover:shadow-[0_12px_24px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 font-semibold rounded-xl hover:from-emerald-500 hover:to-sky-500 transition-all"
             >
               Go to Profile
             </button>

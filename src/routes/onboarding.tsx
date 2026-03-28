@@ -328,10 +328,10 @@ function OnboardingPage() {
             </div>
 
             <div className="grid w-full max-w-xs gap-2 text-sm sm:grid-cols-2 md:w-auto md:grid-cols-1">
-              <div className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-700">
+              <div className="rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-3 py-2 text-slate-700">
                 Required: {completedRequiredFields}/{REQUIRED_FIELD_COUNT}
               </div>
-              <div className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-700">
+              <div className="rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-3 py-2 text-slate-700">
                 Optional: {completedOptionalFields}/{OPTIONAL_FIELD_COUNT}
               </div>
             </div>
@@ -354,7 +354,7 @@ function OnboardingPage() {
                   }}
                   className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition-all motion-reduce:transition-none ${
                     isCurrentStep
-                      ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+                      ? 'border-slate-900 bg-slate-900 text-white shadow-[0_8px_16px_rgba(15,23,42,0.2)] hover:shadow-[0_8px_20px_rgba(15,23,42,0.3)] hover:-translate-y-0.5 shadow-sm'
                       : isComplete
                         ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
                         : 'border-slate-200 bg-white text-slate-600'
@@ -366,7 +366,7 @@ function OnboardingPage() {
                       isCurrentStep
                         ? 'bg-white/20 text-white'
                         : isComplete
-                          ? 'bg-emerald-600 text-white'
+                          ? 'bg-emerald-600 text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)] hover:shadow-[0_8px_20px_rgba(16,185,129,0.3)] hover:-translate-y-0.5'
                           : 'bg-slate-100 text-slate-600'
                     }`}
                   >
@@ -380,7 +380,7 @@ function OnboardingPage() {
         </section>
 
         <section className="app-surface rounded-3xl p-6 md:p-7">
-          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+          <div className="overflow-hidden rounded-[1.45rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <div key={step} className="animate-fadeIn p-5 md:p-6">
               {step === 1 ? (
                 <section>
@@ -551,7 +551,7 @@ function OnboardingPage() {
                         type="button"
                         onClick={handleSyncCalendar}
                         disabled={isSyncingCalendar || isSubmitting}
-                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-sky-500 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white shadow-[0_8px_16px_rgba(14,165,233,0.2)] hover:shadow-[0_8px_20px_rgba(14,165,233,0.3)] hover:-translate-y-0.5 transition-all hover:bg-sky-500 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
                       >
                         <RefreshCw className={`h-4 w-4 ${isSyncingCalendar ? 'animate-spin' : ''}`} />
                         {isSyncingCalendar ? 'Syncing...' : 'Save URL + Sync now'}
@@ -586,7 +586,7 @@ function OnboardingPage() {
                   type="button"
                   onClick={() => setStep(1)}
                   disabled={isSubmitting}
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
+                  className="inline-flex items-center gap-2 rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-4 py-3 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   Back
@@ -595,7 +595,7 @@ function OnboardingPage() {
                   type="button"
                   onClick={() => saveOnboarding(false)}
                   disabled={isSubmitting}
-                  className="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
+                  className="inline-flex items-center rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-4 py-3 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
                 >
                   Skip for now
                 </button>

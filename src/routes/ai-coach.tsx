@@ -294,7 +294,7 @@ function AICoach() {
               <button
                 onClick={handleGenerateMonthlySummary}
                 disabled={isSummarizing}
-                className="self-start md:self-auto px-4 py-2 bg-linear-to-r from-emerald-600 to-sky-600 text-white font-semibold rounded-xl hover:from-emerald-500 hover:to-sky-500 transition-all disabled:opacity-50 flex items-center gap-2 text-sm"
+                className="self-start md:self-auto px-4 py-2 bg-linear-to-r from-emerald-600 to-sky-600 text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)] hover:shadow-[0_12px_24px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 font-semibold rounded-xl hover:from-emerald-500 hover:to-sky-500 transition-all disabled:opacity-50 flex items-center gap-2 text-sm"
               >
                 {isSummarizing ? (
                   <>
@@ -395,7 +395,7 @@ function AICoach() {
                     onClick={() => setChatMode('tactical')}
                     className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${
                       chatMode === 'tactical'
-                        ? 'bg-linear-to-r from-emerald-600 to-sky-600 text-white shadow-md'
+                        ? 'bg-linear-to-r from-emerald-600 to-sky-600 text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)] hover:shadow-[0_12px_24px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 shadow-md'
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
@@ -408,7 +408,7 @@ function AICoach() {
                     onClick={() => setChatMode('strategic')}
                     className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${
                       chatMode === 'strategic'
-                        ? 'bg-linear-to-r from-emerald-600 to-sky-600 text-white shadow-md'
+                        ? 'bg-linear-to-r from-emerald-600 to-sky-600 text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)] hover:shadow-[0_12px_24px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 shadow-md'
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
@@ -434,7 +434,7 @@ function AICoach() {
                     <button
                       onClick={handleGenerateInitialPlan}
                       disabled={isGeneratingPlan}
-                      className="px-6 py-3 bg-linear-to-r from-emerald-600 to-sky-600 text-white font-semibold rounded-xl hover:from-emerald-500 hover:to-sky-500 transition-all disabled:opacity-50"
+                      className="px-6 py-3 bg-linear-to-r from-emerald-600 to-sky-600 text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)] hover:shadow-[0_12px_24px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 font-semibold rounded-xl hover:from-emerald-500 hover:to-sky-500 transition-all disabled:opacity-50"
                     >
                       {isGeneratingPlan ? (
                         <span className="flex items-center gap-2">
@@ -456,7 +456,7 @@ function AICoach() {
                     <div
                       className={`max-w-[80%] px-4 py-3 rounded-2xl ${
                         message.role === 'user'
-                          ? 'bg-linear-to-br from-emerald-600 to-sky-600 text-white font-semibold'
+                          ? 'bg-linear-to-br from-emerald-600 to-sky-600 text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)] hover:shadow-[0_12px_24px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 font-semibold'
                           : 'bg-white text-slate-800 border border-slate-200 shadow-sm'
                       }`}
                     >
@@ -624,7 +624,7 @@ function AICoach() {
                   <button
                     onClick={handleSendMessage}
                     disabled={!input.trim() || isLoading || !currentPlan}
-                    className="px-6 py-3 bg-linear-to-r from-emerald-600 to-sky-600 text-white font-semibold rounded-xl hover:from-emerald-500 hover:to-sky-500 transition-all disabled:opacity-50 flex items-center gap-2"
+                    className="px-6 py-3 bg-linear-to-r from-emerald-600 to-sky-600 text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)] hover:shadow-[0_12px_24px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 font-semibold rounded-xl hover:from-emerald-500 hover:to-sky-500 transition-all disabled:opacity-50 flex items-center gap-2"
                   >
                     <Send className="w-4 h-4" />
                   </button>

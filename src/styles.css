@@ -142,7 +142,7 @@ code {
   width: 34rem;
   height: 34rem;
   border-radius: 9999px;
-  filter: blur(90px);
+  filter: blur(100px);
   opacity: 0.18;
   pointer-events: none;
   animation: pulseGlow 14s ease-in-out infinite;
@@ -151,13 +151,13 @@ code {
 .app-shell__glow--top {
   top: -18rem;
   left: -12rem;
-  background: radial-gradient(circle, rgba(78, 114, 99, 0.14), rgba(78, 114, 99, 0) 65%);
+  background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05), transparent 60%);
 }
 
 .app-shell__glow--bottom {
   right: -12rem;
   bottom: -18rem;
-  background: radial-gradient(circle, rgba(31, 52, 72, 0.12), rgba(31, 52, 72, 0) 65%);
+  background: radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.05), transparent 60%);
   animation-delay: 5s;
 }
 

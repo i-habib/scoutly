@@ -616,7 +616,7 @@ function EventsPage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_10px_24px_rgba(24,35,47,0.04)]">
+            <div className="rounded-[1.45rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-4 shadow-[0_10px_24px_rgba(24,35,47,0.04)]">
               <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
                 Connection status
               </div>
@@ -990,7 +990,7 @@ function EventsPage() {
                 </button>
                 <button
                   onClick={handleAddEvent}
-                  className="flex-1 px-4 py-2 bg-linear-to-r from-emerald-600 to-sky-600 hover:from-emerald-500 hover:to-sky-500 rounded-lg text-white font-semibold transition-all"
+                  className="flex-1 px-4 py-2 bg-linear-to-r from-emerald-600 to-sky-600 hover:from-emerald-500 hover:to-sky-500 rounded-lg text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)] hover:shadow-[0_12px_24px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 font-semibold transition-all"
                 >
                   Add Event
                 </button>
@@ -1025,7 +1025,7 @@ function EventsPage() {
                   type="url"
                   value={calendarUrlDraft}
                   onChange={(event) => setCalendarUrlDraft(event.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 focus:border-transparent focus:ring-4 focus:ring-sky-100"
+                  className="w-full rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-4 py-3 text-slate-900 focus:border-transparent focus:ring-4 focus:ring-sky-100"
                   placeholder="https://api.scouting.org/advancements/events/calendar/..."
                   spellCheck={false}
                   autoComplete="off"
@@ -1047,7 +1047,7 @@ function EventsPage() {
                   <button
                     onClick={handleSyncScoutbook}
                     disabled={isSyncing || isSavingCalendarUrl}
-                    className="inline-flex items-center gap-2 rounded-lg bg-sky-600 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex items-center gap-2 rounded-lg bg-sky-600 px-3 py-2 text-sm font-semibold text-white shadow-[0_8px_16px_rgba(14,165,233,0.2)] hover:shadow-[0_8px_20px_rgba(14,165,233,0.3)] hover:-translate-y-0.5 transition-colors hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
                     {isSyncing ? 'Syncing…' : 'Sync now'}
@@ -1128,7 +1128,7 @@ function EventsPage() {
                   updateProfile({ meetingsPerMonthOverride: showMeetingsDetectedModal.estimate });
                   setShowMeetingsDetectedModal({ open: false, estimate: 0 });
                 }}
-                className="flex-1 px-4 py-2 bg-linear-to-r from-emerald-600 to-sky-600 hover:from-emerald-500 hover:to-sky-500 rounded-lg text-white font-semibold transition-all"
+                className="flex-1 px-4 py-2 bg-linear-to-r from-emerald-600 to-sky-600 hover:from-emerald-500 hover:to-sky-500 rounded-lg text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)] hover:shadow-[0_12px_24px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 font-semibold transition-all"
               >
                 Use {showMeetingsDetectedModal.estimate}/mo
               </button>

@@ -140,7 +140,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               <button
                 ref={confirmRef}
                 onClick={() => handleConfirm(false)}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                className="rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
               >
                 {confirmState.options.cancelLabel || 'Cancel'}
               </button>

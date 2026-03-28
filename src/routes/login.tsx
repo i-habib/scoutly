@@ -100,7 +100,7 @@ function LoginPage() {
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100"
+              className="mt-1 w-full rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100"
               placeholder="you@example.com"
               required
               autoComplete="email"
@@ -116,7 +116,7 @@ function LoginPage() {
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100"
+              className="mt-1 w-full rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100"
               placeholder="Enter a strong password"
               required
               autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
@@ -133,7 +133,7 @@ function LoginPage() {
                 type="password"
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
-                className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100"
+                className="mt-1 w-full rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100"
                 placeholder="Re-enter your password"
                 required
                 autoComplete="new-password"
@@ -156,7 +156,7 @@ function LoginPage() {
           <button
             type="submit"
             disabled={mode === 'signin' ? isSigningIn : isSigningUp}
-            className="group flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-emerald-600 to-sky-600 px-4 py-3 text-sm font-semibold tracking-wide text-white shadow-[0_16px_40px_rgba(14,165,233,0.22)] transition hover:from-emerald-500 hover:to-sky-500 disabled:cursor-not-allowed disabled:opacity-70"
+            className="group flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-emerald-600 to-sky-600 px-4 py-3 text-sm font-semibold tracking-wide text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)] hover:shadow-[0_12px_24px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 shadow-[0_16px_40px_rgba(14,165,233,0.22)] transition hover:from-emerald-500 hover:to-sky-500 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {mode === 'signin' ? (isSigningIn ? 'Signing In...' : 'Sign In') : (isSigningUp ? 'Creating Account...' : 'Create Account')}
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />

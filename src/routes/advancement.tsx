@@ -281,7 +281,7 @@ function AdvancementPage() {
             <button
               onClick={goToPreviousRank}
               disabled={selectedRankIndex === 0}
-              className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-3 text-slate-700 transition-all hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-30"
+              className="flex items-center gap-2 rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-3 text-slate-700 transition-all hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-30"
             >
               <ChevronLeft className="w-5 h-5" />
               <span className="hidden sm:inline">Previous</span>
@@ -302,7 +302,7 @@ function AdvancementPage() {
             <button
               onClick={goToNextRank}
               disabled={selectedRankIndex === RANK_ORDER.length - 1}
-              className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-3 text-slate-700 transition-all hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-30"
+              className="flex items-center gap-2 rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-3 text-slate-700 transition-all hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-30"
             >
               <span className="hidden sm:inline">Next</span>
               <ChevronRight className="w-5 h-5" />
@@ -333,7 +333,7 @@ function AdvancementPage() {
               {!isFullyCompleted ? (
                 <button
                   onClick={handleMarkAllComplete}
-                  className="flex items-center gap-2 rounded-xl bg-linear-to-r from-emerald-600 to-sky-600 px-4 py-2 text-sm font-bold text-white transition-all hover:from-emerald-500 hover:to-sky-500"
+                  className="flex items-center gap-2 rounded-xl bg-linear-to-r from-emerald-600 to-sky-600 px-4 py-2 text-sm font-bold text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)] hover:shadow-[0_12px_24px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 transition-all hover:from-emerald-500 hover:to-sky-500"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   Mark All
