@@ -1,4 +1,4 @@
-# Scoutly
+i# Scoutly
 
 Scoutly is a TanStack Start + React app for planning and tracking progress toward Eagle Scout, with an SSR Node server for production-style preview.
 
