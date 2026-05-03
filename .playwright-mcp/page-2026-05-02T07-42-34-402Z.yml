@@ -1,0 +1,38 @@
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "Scoutly Eagle planning workspace" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e8]
+        - generic [ref=e17]:
+          - generic [ref=e18]: Scoutly
+          - generic [ref=e19]: Eagle planning workspace
+      - navigation [ref=e21]:
+        - link "Dashboard" [ref=e22] [cursor=pointer]:
+          - /url: /
+          - img [ref=e24]
+          - generic [ref=e29]: Dashboard
+        - link "Timeline" [ref=e30] [cursor=pointer]:
+          - /url: /timeline
+          - img [ref=e32]
+          - generic [ref=e36]: Timeline
+        - link "Advancement" [ref=e37] [cursor=pointer]:
+          - /url: /advancement
+          - img [ref=e39]
+          - generic [ref=e42]: Advancement
+        - link "Merit Badges" [ref=e43] [cursor=pointer]:
+          - /url: /merit-badges
+          - img [ref=e45]
+          - generic [ref=e48]: Merit Badges
+        - link "Events" [ref=e49] [cursor=pointer]:
+          - /url: /events
+          - img [ref=e51]
+          - generic [ref=e53]: Events
+        - link "Profile" [ref=e54] [cursor=pointer]:
+          - /url: /profile
+          - img [ref=e56]
+          - generic [ref=e59]: Profile
+  - main [ref=e60]:
+    - paragraph [ref=e64]: Loading...

@@ -1,0 +1,90 @@
+- generic [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "Scoutly Eagle planning workspace" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e8]
+        - generic [ref=e17]:
+          - generic [ref=e18]: Scoutly
+          - generic [ref=e19]: Eagle planning workspace
+      - navigation [ref=e21]:
+        - link "Dashboard" [ref=e22] [cursor=pointer]:
+          - /url: /
+          - img [ref=e24]
+          - generic [ref=e29]: Dashboard
+        - link "Timeline" [ref=e30] [cursor=pointer]:
+          - /url: /timeline
+          - img [ref=e32]
+          - generic [ref=e36]: Timeline
+        - link "Advancement" [ref=e37] [cursor=pointer]:
+          - /url: /advancement
+          - img [ref=e39]
+          - generic [ref=e42]: Advancement
+        - link "Merit Badges" [ref=e43] [cursor=pointer]:
+          - /url: /merit-badges
+          - img [ref=e45]
+          - generic [ref=e48]: Merit Badges
+        - link "Events" [ref=e49] [cursor=pointer]:
+          - /url: /events
+          - img [ref=e51]
+          - generic [ref=e53]: Events
+        - link "Profile" [ref=e54] [cursor=pointer]:
+          - /url: /profile
+          - img [ref=e56]
+          - generic [ref=e59]: Profile
+  - main [ref=e60]:
+    - generic [ref=e66]:
+      - generic [ref=e67]:
+        - generic [ref=e68]:
+          - generic [ref=e69]:
+            - generic [ref=e70]:
+              - img [ref=e72]
+              - generic [ref=e81]:
+                - paragraph [ref=e82]: Scoutly onboarding
+                - paragraph [ref=e83]: Fast setup with optional details you can refine later.
+            - paragraph [ref=e86]: 25% complete
+          - generic [ref=e87]:
+            - generic [ref=e88]: "Required: 2/2"
+            - generic [ref=e89]: "Optional: 0/6"
+        - generic [ref=e90]:
+          - button "1 Basics" [ref=e91]:
+            - generic [ref=e92]: "1"
+            - text: Basics
+          - button "2 Planning details" [ref=e93]:
+            - generic [ref=e94]: "2"
+            - text: Planning details
+      - generic [ref=e95]:
+        - generic [ref=e98]:
+          - generic [ref=e99]:
+            - img [ref=e101]
+            - generic [ref=e104]:
+              - heading "Start with the essentials" [level=1] [ref=e105]
+              - paragraph [ref=e106]: Two quick details unlock the full workspace.
+          - generic [ref=e107]:
+            - generic [ref=e108]:
+              - generic [ref=e109]:
+                - generic [ref=e110]: Scout name
+                - generic [ref=e111]: Required
+              - textbox "Scout name Required" [ref=e112]:
+                - /placeholder: Scout name
+                - text: Test Scout
+            - generic [ref=e113]:
+              - generic [ref=e114]:
+                - generic [ref=e115]: Current rank
+                - generic [ref=e116]: Required
+              - combobox "Current rank Required" [active] [ref=e117]:
+                - option "Select rank"
+                - option "Scout"
+                - option "Tenderfoot"
+                - option "Second Class"
+                - option "First Class" [selected]
+                - option "Star"
+                - option "Life"
+                - option "Eagle"
+        - generic [ref=e118]:
+          - paragraph [ref=e119]: Step 1 is required to continue.
+          - button "Continue" [ref=e120]:
+            - text: Continue
+            - img [ref=e121]

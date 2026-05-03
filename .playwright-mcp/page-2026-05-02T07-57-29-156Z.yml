@@ -1,0 +1,112 @@
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "Scoutly Eagle planning workspace" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e8]
+        - generic [ref=e17]:
+          - generic [ref=e18]: Scoutly
+          - generic [ref=e19]: Eagle planning workspace
+      - navigation [ref=e21]:
+        - link "Dashboard" [ref=e22] [cursor=pointer]:
+          - /url: /
+          - img [ref=e24]
+          - generic [ref=e29]: Dashboard
+        - link "Timeline" [ref=e30] [cursor=pointer]:
+          - /url: /timeline
+          - img [ref=e32]
+          - generic [ref=e36]: Timeline
+        - link "Advancement" [ref=e37] [cursor=pointer]:
+          - /url: /advancement
+          - img [ref=e39]
+          - generic [ref=e42]: Advancement
+        - link "Merit Badges" [ref=e43] [cursor=pointer]:
+          - /url: /merit-badges
+          - img [ref=e45]
+          - generic [ref=e48]: Merit Badges
+        - link "Events" [ref=e49] [cursor=pointer]:
+          - /url: /events
+          - img [ref=e51]
+          - generic [ref=e53]: Events
+        - link "Profile" [ref=e54] [cursor=pointer]:
+          - /url: /profile
+          - img [ref=e56]
+          - generic [ref=e59]: Profile
+  - main [ref=e60]:
+    - generic [ref=e190]:
+      - generic [ref=e191]:
+        - paragraph [ref=e192]: Dashboard
+        - heading "Test Scout" [level=1] [ref=e193]
+        - paragraph [ref=e194]: Keep advancement and upcoming troop activity in one clean place.
+        - paragraph [ref=e195]: Your calendar is not connected yet. Add Scoutbook in Events to keep meetings and campouts here.
+        - generic [ref=e196]:
+          - generic [ref=e197]:
+            - generic [ref=e198]: Current rank
+            - generic [ref=e199]: First Class
+          - generic [ref=e200]:
+            - generic [ref=e201]: Next rank
+            - generic [ref=e202]: Star
+          - generic [ref=e203]:
+            - generic [ref=e204]: Eagle-required complete
+            - generic [ref=e205]: 0/21
+        - generic [ref=e206]:
+          - link "Review advancement" [ref=e207] [cursor=pointer]:
+            - /url: /advancement
+            - text: Review advancement
+            - img [ref=e208]
+          - link "Connect calendar" [ref=e210] [cursor=pointer]:
+            - /url: /events
+            - text: Connect calendar
+            - img [ref=e211]
+      - generic [ref=e214]:
+        - generic [ref=e215]:
+          - generic [ref=e216]:
+            - generic [ref=e217]:
+              - img [ref=e219]
+              - generic [ref=e222]:
+                - heading "Merit badge focus" [level=3] [ref=e223]
+                - paragraph [ref=e224]: Primary push for Star
+            - generic [ref=e225]: 0/21
+          - generic [ref=e226]:
+            - generic [ref=e227]:
+              - generic [ref=e228]:
+                - paragraph [ref=e229]: Eagle-required progress
+                - paragraph [ref=e230]: 0 in progress, 18 not started
+              - generic [ref=e231]: 547 reqs left
+            - paragraph [ref=e232]: You still need 21 Eagle-required badges. Add a target Eagle date to estimate the badge pace.
+          - generic [ref=e233]:
+            - link "Camping Not started yet. Good candidate to begin next. Start" [ref=e234] [cursor=pointer]:
+              - /url: /merit-badges/mb_camping
+              - generic [ref=e235]:
+                - paragraph [ref=e236]: Camping
+                - paragraph [ref=e237]: Not started yet. Good candidate to begin next.
+              - generic [ref=e238]: Start
+            - link "Citizenship in Society Not started yet. Good candidate to begin next. Start" [ref=e239] [cursor=pointer]:
+              - /url: /merit-badges/mb_citizenship_in_society
+              - generic [ref=e240]:
+                - paragraph [ref=e241]: Citizenship in Society
+                - paragraph [ref=e242]: Not started yet. Good candidate to begin next.
+              - generic [ref=e243]: Start
+            - link "Citizenship in the Community Not started yet. Good candidate to begin next. Start" [ref=e244] [cursor=pointer]:
+              - /url: /merit-badges/mb_citizenship_in_the_community
+              - generic [ref=e245]:
+                - paragraph [ref=e246]: Citizenship in the Community
+                - paragraph [ref=e247]: Not started yet. Good candidate to begin next.
+              - generic [ref=e248]: Start
+            - link "Citizenship in the Nation Not started yet. Good candidate to begin next. Start" [ref=e249] [cursor=pointer]:
+              - /url: /merit-badges/mb_citizenship_in_the_nation
+              - generic [ref=e250]:
+                - paragraph [ref=e251]: Citizenship in the Nation
+                - paragraph [ref=e252]: Not started yet. Good candidate to begin next.
+              - generic [ref=e253]: Start
+          - link "Open merit badge tracker" [ref=e255] [cursor=pointer]:
+            - /url: /merit-badges
+        - generic [ref=e256]:
+          - generic [ref=e257]:
+            - img [ref=e259]
+            - generic [ref=e261]:
+              - heading "Upcoming events" [level=2] [ref=e262]
+              - paragraph [ref=e263]: Just the next troop events that matter.
+          - generic [ref=e264]: No upcoming events yet. Add events or connect a calendar in the Events section.

@@ -1,0 +1,158 @@
+- generic [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "Scoutly Eagle planning workspace" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e8]
+        - generic [ref=e17]:
+          - generic [ref=e18]: Scoutly
+          - generic [ref=e19]: Eagle planning workspace
+      - navigation [ref=e21]:
+        - link "Dashboard" [ref=e22] [cursor=pointer]:
+          - /url: /
+          - img [ref=e24]
+          - generic [ref=e29]: Dashboard
+        - link "Timeline" [ref=e30] [cursor=pointer]:
+          - /url: /timeline
+          - img [ref=e32]
+          - generic [ref=e36]: Timeline
+        - link "Advancement" [ref=e37] [cursor=pointer]:
+          - /url: /advancement
+          - img [ref=e39]
+          - generic [ref=e42]: Advancement
+        - link "Merit Badges" [ref=e43] [cursor=pointer]:
+          - /url: /merit-badges
+          - img [ref=e45]
+          - generic [ref=e48]: Merit Badges
+        - link "Events" [active] [ref=e49] [cursor=pointer]:
+          - /url: /events
+          - img [ref=e51]
+          - generic [ref=e53]: Events
+        - link "Profile" [ref=e54] [cursor=pointer]:
+          - /url: /profile
+          - img [ref=e56]
+          - generic [ref=e59]: Profile
+  - main [ref=e60]:
+    - generic [ref=e727]:
+      - generic [ref=e728]:
+        - generic [ref=e729]:
+          - generic [ref=e730]:
+            - img [ref=e732]
+            - generic [ref=e735]:
+              - heading "Troop Events" [level=1] [ref=e736]
+              - paragraph [ref=e737]: Get the troop calendar connected so upcoming dates can drive the rest of the plan.
+          - generic [ref=e738]:
+            - generic [ref=e739]:
+              - generic [ref=e740]: Meetings/mo
+              - generic [ref=e741]: "4"
+            - button "Manage Calendar" [ref=e742]:
+              - img [ref=e743]
+              - text: Manage Calendar
+            - button "Add Event" [ref=e746]:
+              - img [ref=e747]
+              - text: Add Event
+        - generic [ref=e748]:
+          - generic [ref=e749]:
+            - generic [ref=e750]: Calendar focus
+            - generic [ref=e751]: Calendar setup still needed
+            - generic [ref=e752]: Attach Scoutbook or import ICS so Scoutly can plan around meetings, campouts, and service dates.
+          - generic [ref=e753]:
+            - generic [ref=e754]: Connection status
+            - generic [ref=e755]: No live calendar
+            - generic [ref=e756]: No successful sync recorded yet.
+        - generic [ref=e757]:
+          - generic [ref=e758]:
+            - generic [ref=e759]: "0"
+            - generic [ref=e760]: Upcoming Events
+          - generic [ref=e761]:
+            - generic [ref=e762]: "0"
+            - generic [ref=e763]: Total Events
+          - generic [ref=e764]:
+            - generic [ref=e765]: "0"
+            - generic [ref=e766]: Past Events
+      - generic [ref=e768]:
+        - generic [ref=e769]:
+          - heading "May 2026" [level=2] [ref=e770]
+          - generic [ref=e771]:
+            - button "Previous month" [ref=e772]:
+              - img [ref=e773]
+            - button "Today" [ref=e775]
+            - button "Next month" [ref=e776]:
+              - img [ref=e777]
+        - generic [ref=e779]:
+          - generic [ref=e780]: Sun
+          - generic [ref=e781]: Mon
+          - generic [ref=e782]: Tue
+          - generic [ref=e783]: Wed
+          - generic [ref=e784]: Thu
+          - generic [ref=e785]: Fri
+          - generic [ref=e786]: Sat
+          - button "1" [ref=e793]:
+            - generic [ref=e794]: "1"
+          - button "2" [ref=e796]:
+            - generic [ref=e797]: "2"
+          - button "3" [ref=e799]:
+            - generic [ref=e800]: "3"
+          - button "4" [ref=e802]:
+            - generic [ref=e803]: "4"
+          - button "5" [ref=e805]:
+            - generic [ref=e806]: "5"
+          - button "6" [ref=e808]:
+            - generic [ref=e809]: "6"
+          - button "7" [ref=e811]:
+            - generic [ref=e812]: "7"
+          - button "8" [ref=e814]:
+            - generic [ref=e815]: "8"
+          - button "9" [ref=e817]:
+            - generic [ref=e818]: "9"
+          - button "10" [ref=e820]:
+            - generic [ref=e821]: "10"
+          - button "11" [ref=e823]:
+            - generic [ref=e824]: "11"
+          - button "12" [ref=e826]:
+            - generic [ref=e827]: "12"
+          - button "13" [ref=e829]:
+            - generic [ref=e830]: "13"
+          - button "14" [ref=e832]:
+            - generic [ref=e833]: "14"
+          - button "15" [ref=e835]:
+            - generic [ref=e836]: "15"
+          - button "16" [ref=e838]:
+            - generic [ref=e839]: "16"
+          - button "17" [ref=e841]:
+            - generic [ref=e842]: "17"
+          - button "18" [ref=e844]:
+            - generic [ref=e845]: "18"
+          - button "19" [ref=e847]:
+            - generic [ref=e848]: "19"
+          - button "20" [ref=e850]:
+            - generic [ref=e851]: "20"
+          - button "21" [ref=e853]:
+            - generic [ref=e854]: "21"
+          - button "22" [ref=e856]:
+            - generic [ref=e857]: "22"
+          - button "23" [ref=e859]:
+            - generic [ref=e860]: "23"
+          - button "24" [ref=e862]:
+            - generic [ref=e863]: "24"
+          - button "25" [ref=e865]:
+            - generic [ref=e866]: "25"
+          - button "26" [ref=e868]:
+            - generic [ref=e869]: "26"
+          - button "27" [ref=e871]:
+            - generic [ref=e872]: "27"
+          - button "28" [ref=e874]:
+            - generic [ref=e875]: "28"
+          - button "29" [ref=e877]:
+            - generic [ref=e878]: "29"
+          - button "30" [ref=e880]:
+            - generic [ref=e881]: "30"
+          - button "31" [ref=e883]:
+            - generic [ref=e884]: "31"
+      - generic [ref=e885]:
+        - heading "Upcoming Events" [level=2] [ref=e887]
+        - generic [ref=e888]:
+          - img [ref=e889]
+          - paragraph [ref=e892]: No upcoming events. Add one or connect a calendar to get started.

@@ -1,0 +1,146 @@
+- generic [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "Scoutly Eagle planning workspace" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e8]
+        - generic [ref=e17]:
+          - generic [ref=e18]: Scoutly
+          - generic [ref=e19]: Eagle planning workspace
+      - navigation [ref=e21]:
+        - link "Dashboard" [ref=e22] [cursor=pointer]:
+          - /url: /
+          - img [ref=e24]
+          - generic [ref=e29]: Dashboard
+        - link "Timeline" [ref=e30] [cursor=pointer]:
+          - /url: /timeline
+          - img [ref=e32]
+          - generic [ref=e36]: Timeline
+        - link "Advancement" [ref=e37] [cursor=pointer]:
+          - /url: /advancement
+          - img [ref=e39]
+          - generic [ref=e42]: Advancement
+        - link "Merit Badges" [ref=e43] [cursor=pointer]:
+          - /url: /merit-badges
+          - img [ref=e45]
+          - generic [ref=e48]: Merit Badges
+        - link "Events" [ref=e49] [cursor=pointer]:
+          - /url: /events
+          - img [ref=e51]
+          - generic [ref=e53]: Events
+        - link "Profile" [active] [ref=e54] [cursor=pointer]:
+          - /url: /profile
+          - img [ref=e56]
+          - generic [ref=e59]: Profile
+  - main [ref=e60]:
+    - generic [ref=e3242]:
+      - generic [ref=e3243]:
+        - generic [ref=e3244]:
+          - generic [ref=e3245]:
+            - paragraph [ref=e3246]: Profile
+            - heading "Settings and planning inputs" [level=1] [ref=e3247]
+            - paragraph [ref=e3248]: Star is currently merit-badge-first. You still need 21 Eagle-required badges. Add a target Eagle date to estimate the badge pace.
+          - button "Edit settings" [ref=e3249]:
+            - img [ref=e3250]
+            - text: Edit settings
+        - generic [ref=e3252]:
+          - generic [ref=e3253]:
+            - generic [ref=e3254]: Scout name
+            - generic [ref=e3255]: Test Scout
+          - generic [ref=e3256]:
+            - generic [ref=e3257]: Current rank
+            - generic [ref=e3258]: First Class
+          - generic [ref=e3259]:
+            - generic [ref=e3260]: Target Eagle date
+            - generic [ref=e3261]: Not set
+          - generic [ref=e3262]:
+            - generic [ref=e3263]: Meetings per month
+            - generic [ref=e3264]: Auto from events
+          - generic [ref=e3265]:
+            - generic [ref=e3266]: Troop details
+            - generic [ref=e3267]: Not set
+          - generic [ref=e3268]:
+            - generic [ref=e3269]: Notifications
+            - generic [ref=e3270]: Meetings, Events, Progress
+      - generic [ref=e3271]:
+        - generic [ref=e3272]:
+          - img [ref=e3273]
+          - heading "Rank progress" [level=2] [ref=e3276]
+        - generic [ref=e3277]:
+          - generic [ref=e3278]:
+            - generic [ref=e3280]: Current rank
+            - generic [ref=e3281]: First Class
+          - generic [ref=e3282]:
+            - generic [ref=e3284]: Next rank
+            - generic [ref=e3285]: Star
+          - generic [ref=e3286]:
+            - generic [ref=e3287]:
+              - img [ref=e3288]
+              - generic [ref=e3290]: Target date
+            - generic [ref=e3291]: Not set
+        - generic [ref=e3293]:
+          - generic [ref=e3294]: 0/17 requirements completed
+          - generic [ref=e3295]: 0%
+      - generic [ref=e3297]:
+        - generic [ref=e3298]:
+          - img [ref=e3299]
+          - heading "Eagle-required badges" [level=2] [ref=e3303]
+        - generic [ref=e3304]:
+          - generic [ref=e3305]:
+            - generic [ref=e3306]: Completed
+            - generic [ref=e3307]: "0"
+          - generic [ref=e3308]:
+            - generic [ref=e3309]: In progress
+            - generic [ref=e3310]: "0"
+          - generic [ref=e3311]:
+            - generic [ref=e3312]: Not started
+            - generic [ref=e3313]: "18"
+        - generic [ref=e3314]:
+          - generic [ref=e3315]:
+            - generic [ref=e3316]:
+              - img [ref=e3317]
+              - heading "In progress" [level=3] [ref=e3320]
+            - paragraph [ref=e3321]: None right now.
+          - generic [ref=e3322]:
+            - generic [ref=e3323]:
+              - img [ref=e3324]
+              - heading "Not started" [level=3] [ref=e3327]
+            - generic [ref=e3328]:
+              - link "Camping 0%" [ref=e3329] [cursor=pointer]:
+                - /url: /merit-badges/mb_camping
+                - generic [ref=e3330]: Camping
+                - generic [ref=e3331]: 0%
+              - link "Citizenship in Society 0%" [ref=e3332] [cursor=pointer]:
+                - /url: /merit-badges/mb_citizenship_in_society
+                - generic [ref=e3333]: Citizenship in Society
+                - generic [ref=e3334]: 0%
+              - link "Citizenship in the Community 0%" [ref=e3335] [cursor=pointer]:
+                - /url: /merit-badges/mb_citizenship_in_the_community
+                - generic [ref=e3336]: Citizenship in the Community
+                - generic [ref=e3337]: 0%
+              - link "Citizenship in the Nation 0%" [ref=e3338] [cursor=pointer]:
+                - /url: /merit-badges/mb_citizenship_in_the_nation
+                - generic [ref=e3339]: Citizenship in the Nation
+                - generic [ref=e3340]: 0%
+              - link "Citizenship in the World 0%" [ref=e3341] [cursor=pointer]:
+                - /url: /merit-badges/mb_citizenship_in_the_world
+                - generic [ref=e3342]: Citizenship in the World
+                - generic [ref=e3343]: 0%
+              - link "Communication 0%" [ref=e3344] [cursor=pointer]:
+                - /url: /merit-badges/mb_communication
+                - generic [ref=e3345]: Communication
+                - generic [ref=e3346]: 0%
+              - link "Cooking 0%" [ref=e3347] [cursor=pointer]:
+                - /url: /merit-badges/mb_cooking
+                - generic [ref=e3348]: Cooking
+                - generic [ref=e3349]: 0%
+              - link "Cycling 0%" [ref=e3350] [cursor=pointer]:
+                - /url: /merit-badges/mb_cycling
+                - generic [ref=e3351]: Cycling
+                - generic [ref=e3352]: 0%
+          - link "Open merit badge tracker" [ref=e3354] [cursor=pointer]:
+            - /url: /merit-badges
+            - text: Open merit badge tracker
+            - img [ref=e3355]

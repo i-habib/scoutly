@@ -1,0 +1,282 @@
+- generic [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "Scoutly Eagle planning workspace" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e8]
+        - generic [ref=e17]:
+          - generic [ref=e18]: Scoutly
+          - generic [ref=e19]: Eagle planning workspace
+      - navigation [ref=e21]:
+        - link "Dashboard" [ref=e22] [cursor=pointer]:
+          - /url: /
+          - img [ref=e24]
+          - generic [ref=e29]: Dashboard
+        - link "Timeline" [ref=e30] [cursor=pointer]:
+          - /url: /timeline
+          - img [ref=e32]
+          - generic [ref=e36]: Timeline
+        - link "Advancement" [active] [ref=e37] [cursor=pointer]:
+          - /url: /advancement
+          - img [ref=e39]
+          - generic [ref=e42]: Advancement
+        - link "Merit Badges" [ref=e43] [cursor=pointer]:
+          - /url: /merit-badges
+          - img [ref=e45]
+          - generic [ref=e48]: Merit Badges
+        - link "Events" [ref=e49] [cursor=pointer]:
+          - /url: /events
+          - img [ref=e51]
+          - generic [ref=e53]: Events
+        - link "Profile" [ref=e54] [cursor=pointer]:
+          - /url: /profile
+          - img [ref=e56]
+          - generic [ref=e59]: Profile
+  - main [ref=e60]:
+    - generic [ref=e266]:
+      - generic [ref=e268]:
+        - img [ref=e270]
+        - generic [ref=e275]:
+          - heading "Rank Advancement" [level=1] [ref=e276]
+          - paragraph [ref=e277]: Rank requirements matter, but merit badges are the main priority now.
+          - paragraph [ref=e278]: "Current rank: First Class • In progress: Star"
+      - generic [ref=e280]:
+        - generic [ref=e281]:
+          - img [ref=e283]
+          - generic [ref=e286]:
+            - heading "Merit badges are the real focus for Star" [level=2] [ref=e287]
+            - paragraph [ref=e288]: You still need 21 Eagle-required badges. Add a target Eagle date to estimate the badge pace.
+        - link "Open merit badges" [ref=e289] [cursor=pointer]:
+          - /url: /merit-badges
+          - text: Open merit badges
+          - img [ref=e290]
+      - generic [ref=e293]:
+        - generic [ref=e294]:
+          - button "Previous" [ref=e295]:
+            - img [ref=e296]
+            - generic [ref=e298]: Previous
+          - generic [ref=e299]:
+            - img [ref=e301]
+            - heading "First Class" [level=2] [ref=e305]
+            - generic [ref=e306]: Current Rank
+          - button "Next" [ref=e307]:
+            - generic [ref=e308]: Next
+            - img [ref=e309]
+        - generic [ref=e312]:
+          - generic [ref=e313]: Progress
+          - generic [ref=e314]: 0%
+        - generic [ref=e316]:
+          - generic [ref=e317]:
+            - img [ref=e318]
+            - generic [ref=e322]: 0 / 38 completed
+          - button "Mark All" [ref=e324]:
+            - img [ref=e325]
+            - text: Mark All
+      - generic [ref=e328]:
+        - heading "Your Journey to Eagle" [level=3] [ref=e329]
+        - generic [ref=e330]:
+          - button "Scout" [ref=e331]
+          - button "Tenderfoot" [ref=e332]
+          - button "Second Class" [ref=e333]
+          - button "First Class" [ref=e334]
+          - button "Star" [ref=e335]
+          - button "Life" [ref=e336]
+          - button "Eagle" [ref=e337]
+        - generic [ref=e338]:
+          - generic [ref=e339]: Scout
+          - generic [ref=e340]: Eagle
+      - generic [ref=e341]:
+        - heading "Rank requirements sidecar" [level=3] [ref=e342]
+        - generic [ref=e345] [cursor=pointer]:
+          - img [ref=e347]
+          - generic [ref=e350]:
+            - generic [ref=e351]: 1a.
+            - paragraph [ref=e352]: Since joining Scouts BSA, participate in 10 separate troop/patrol activities, at least six of which must be held outdoors. Of the outdoor activities, at least three must include overnight camping. These activities do not include troop or patrol meetings. On campouts, spend the night in a tent that you pitch or other structure that you help erect, such as a lean-to, snow cave, or tepee.
+        - generic [ref=e355] [cursor=pointer]:
+          - img [ref=e357]
+          - generic [ref=e360]:
+            - generic [ref=e361]: 1b.
+            - paragraph [ref=e362]: Explain each of the principles of Tread Lightly! and tell how you practiced them on a campout or outing. This outing must be different from the ones used for Tenderfoot requirement 1c and Second Class requirement 1b.
+        - generic [ref=e365] [cursor=pointer]:
+          - img [ref=e367]
+          - generic [ref=e370]:
+            - generic [ref=e371]: 2a.
+            - paragraph [ref=e372]: Help plan a menu for one of the above campouts that includes at least one breakfast, one lunch, and one dinner, and that requires cooking at least two of the meals. Tell how the menu includes the foods from MyPlate or the current USDA nutritional model and how it meets nutritional needs for the planned activity or campout.
+        - generic [ref=e375] [cursor=pointer]:
+          - img [ref=e377]
+          - generic [ref=e380]:
+            - generic [ref=e381]: 2b.
+            - paragraph [ref=e382]: Using the menu planned in First Class requirement 2a, make a list showing a budget and the food amounts needed to feed three or more youth. Secure the ingredients.
+        - generic [ref=e385] [cursor=pointer]:
+          - img [ref=e387]
+          - generic [ref=e390]:
+            - generic [ref=e391]: 2c.
+            - paragraph [ref=e392]: Show which pans, utensils, and other gear will be needed to cook and serve these meals.
+        - generic [ref=e395] [cursor=pointer]:
+          - img [ref=e397]
+          - generic [ref=e400]:
+            - generic [ref=e401]: 2d.
+            - paragraph [ref=e402]: Demonstrate the procedures to follow in the safe handling and storage of fresh meats, dairy products, eggs, vegetables, and other perishable food products. Show how to properly dispose of camp garbage, cans, plastic containers, and other rubbish.
+        - generic [ref=e405] [cursor=pointer]:
+          - img [ref=e407]
+          - generic [ref=e410]:
+            - generic [ref=e411]: 2e.
+            - paragraph [ref=e412]: On one campout, serve as cook. Supervise your assistant(s) in using a stove or building a cooking fire. Prepare the breakfast, lunch, and dinner planned in First Class requirement 2a. Supervise the cleanup.
+        - generic [ref=e415] [cursor=pointer]:
+          - img [ref=e417]
+          - generic [ref=e420]:
+            - generic [ref=e421]: 3a.
+            - paragraph [ref=e422]: Discuss when you should and should not use lashings.
+        - generic [ref=e425] [cursor=pointer]:
+          - img [ref=e427]
+          - generic [ref=e430]:
+            - generic [ref=e431]: 3b.
+            - paragraph [ref=e432]: Demonstrate tying the timber hitch and clove hitch.
+        - generic [ref=e435] [cursor=pointer]:
+          - img [ref=e437]
+          - generic [ref=e440]:
+            - generic [ref=e441]: 3c.
+            - paragraph [ref=e442]: Demonstrate tying the square, shear, and diagonal lashings by joining two or more poles or staves together.
+        - generic [ref=e445] [cursor=pointer]:
+          - img [ref=e447]
+          - generic [ref=e450]:
+            - generic [ref=e451]: 3d.
+            - paragraph [ref=e452]: Use lashings to make a useful camp gadget or structure.
+        - generic [ref=e455] [cursor=pointer]:
+          - img [ref=e457]
+          - generic [ref=e460]:
+            - generic [ref=e461]: 4a.
+            - paragraph [ref=e462]: Using a map and compass, complete an orienteering course that covers at least one mile and requires measuring the height and/or width of designated items (tree, tower, canyon, ditch, etc.).
+        - generic [ref=e465] [cursor=pointer]:
+          - img [ref=e467]
+          - generic [ref=e470]:
+            - generic [ref=e471]: 4b.
+            - paragraph [ref=e472]: Demonstrate how to use a handheld GPS unit, GPS app on a smartphone, or other electronic navigation system. Use GPS to find your current location, a destination of your choice, and the route you will take to get there. Follow that route to arrive at your destination.
+        - generic [ref=e475] [cursor=pointer]:
+          - img [ref=e477]
+          - generic [ref=e480]:
+            - generic [ref=e481]: 5a.
+            - paragraph [ref=e482]: Identify or show evidence of at least 10 kinds of native plants found in your local area or campsite location. You may show evidence by identifying fallen leaves or fallen fruit that you find in the field, or as part of a collection you have made, or by photographs you have taken.
+        - generic [ref=e485] [cursor=pointer]:
+          - img [ref=e487]
+          - generic [ref=e490]:
+            - generic [ref=e491]: 5b.
+            - paragraph [ref=e492]: Identify two ways to obtain a weather forecast for an upcoming activity. Explain why weather forecasts are important when planning for an event.
+        - generic [ref=e495] [cursor=pointer]:
+          - img [ref=e497]
+          - generic [ref=e500]:
+            - generic [ref=e501]: 5c.
+            - paragraph [ref=e502]: Describe at least three natural indicators of impending hazardous weather, the potential dangerous events that might result from such weather conditions, and the appropriate actions to take.
+        - generic [ref=e505] [cursor=pointer]:
+          - img [ref=e507]
+          - generic [ref=e510]:
+            - generic [ref=e511]: 5d.
+            - paragraph [ref=e512]: Describe extreme weather conditions you might encounter in the outdoors in your local geographic area. Discuss how you would determine ahead of time the potential risk of these types of weather dangers, alternative planning considerations to avoid such risks, and how you would prepare for and respond to those weather conditions.
+        - generic [ref=e515] [cursor=pointer]:
+          - img [ref=e517]
+          - generic [ref=e520]:
+            - generic [ref=e521]: 6a.
+            - paragraph [ref=e522]: Successfully complete the BSA swimmer test.
+        - generic [ref=e525] [cursor=pointer]:
+          - img [ref=e527]
+          - generic [ref=e530]:
+            - generic [ref=e531]: 6b.
+            - paragraph [ref=e532]: Tell what precautions must be taken for a safe trip afloat.
+        - generic [ref=e535] [cursor=pointer]:
+          - img [ref=e537]
+          - generic [ref=e540]:
+            - generic [ref=e541]: 6c.
+            - paragraph [ref=e542]: Identify the basic parts of a canoe, kayak, or other boat. Identify the parts of a paddle or an oar.
+        - generic [ref=e545] [cursor=pointer]:
+          - img [ref=e547]
+          - generic [ref=e550]:
+            - generic [ref=e551]: 6d.
+            - paragraph [ref=e552]: Describe proper body positioning in a watercraft, depending on the type and size of the vessel. Explain the importance of proper body position in the boat.
+        - generic [ref=e555] [cursor=pointer]:
+          - img [ref=e557]
+          - generic [ref=e560]:
+            - generic [ref=e561]: 6e.
+            - paragraph [ref=e562]: With a helper and a practice victim, show a line rescue both as tender and as rescuer. (The practice victim should be approximately 30 feet from shore in deep water.)
+        - generic [ref=e565] [cursor=pointer]:
+          - img [ref=e567]
+          - generic [ref=e570]:
+            - generic [ref=e571]: 7a.
+            - paragraph [ref=e572]: Demonstrate bandages for a sprained ankle and for injuries on the head, the upper arm, and the collarbone.
+        - generic [ref=e575] [cursor=pointer]:
+          - img [ref=e577]
+          - generic [ref=e580]:
+            - generic [ref=e581]: 7b.
+            - paragraph [ref=e582]: "By yourself and with a partner, show how to: Transport a person from a smoke-filled room. Transport for at least 25 yards a person with a sprained ankle."
+        - generic [ref=e585] [cursor=pointer]:
+          - img [ref=e587]
+          - generic [ref=e590]:
+            - generic [ref=e591]: 7c.
+            - paragraph [ref=e592]: Tell the five most common signals of a heart attack. Explain the steps (procedures) in cardiopulmonary resuscitation (CPR).
+        - generic [ref=e595] [cursor=pointer]:
+          - img [ref=e597]
+          - generic [ref=e600]:
+            - generic [ref=e601]: 7d.
+            - paragraph [ref=e602]: Tell what utility services exist in your home or meeting place. Describe potential hazards associated with these utilities and tell how to respond in emergency situations.
+        - generic [ref=e605] [cursor=pointer]:
+          - img [ref=e607]
+          - generic [ref=e610]:
+            - generic [ref=e611]: 7e.
+            - paragraph [ref=e612]: Develop an emergency action plan for your home that includes what to do in case of fire, storm, power outage, and water outage.
+        - generic [ref=e615] [cursor=pointer]:
+          - img [ref=e617]
+          - generic [ref=e620]:
+            - generic [ref=e621]: 7f.
+            - paragraph [ref=e622]: Explain how to obtain potable water in an emergency.
+        - generic [ref=e625] [cursor=pointer]:
+          - img [ref=e627]
+          - generic [ref=e630]:
+            - generic [ref=e631]: 8a.
+            - paragraph [ref=e632]: After completing Second Class requirement 7a, be physically active at least 30 minutes each day for five days a week for four weeks. Keep track of your activities.
+        - generic [ref=e635] [cursor=pointer]:
+          - img [ref=e637]
+          - generic [ref=e640]:
+            - generic [ref=e641]: 8b.
+            - paragraph [ref=e642]: Share your challenges and successes in completing First Class requirement 8a. Set a goal for continuing to include physical activity as part of your daily life.
+        - generic [ref=e645] [cursor=pointer]:
+          - img [ref=e647]
+          - generic [ref=e650]:
+            - generic [ref=e651]: 9a.
+            - paragraph [ref=e652]: Visit and discuss with a selected individual approved by your leader (for example, an elected official, judge, attorney, civil servant, principal, or teacher) the constitutional rights and obligations of a U.S. citizen.
+        - generic [ref=e655] [cursor=pointer]:
+          - img [ref=e657]
+          - generic [ref=e660]:
+            - generic [ref=e661]: 9b.
+            - paragraph [ref=e662]: Investigate an environmental issue affecting your community. Share what you learned about that issue with your patrol or troop. Tell what, if anything, could be done by you or your community to address the concern.
+        - generic [ref=e665] [cursor=pointer]:
+          - img [ref=e667]
+          - generic [ref=e670]:
+            - generic [ref=e671]: 9c.
+            - paragraph [ref=e672]: On a Scouting or family outing, take note of the trash and garbage you produce. Before your next similar outing, decide how you can reduce, recycle, or repurpose what you take on that outing, and then put those plans into action. Compare your results.
+        - generic [ref=e675] [cursor=pointer]:
+          - img [ref=e677]
+          - generic [ref=e680]:
+            - generic [ref=e681]: 9d.
+            - paragraph [ref=e682]: Participate in three hours of service through one or more service projects approved by your Scoutmaster. The project(s) must not be the same service project(s) used for Tenderfoot requirement 7b and Second Class requirement 8e. Explain how your service to others relates to the Scout Law.
+        - generic [ref=e685] [cursor=pointer]:
+          - img [ref=e687]
+          - generic [ref=e690]:
+            - generic [ref=e691]: "10."
+            - paragraph [ref=e692]: Tell someone who is eligible to join Scouts BSA, or an inactive Scout, about your Scouting activities. Invite this person to an outing, activity, service project, or meeting. Provide information on how to join, or encourage the inactive Scout to become active. Share your efforts with your Scoutmaster or other adult leader.
+        - generic [ref=e695] [cursor=pointer]:
+          - img [ref=e697]
+          - generic [ref=e700]:
+            - generic [ref=e701]: "11."
+            - paragraph [ref=e702]: Demonstrate Scout spirit by living the Scout Oath and Scout Law. Tell how you have done your duty to God and how you have lived four different points of the Scout Law (different from those points used for previous ranks) in your everyday life.
+        - generic [ref=e705] [cursor=pointer]:
+          - img [ref=e707]
+          - generic [ref=e710]:
+            - generic [ref=e711]: "12."
+            - paragraph [ref=e712]: While working toward the First Class rank, and after completing Second Class requirement 11, participate in a Scoutmaster conference.
+        - generic [ref=e715] [cursor=pointer]:
+          - img [ref=e717]
+          - generic [ref=e720]:
+            - generic [ref=e721]: "13."
+            - paragraph [ref=e722]: Successfully complete your board of review for the First Class rank.
+      - paragraph [ref=e724]: Use the Previous/Next buttons to view other ranks and track your progress

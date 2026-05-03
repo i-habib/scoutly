@@ -1,0 +1,117 @@
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "Scoutly Eagle planning workspace" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e8]
+        - generic [ref=e17]:
+          - generic [ref=e18]: Scoutly
+          - generic [ref=e19]: Eagle planning workspace
+      - navigation [ref=e21]:
+        - link "Dashboard" [ref=e22] [cursor=pointer]:
+          - /url: /
+          - img [ref=e24]
+          - generic [ref=e29]: Dashboard
+        - link "Timeline" [ref=e30] [cursor=pointer]:
+          - /url: /timeline
+          - img [ref=e32]
+          - generic [ref=e36]: Timeline
+        - link "Advancement" [ref=e37] [cursor=pointer]:
+          - /url: /advancement
+          - img [ref=e39]
+          - generic [ref=e42]: Advancement
+        - link "Merit Badges" [ref=e43] [cursor=pointer]:
+          - /url: /merit-badges
+          - img [ref=e45]
+          - generic [ref=e48]: Merit Badges
+        - link "Events" [ref=e49] [cursor=pointer]:
+          - /url: /events
+          - img [ref=e51]
+          - generic [ref=e53]: Events
+        - link "Profile" [ref=e54] [cursor=pointer]:
+          - /url: /profile
+          - img [ref=e56]
+          - generic [ref=e59]: Profile
+  - main [ref=e60]:
+    - generic [ref=e66]:
+      - generic [ref=e67]:
+        - generic [ref=e68]:
+          - generic [ref=e69]:
+            - generic [ref=e70]:
+              - img [ref=e72]
+              - generic [ref=e81]:
+                - paragraph [ref=e82]: Scoutly onboarding
+                - paragraph [ref=e83]: Fast setup with optional details you can refine later.
+            - paragraph [ref=e86]: 25% complete
+          - generic [ref=e87]:
+            - generic [ref=e88]: "Required: 2/2"
+            - generic [ref=e89]: "Optional: 0/6"
+        - generic [ref=e90]:
+          - button "Basics" [ref=e123]:
+            - img [ref=e124]
+            - text: Basics
+          - button "2 Planning details" [ref=e93]:
+            - generic [ref=e94]: "2"
+            - text: Planning details
+      - generic [ref=e95]:
+        - generic [ref=e128]:
+          - generic [ref=e129]:
+            - img [ref=e131]
+            - generic [ref=e136]:
+              - heading "Optional planning details" [level=1] [ref=e137]
+              - paragraph [ref=e138]: Add what you know now. You can edit everything later in Profile and Events.
+          - generic [ref=e139]:
+            - generic [ref=e140]:
+              - generic [ref=e142]: Target Eagle date
+              - textbox "Target Eagle date" [ref=e143]
+            - generic [ref=e144]:
+              - generic [ref=e146]: Meetings per month
+              - spinbutton "Meetings per month Leave blank to estimate from your event activity." [ref=e147]
+              - paragraph [ref=e148]: Leave blank to estimate from your event activity.
+            - generic [ref=e149]:
+              - generic [ref=e151]: Troop number
+              - textbox "Troop number" [ref=e152]:
+                - /placeholder: e.g. 412
+            - generic [ref=e153]:
+              - generic [ref=e155]: Meeting day
+              - combobox "Meeting day" [ref=e156]:
+                - option "Select day" [selected]
+                - option "Monday"
+                - option "Tuesday"
+                - option "Wednesday"
+                - option "Thursday"
+                - option "Friday"
+                - option "Saturday"
+                - option "Sunday"
+            - generic [ref=e157]:
+              - generic [ref=e159]: Meeting time
+              - textbox "Meeting time" [ref=e160]
+            - generic [ref=e161]:
+              - generic [ref=e163]: Scoutbook calendar URL
+              - generic [ref=e164]:
+                - img
+                - textbox "Scoutbook calendar URL Paste the link from Scoutbook Plus Calendar > Copy url." [ref=e165]:
+                  - /placeholder: https://api.scouting.org/advancements/events/calendar/...
+              - paragraph [ref=e166]: Paste the link from Scoutbook Plus Calendar > Copy url.
+          - generic [ref=e168]:
+            - generic [ref=e169]:
+              - paragraph [ref=e170]:
+                - img [ref=e171]
+                - text: Pull your troop calendar in right now
+              - paragraph [ref=e173]: Save the Scoutbook link and sync events before you finish onboarding.
+              - paragraph [ref=e174]: No Scoutbook sync yet.
+            - button "Save URL + Sync now" [ref=e175]:
+              - img [ref=e176]
+              - text: Save URL + Sync now
+        - generic [ref=e118]:
+          - paragraph [ref=e119]: Step 2 is optional. Save what you have now and refine anytime.
+          - generic [ref=e181]:
+            - button "Back" [ref=e182]:
+              - img [ref=e183]
+              - text: Back
+            - button "Skip for now" [ref=e185]
+            - button "Open dashboard" [ref=e186]:
+              - text: Open dashboard
+              - img [ref=e187]

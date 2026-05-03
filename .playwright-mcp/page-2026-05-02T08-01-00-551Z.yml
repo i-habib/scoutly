@@ -1,0 +1,2112 @@
+- generic [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "Scoutly Eagle planning workspace" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e8]
+        - generic [ref=e17]:
+          - generic [ref=e18]: Scoutly
+          - generic [ref=e19]: Eagle planning workspace
+      - navigation [ref=e21]:
+        - link "Dashboard" [ref=e22] [cursor=pointer]:
+          - /url: /
+          - img [ref=e24]
+          - generic [ref=e29]: Dashboard
+        - link "Timeline" [ref=e30] [cursor=pointer]:
+          - /url: /timeline
+          - img [ref=e32]
+          - generic [ref=e36]: Timeline
+        - link "Advancement" [ref=e37] [cursor=pointer]:
+          - /url: /advancement
+          - img [ref=e39]
+          - generic [ref=e42]: Advancement
+        - link "Merit Badges" [active] [ref=e43] [cursor=pointer]:
+          - /url: /merit-badges
+          - img [ref=e45]
+          - generic [ref=e48]: Merit Badges
+        - link "Events" [ref=e49] [cursor=pointer]:
+          - /url: /events
+          - img [ref=e51]
+          - generic [ref=e53]: Events
+        - link "Profile" [ref=e54] [cursor=pointer]:
+          - /url: /profile
+          - img [ref=e56]
+          - generic [ref=e59]: Profile
+  - main [ref=e60]:
+    - generic [ref=e894]:
+      - generic [ref=e895]:
+        - paragraph [ref=e896]: Merit badges
+        - heading "Merit Badge Tracker" [level=1] [ref=e897]
+        - paragraph [ref=e898]: Merit badges are a primary push during Star. Keep the list practical and focused on what should move next.
+        - paragraph [ref=e899]: You still need 21 Eagle-required badges. Add a target Eagle date to estimate the badge pace.
+        - generic [ref=e900]:
+          - generic [ref=e901]:
+            - generic [ref=e902]: Working rank
+            - generic [ref=e903]: Star
+          - generic [ref=e904]:
+            - generic [ref=e905]: Eagle-required complete
+            - generic [ref=e906]: 0/21
+          - generic [ref=e907]:
+            - generic [ref=e908]: In progress
+            - generic [ref=e909]: "0"
+      - generic [ref=e910]:
+        - generic [ref=e911]:
+          - generic [ref=e912]:
+            - heading "Browse badges" [level=2] [ref=e913]
+            - paragraph [ref=e914]: Search and filter to the badges that actually need attention.
+          - generic [ref=e915]: 135 showing
+        - generic [ref=e916]:
+          - generic [ref=e917]:
+            - img [ref=e918]
+            - textbox "Search merit badges" [ref=e921]
+          - generic [ref=e922]:
+            - button "All" [ref=e923]
+            - button "Eagle" [ref=e924]
+            - button "Started" [ref=e925]
+            - button "Completed" [ref=e926]
+      - generic [ref=e927]:
+        - link "American Business American Business Not started 0 of 19 requirements complete 0% Open badge" [ref=e928] [cursor=pointer]:
+          - /url: /merit-badges/mb_american_business
+          - generic [ref=e929]:
+            - generic [ref=e930]:
+              - img "American Business" [ref=e932]
+              - generic [ref=e933]:
+                - generic [ref=e934]:
+                  - heading "American Business" [level=3] [ref=e935]
+                  - generic [ref=e936]: Not started
+                - generic [ref=e937]:
+                  - generic [ref=e938]: 0 of 19 requirements complete
+                  - generic [ref=e939]: 0%
+            - generic [ref=e941]:
+              - text: Open badge
+              - img [ref=e942]
+        - link "American Cultures American Cultures Not started 0 of 6 requirements complete 0% Open badge" [ref=e945] [cursor=pointer]:
+          - /url: /merit-badges/mb_american_cultures
+          - generic [ref=e946]:
+            - generic [ref=e947]:
+              - img "American Cultures" [ref=e949]
+              - generic [ref=e950]:
+                - generic [ref=e951]:
+                  - heading "American Cultures" [level=3] [ref=e952]
+                  - generic [ref=e953]: Not started
+                - generic [ref=e954]:
+                  - generic [ref=e955]: 0 of 6 requirements complete
+                  - generic [ref=e956]: 0%
+            - generic [ref=e958]:
+              - text: Open badge
+              - img [ref=e959]
+        - link "American Heritage American Heritage Not started 0 of 10 requirements complete 0% Open badge" [ref=e962] [cursor=pointer]:
+          - /url: /merit-badges/mb_american_heritage
+          - generic [ref=e963]:
+            - generic [ref=e964]:
+              - img "American Heritage" [ref=e966]
+              - generic [ref=e967]:
+                - generic [ref=e968]:
+                  - heading "American Heritage" [level=3] [ref=e969]
+                  - generic [ref=e970]: Not started
+                - generic [ref=e971]:
+                  - generic [ref=e972]: 0 of 10 requirements complete
+                  - generic [ref=e973]: 0%
+            - generic [ref=e975]:
+              - text: Open badge
+              - img [ref=e976]
+        - link "American Labor American Labor Not started 0 of 11 requirements complete 0% Open badge" [ref=e979] [cursor=pointer]:
+          - /url: /merit-badges/mb_american_labor
+          - generic [ref=e980]:
+            - generic [ref=e981]:
+              - img "American Labor" [ref=e983]
+              - generic [ref=e984]:
+                - generic [ref=e985]:
+                  - heading "American Labor" [level=3] [ref=e986]
+                  - generic [ref=e987]: Not started
+                - generic [ref=e988]:
+                  - generic [ref=e989]: 0 of 11 requirements complete
+                  - generic [ref=e990]: 0%
+            - generic [ref=e992]:
+              - text: Open badge
+              - img [ref=e993]
+        - link "Animal Science Animal Science Not started 0 of 9 requirements complete 0% Open badge" [ref=e996] [cursor=pointer]:
+          - /url: /merit-badges/mb_animal_science
+          - generic [ref=e997]:
+            - generic [ref=e998]:
+              - img "Animal Science" [ref=e1000]
+              - generic [ref=e1001]:
+                - generic [ref=e1002]:
+                  - heading "Animal Science" [level=3] [ref=e1003]
+                  - generic [ref=e1004]: Not started
+                - generic [ref=e1005]:
+                  - generic [ref=e1006]: 0 of 9 requirements complete
+                  - generic [ref=e1007]: 0%
+            - generic [ref=e1009]:
+              - text: Open badge
+              - img [ref=e1010]
+        - link "Animation Animation Not started 0 of 8 requirements complete 0% Open badge" [ref=e1013] [cursor=pointer]:
+          - /url: /merit-badges/mb_animation
+          - generic [ref=e1014]:
+            - generic [ref=e1015]:
+              - img "Animation" [ref=e1017]
+              - generic [ref=e1018]:
+                - generic [ref=e1019]:
+                  - heading "Animation" [level=3] [ref=e1020]
+                  - generic [ref=e1021]: Not started
+                - generic [ref=e1022]:
+                  - generic [ref=e1023]: 0 of 8 requirements complete
+                  - generic [ref=e1024]: 0%
+            - generic [ref=e1026]:
+              - text: Open badge
+              - img [ref=e1027]
+        - link "Archaeology Archaeology Not started 0 of 15 requirements complete 0% Open badge" [ref=e1030] [cursor=pointer]:
+          - /url: /merit-badges/mb_archaeology
+          - generic [ref=e1031]:
+            - generic [ref=e1032]:
+              - img "Archaeology" [ref=e1034]
+              - generic [ref=e1035]:
+                - generic [ref=e1036]:
+                  - heading "Archaeology" [level=3] [ref=e1037]
+                  - generic [ref=e1038]: Not started
+                - generic [ref=e1039]:
+                  - generic [ref=e1040]: 0 of 15 requirements complete
+                  - generic [ref=e1041]: 0%
+            - generic [ref=e1043]:
+              - text: Open badge
+              - img [ref=e1044]
+        - link "Archery Archery Not started 0 of 19 requirements complete 0% Open badge" [ref=e1047] [cursor=pointer]:
+          - /url: /merit-badges/mb_archery
+          - generic [ref=e1048]:
+            - generic [ref=e1049]:
+              - img "Archery" [ref=e1051]
+              - generic [ref=e1052]:
+                - generic [ref=e1053]:
+                  - heading "Archery" [level=3] [ref=e1054]
+                  - generic [ref=e1055]: Not started
+                - generic [ref=e1056]:
+                  - generic [ref=e1057]: 0 of 19 requirements complete
+                  - generic [ref=e1058]: 0%
+            - generic [ref=e1060]:
+              - text: Open badge
+              - img [ref=e1061]
+        - link "Architecture Architecture Not started 0 of 9 requirements complete 0% Open badge" [ref=e1064] [cursor=pointer]:
+          - /url: /merit-badges/mb_architecture
+          - generic [ref=e1065]:
+            - generic [ref=e1066]:
+              - img "Architecture" [ref=e1068]
+              - generic [ref=e1069]:
+                - generic [ref=e1070]:
+                  - heading "Architecture" [level=3] [ref=e1071]
+                  - generic [ref=e1072]: Not started
+                - generic [ref=e1073]:
+                  - generic [ref=e1074]: 0 of 9 requirements complete
+                  - generic [ref=e1075]: 0%
+            - generic [ref=e1077]:
+              - text: Open badge
+              - img [ref=e1078]
+        - link "Art Art Not started 0 of 17 requirements complete 0% Open badge" [ref=e1081] [cursor=pointer]:
+          - /url: /merit-badges/mb_art
+          - generic [ref=e1082]:
+            - generic [ref=e1083]:
+              - img "Art" [ref=e1085]
+              - generic [ref=e1086]:
+                - generic [ref=e1087]:
+                  - heading "Art" [level=3] [ref=e1088]
+                  - generic [ref=e1089]: Not started
+                - generic [ref=e1090]:
+                  - generic [ref=e1091]: 0 of 17 requirements complete
+                  - generic [ref=e1092]: 0%
+            - generic [ref=e1094]:
+              - text: Open badge
+              - img [ref=e1095]
+        - link "Astronomy Astronomy Not started 0 of 26 requirements complete 0% Open badge" [ref=e1098] [cursor=pointer]:
+          - /url: /merit-badges/mb_astronomy
+          - generic [ref=e1099]:
+            - generic [ref=e1100]:
+              - img "Astronomy" [ref=e1102]
+              - generic [ref=e1103]:
+                - generic [ref=e1104]:
+                  - heading "Astronomy" [level=3] [ref=e1105]
+                  - generic [ref=e1106]: Not started
+                - generic [ref=e1107]:
+                  - generic [ref=e1108]: 0 of 26 requirements complete
+                  - generic [ref=e1109]: 0%
+            - generic [ref=e1111]:
+              - text: Open badge
+              - img [ref=e1112]
+        - link "Athletics Athletics Not started 0 of 59 requirements complete 0% Open badge" [ref=e1115] [cursor=pointer]:
+          - /url: /merit-badges/mb_athletics
+          - generic [ref=e1116]:
+            - generic [ref=e1117]:
+              - img "Athletics" [ref=e1119]
+              - generic [ref=e1120]:
+                - generic [ref=e1121]:
+                  - heading "Athletics" [level=3] [ref=e1122]
+                  - generic [ref=e1123]: Not started
+                - generic [ref=e1124]:
+                  - generic [ref=e1125]: 0 of 59 requirements complete
+                  - generic [ref=e1126]: 0%
+            - generic [ref=e1128]:
+              - text: Open badge
+              - img [ref=e1129]
+        - link "Automotive Maintenance Automotive Maintenance Not started 0 of 62 requirements complete 0% Open badge" [ref=e1132] [cursor=pointer]:
+          - /url: /merit-badges/mb_automotive_maintenance
+          - generic [ref=e1133]:
+            - generic [ref=e1134]:
+              - img "Automotive Maintenance" [ref=e1136]
+              - generic [ref=e1137]:
+                - generic [ref=e1138]:
+                  - heading "Automotive Maintenance" [level=3] [ref=e1139]
+                  - generic [ref=e1140]: Not started
+                - generic [ref=e1141]:
+                  - generic [ref=e1142]: 0 of 62 requirements complete
+                  - generic [ref=e1143]: 0%
+            - generic [ref=e1145]:
+              - text: Open badge
+              - img [ref=e1146]
+        - link "Aviation Aviation Not started 0 of 17 requirements complete 0% Open badge" [ref=e1149] [cursor=pointer]:
+          - /url: /merit-badges/mb_aviation
+          - generic [ref=e1150]:
+            - generic [ref=e1151]:
+              - img "Aviation" [ref=e1153]
+              - generic [ref=e1154]:
+                - generic [ref=e1155]:
+                  - heading "Aviation" [level=3] [ref=e1156]
+                  - generic [ref=e1157]: Not started
+                - generic [ref=e1158]:
+                  - generic [ref=e1159]: 0 of 17 requirements complete
+                  - generic [ref=e1160]: 0%
+            - generic [ref=e1162]:
+              - text: Open badge
+              - img [ref=e1163]
+        - link "Backpacking Backpacking Not started 0 of 29 requirements complete 0% Open badge" [ref=e1166] [cursor=pointer]:
+          - /url: /merit-badges/mb_backpacking
+          - generic [ref=e1167]:
+            - generic [ref=e1168]:
+              - img "Backpacking" [ref=e1170]
+              - generic [ref=e1171]:
+                - generic [ref=e1172]:
+                  - heading "Backpacking" [level=3] [ref=e1173]
+                  - generic [ref=e1174]: Not started
+                - generic [ref=e1175]:
+                  - generic [ref=e1176]: 0 of 29 requirements complete
+                  - generic [ref=e1177]: 0%
+            - generic [ref=e1179]:
+              - text: Open badge
+              - img [ref=e1180]
+        - link "Basketry Basketry Not started 0 of 7 requirements complete 0% Open badge" [ref=e1183] [cursor=pointer]:
+          - /url: /merit-badges/mb_basketry
+          - generic [ref=e1184]:
+            - generic [ref=e1185]:
+              - img "Basketry" [ref=e1187]
+              - generic [ref=e1188]:
+                - generic [ref=e1189]:
+                  - heading "Basketry" [level=3] [ref=e1190]
+                  - generic [ref=e1191]: Not started
+                - generic [ref=e1192]:
+                  - generic [ref=e1193]: 0 of 7 requirements complete
+                  - generic [ref=e1194]: 0%
+            - generic [ref=e1196]:
+              - text: Open badge
+              - img [ref=e1197]
+        - link "Bird Study Bird Study Not started 0 of 28 requirements complete 0% Open badge" [ref=e1200] [cursor=pointer]:
+          - /url: /merit-badges/mb_bird_study
+          - generic [ref=e1201]:
+            - generic [ref=e1202]:
+              - img "Bird Study" [ref=e1204]
+              - generic [ref=e1205]:
+                - generic [ref=e1206]:
+                  - heading "Bird Study" [level=3] [ref=e1207]
+                  - generic [ref=e1208]: Not started
+                - generic [ref=e1209]:
+                  - generic [ref=e1210]: 0 of 28 requirements complete
+                  - generic [ref=e1211]: 0%
+            - generic [ref=e1213]:
+              - text: Open badge
+              - img [ref=e1214]
+        - link "Bugling Bugling Not started 0 of 7 requirements complete 0% Open badge" [ref=e1217] [cursor=pointer]:
+          - /url: /merit-badges/mb_bugling
+          - generic [ref=e1218]:
+            - generic [ref=e1219]:
+              - img "Bugling" [ref=e1221]
+              - generic [ref=e1222]:
+                - generic [ref=e1223]:
+                  - heading "Bugling" [level=3] [ref=e1224]
+                  - generic [ref=e1225]: Not started
+                - generic [ref=e1226]:
+                  - generic [ref=e1227]: 0 of 7 requirements complete
+                  - generic [ref=e1228]: 0%
+            - generic [ref=e1230]:
+              - text: Open badge
+              - img [ref=e1231]
+        - link "Camping Camping Eagle required Not started 0 of 38 requirements complete 0% Open badge" [ref=e1234] [cursor=pointer]:
+          - /url: /merit-badges/mb_camping
+          - generic [ref=e1235]:
+            - generic [ref=e1236]:
+              - img "Camping" [ref=e1238]
+              - generic [ref=e1239]:
+                - generic [ref=e1240]:
+                  - heading "Camping" [level=3] [ref=e1241]
+                  - generic [ref=e1242]: Eagle required
+                  - generic [ref=e1243]: Not started
+                - generic [ref=e1244]:
+                  - generic [ref=e1245]: 0 of 38 requirements complete
+                  - generic [ref=e1246]: 0%
+            - generic [ref=e1248]:
+              - text: Open badge
+              - img [ref=e1249]
+        - link "Canoeing Canoeing Not started 0 of 30 requirements complete 0% Open badge" [ref=e1252] [cursor=pointer]:
+          - /url: /merit-badges/mb_canoeing
+          - generic [ref=e1253]:
+            - generic [ref=e1254]:
+              - img "Canoeing" [ref=e1256]
+              - generic [ref=e1257]:
+                - generic [ref=e1258]:
+                  - heading "Canoeing" [level=3] [ref=e1259]
+                  - generic [ref=e1260]: Not started
+                - generic [ref=e1261]:
+                  - generic [ref=e1262]: 0 of 30 requirements complete
+                  - generic [ref=e1263]: 0%
+            - generic [ref=e1265]:
+              - text: Open badge
+              - img [ref=e1266]
+        - link "Chemistry Chemistry Not started 0 of 15 requirements complete 0% Open badge" [ref=e1269] [cursor=pointer]:
+          - /url: /merit-badges/mb_chemistry
+          - generic [ref=e1270]:
+            - generic [ref=e1271]:
+              - img "Chemistry" [ref=e1273]
+              - generic [ref=e1274]:
+                - generic [ref=e1275]:
+                  - heading "Chemistry" [level=3] [ref=e1276]
+                  - generic [ref=e1277]: Not started
+                - generic [ref=e1278]:
+                  - generic [ref=e1279]: 0 of 15 requirements complete
+                  - generic [ref=e1280]: 0%
+            - generic [ref=e1282]:
+              - text: Open badge
+              - img [ref=e1283]
+        - link "Chess Chess Not started 0 of 17 requirements complete 0% Open badge" [ref=e1286] [cursor=pointer]:
+          - /url: /merit-badges/mb_chess
+          - generic [ref=e1287]:
+            - generic [ref=e1288]:
+              - img "Chess" [ref=e1290]
+              - generic [ref=e1291]:
+                - generic [ref=e1292]:
+                  - heading "Chess" [level=3] [ref=e1293]
+                  - generic [ref=e1294]: Not started
+                - generic [ref=e1295]:
+                  - generic [ref=e1296]: 0 of 17 requirements complete
+                  - generic [ref=e1297]: 0%
+            - generic [ref=e1299]:
+              - text: Open badge
+              - img [ref=e1300]
+        - link "Citizenship in Society Citizenship in Society Eagle required Not started 0 of 43 requirements complete 0% Open badge" [ref=e1303] [cursor=pointer]:
+          - /url: /merit-badges/mb_citizenship_in_society
+          - generic [ref=e1304]:
+            - generic [ref=e1305]:
+              - img "Citizenship in Society" [ref=e1307]
+              - generic [ref=e1308]:
+                - generic [ref=e1309]:
+                  - heading "Citizenship in Society" [level=3] [ref=e1310]
+                  - generic [ref=e1311]: Eagle required
+                  - generic [ref=e1312]: Not started
+                - generic [ref=e1313]:
+                  - generic [ref=e1314]: 0 of 43 requirements complete
+                  - generic [ref=e1315]: 0%
+            - generic [ref=e1317]:
+              - text: Open badge
+              - img [ref=e1318]
+        - link "Citizenship in the Community Citizenship in the Community Eagle required Not started 0 of 22 requirements complete 0% Open badge" [ref=e1321] [cursor=pointer]:
+          - /url: /merit-badges/mb_citizenship_in_the_community
+          - generic [ref=e1322]:
+            - generic [ref=e1323]:
+              - img "Citizenship in the Community" [ref=e1325]
+              - generic [ref=e1326]:
+                - generic [ref=e1327]:
+                  - heading "Citizenship in the Community" [level=3] [ref=e1328]
+                  - generic [ref=e1329]: Eagle required
+                  - generic [ref=e1330]: Not started
+                - generic [ref=e1331]:
+                  - generic [ref=e1332]: 0 of 22 requirements complete
+                  - generic [ref=e1333]: 0%
+            - generic [ref=e1335]:
+              - text: Open badge
+              - img [ref=e1336]
+        - link "Citizenship in the Nation Citizenship in the Nation Eagle required Not started 0 of 19 requirements complete 0% Open badge" [ref=e1339] [cursor=pointer]:
+          - /url: /merit-badges/mb_citizenship_in_the_nation
+          - generic [ref=e1340]:
+            - generic [ref=e1341]:
+              - img "Citizenship in the Nation" [ref=e1343]
+              - generic [ref=e1344]:
+                - generic [ref=e1345]:
+                  - heading "Citizenship in the Nation" [level=3] [ref=e1346]
+                  - generic [ref=e1347]: Eagle required
+                  - generic [ref=e1348]: Not started
+                - generic [ref=e1349]:
+                  - generic [ref=e1350]: 0 of 19 requirements complete
+                  - generic [ref=e1351]: 0%
+            - generic [ref=e1353]:
+              - text: Open badge
+              - img [ref=e1354]
+        - link "Citizenship in the World Citizenship in the World Eagle required Not started 0 of 14 requirements complete 0% Open badge" [ref=e1357] [cursor=pointer]:
+          - /url: /merit-badges/mb_citizenship_in_the_world
+          - generic [ref=e1358]:
+            - generic [ref=e1359]:
+              - img "Citizenship in the World" [ref=e1361]
+              - generic [ref=e1362]:
+                - generic [ref=e1363]:
+                  - heading "Citizenship in the World" [level=3] [ref=e1364]
+                  - generic [ref=e1365]: Eagle required
+                  - generic [ref=e1366]: Not started
+                - generic [ref=e1367]:
+                  - generic [ref=e1368]: 0 of 14 requirements complete
+                  - generic [ref=e1369]: 0%
+            - generic [ref=e1371]:
+              - text: Open badge
+              - img [ref=e1372]
+        - link "Climbing Climbing Not started 0 of 34 requirements complete 0% Open badge" [ref=e1375] [cursor=pointer]:
+          - /url: /merit-badges/mb_climbing
+          - generic [ref=e1376]:
+            - generic [ref=e1377]:
+              - img "Climbing" [ref=e1379]
+              - generic [ref=e1380]:
+                - generic [ref=e1381]:
+                  - heading "Climbing" [level=3] [ref=e1382]
+                  - generic [ref=e1383]: Not started
+                - generic [ref=e1384]:
+                  - generic [ref=e1385]: 0 of 34 requirements complete
+                  - generic [ref=e1386]: 0%
+            - generic [ref=e1388]:
+              - text: Open badge
+              - img [ref=e1389]
+        - link "Coin Collecting Coin Collecting Not started 0 of 12 requirements complete 0% Open badge" [ref=e1392] [cursor=pointer]:
+          - /url: /merit-badges/mb_coin_collecting
+          - generic [ref=e1393]:
+            - generic [ref=e1394]:
+              - img "Coin Collecting" [ref=e1396]
+              - generic [ref=e1397]:
+                - generic [ref=e1398]:
+                  - heading "Coin Collecting" [level=3] [ref=e1399]
+                  - generic [ref=e1400]: Not started
+                - generic [ref=e1401]:
+                  - generic [ref=e1402]: 0 of 12 requirements complete
+                  - generic [ref=e1403]: 0%
+            - generic [ref=e1405]:
+              - text: Open badge
+              - img [ref=e1406]
+        - link "Collections Collections Not started 0 of 24 requirements complete 0% Open badge" [ref=e1409] [cursor=pointer]:
+          - /url: /merit-badges/mb_collections
+          - generic [ref=e1410]:
+            - generic [ref=e1411]:
+              - img "Collections" [ref=e1413]
+              - generic [ref=e1414]:
+                - generic [ref=e1415]:
+                  - heading "Collections" [level=3] [ref=e1416]
+                  - generic [ref=e1417]: Not started
+                - generic [ref=e1418]:
+                  - generic [ref=e1419]: 0 of 24 requirements complete
+                  - generic [ref=e1420]: 0%
+            - generic [ref=e1422]:
+              - text: Open badge
+              - img [ref=e1423]
+        - link "Communication Communication Eagle required Not started 0 of 9 requirements complete 0% Open badge" [ref=e1426] [cursor=pointer]:
+          - /url: /merit-badges/mb_communication
+          - generic [ref=e1427]:
+            - generic [ref=e1428]:
+              - img "Communication" [ref=e1430]
+              - generic [ref=e1431]:
+                - generic [ref=e1432]:
+                  - heading "Communication" [level=3] [ref=e1433]
+                  - generic [ref=e1434]: Eagle required
+                  - generic [ref=e1435]: Not started
+                - generic [ref=e1436]:
+                  - generic [ref=e1437]: 0 of 9 requirements complete
+                  - generic [ref=e1438]: 0%
+            - generic [ref=e1440]:
+              - text: Open badge
+              - img [ref=e1441]
+        - link "Composite Materials Composite Materials Not started 0 of 13 requirements complete 0% Open badge" [ref=e1444] [cursor=pointer]:
+          - /url: /merit-badges/mb_composite_materials
+          - generic [ref=e1445]:
+            - generic [ref=e1446]:
+              - img "Composite Materials" [ref=e1448]
+              - generic [ref=e1449]:
+                - generic [ref=e1450]:
+                  - heading "Composite Materials" [level=3] [ref=e1451]
+                  - generic [ref=e1452]: Not started
+                - generic [ref=e1453]:
+                  - generic [ref=e1454]: 0 of 13 requirements complete
+                  - generic [ref=e1455]: 0%
+            - generic [ref=e1457]:
+              - text: Open badge
+              - img [ref=e1458]
+        - link "Cooking Cooking Eagle required Not started 0 of 30 requirements complete 0% Open badge" [ref=e1461] [cursor=pointer]:
+          - /url: /merit-badges/mb_cooking
+          - generic [ref=e1462]:
+            - generic [ref=e1463]:
+              - img "Cooking" [ref=e1465]
+              - generic [ref=e1466]:
+                - generic [ref=e1467]:
+                  - heading "Cooking" [level=3] [ref=e1468]
+                  - generic [ref=e1469]: Eagle required
+                  - generic [ref=e1470]: Not started
+                - generic [ref=e1471]:
+                  - generic [ref=e1472]: 0 of 30 requirements complete
+                  - generic [ref=e1473]: 0%
+            - generic [ref=e1475]:
+              - text: Open badge
+              - img [ref=e1476]
+        - link "Crime Prevention Crime Prevention Not started 0 of 41 requirements complete 0% Open badge" [ref=e1479] [cursor=pointer]:
+          - /url: /merit-badges/mb_crime_prevention
+          - generic [ref=e1480]:
+            - generic [ref=e1481]:
+              - img "Crime Prevention" [ref=e1483]
+              - generic [ref=e1484]:
+                - generic [ref=e1485]:
+                  - heading "Crime Prevention" [level=3] [ref=e1486]
+                  - generic [ref=e1487]: Not started
+                - generic [ref=e1488]:
+                  - generic [ref=e1489]: 0 of 41 requirements complete
+                  - generic [ref=e1490]: 0%
+            - generic [ref=e1492]:
+              - text: Open badge
+              - img [ref=e1493]
+        - link "Cycling Cycling Eagle required Not started 0 of 35 requirements complete 0% Open badge" [ref=e1496] [cursor=pointer]:
+          - /url: /merit-badges/mb_cycling
+          - generic [ref=e1497]:
+            - generic [ref=e1498]:
+              - img "Cycling" [ref=e1500]
+              - generic [ref=e1501]:
+                - generic [ref=e1502]:
+                  - heading "Cycling" [level=3] [ref=e1503]
+                  - generic [ref=e1504]: Eagle required
+                  - generic [ref=e1505]: Not started
+                - generic [ref=e1506]:
+                  - generic [ref=e1507]: 0 of 35 requirements complete
+                  - generic [ref=e1508]: 0%
+            - generic [ref=e1510]:
+              - text: Open badge
+              - img [ref=e1511]
+        - link "Dentistry Dentistry Not started 0 of 16 requirements complete 0% Open badge" [ref=e1514] [cursor=pointer]:
+          - /url: /merit-badges/mb_dentistry
+          - generic [ref=e1515]:
+            - generic [ref=e1516]:
+              - img "Dentistry" [ref=e1518]
+              - generic [ref=e1519]:
+                - generic [ref=e1520]:
+                  - heading "Dentistry" [level=3] [ref=e1521]
+                  - generic [ref=e1522]: Not started
+                - generic [ref=e1523]:
+                  - generic [ref=e1524]: 0 of 16 requirements complete
+                  - generic [ref=e1525]: 0%
+            - generic [ref=e1527]:
+              - text: Open badge
+              - img [ref=e1528]
+        - link "Digital Technology Digital Technology Not started 0 of 23 requirements complete 0% Open badge" [ref=e1531] [cursor=pointer]:
+          - /url: /merit-badges/mb_digital_technology
+          - generic [ref=e1532]:
+            - generic [ref=e1533]:
+              - img "Digital Technology" [ref=e1535]
+              - generic [ref=e1536]:
+                - generic [ref=e1537]:
+                  - heading "Digital Technology" [level=3] [ref=e1538]
+                  - generic [ref=e1539]: Not started
+                - generic [ref=e1540]:
+                  - generic [ref=e1541]: 0 of 23 requirements complete
+                  - generic [ref=e1542]: 0%
+            - generic [ref=e1544]:
+              - text: Open badge
+              - img [ref=e1545]
+        - link "Disabilities Awareness Disabilities Awareness Not started 0 of 9 requirements complete 0% Open badge" [ref=e1548] [cursor=pointer]:
+          - /url: /merit-badges/mb_disabilities_awareness
+          - generic [ref=e1549]:
+            - generic [ref=e1550]:
+              - img "Disabilities Awareness" [ref=e1552]
+              - generic [ref=e1553]:
+                - generic [ref=e1554]:
+                  - heading "Disabilities Awareness" [level=3] [ref=e1555]
+                  - generic [ref=e1556]: Not started
+                - generic [ref=e1557]:
+                  - generic [ref=e1558]: 0 of 9 requirements complete
+                  - generic [ref=e1559]: 0%
+            - generic [ref=e1561]:
+              - text: Open badge
+              - img [ref=e1562]
+        - link "Dog Care Dog Care Not started 0 of 26 requirements complete 0% Open badge" [ref=e1565] [cursor=pointer]:
+          - /url: /merit-badges/mb_dog_care
+          - generic [ref=e1566]:
+            - generic [ref=e1567]:
+              - img "Dog Care" [ref=e1569]
+              - generic [ref=e1570]:
+                - generic [ref=e1571]:
+                  - heading "Dog Care" [level=3] [ref=e1572]
+                  - generic [ref=e1573]: Not started
+                - generic [ref=e1574]:
+                  - generic [ref=e1575]: 0 of 26 requirements complete
+                  - generic [ref=e1576]: 0%
+            - generic [ref=e1578]:
+              - text: Open badge
+              - img [ref=e1579]
+        - link "Drafting Drafting Not started 0 of 10 requirements complete 0% Open badge" [ref=e1582] [cursor=pointer]:
+          - /url: /merit-badges/mb_drafting
+          - generic [ref=e1583]:
+            - generic [ref=e1584]:
+              - img "Drafting" [ref=e1586]
+              - generic [ref=e1587]:
+                - generic [ref=e1588]:
+                  - heading "Drafting" [level=3] [ref=e1589]
+                  - generic [ref=e1590]: Not started
+                - generic [ref=e1591]:
+                  - generic [ref=e1592]: 0 of 10 requirements complete
+                  - generic [ref=e1593]: 0%
+            - generic [ref=e1595]:
+              - text: Open badge
+              - img [ref=e1596]
+        - link "Electricity Electricity Not started 0 of 27 requirements complete 0% Open badge" [ref=e1599] [cursor=pointer]:
+          - /url: /merit-badges/mb_electricity
+          - generic [ref=e1600]:
+            - generic [ref=e1601]:
+              - img "Electricity" [ref=e1603]
+              - generic [ref=e1604]:
+                - generic [ref=e1605]:
+                  - heading "Electricity" [level=3] [ref=e1606]
+                  - generic [ref=e1607]: Not started
+                - generic [ref=e1608]:
+                  - generic [ref=e1609]: 0 of 27 requirements complete
+                  - generic [ref=e1610]: 0%
+            - generic [ref=e1612]:
+              - text: Open badge
+              - img [ref=e1613]
+        - link "Electronics Electronics Not started 0 of 20 requirements complete 0% Open badge" [ref=e1616] [cursor=pointer]:
+          - /url: /merit-badges/mb_electronics
+          - generic [ref=e1617]:
+            - generic [ref=e1618]:
+              - img "Electronics" [ref=e1620]
+              - generic [ref=e1621]:
+                - generic [ref=e1622]:
+                  - heading "Electronics" [level=3] [ref=e1623]
+                  - generic [ref=e1624]: Not started
+                - generic [ref=e1625]:
+                  - generic [ref=e1626]: 0 of 20 requirements complete
+                  - generic [ref=e1627]: 0%
+            - generic [ref=e1629]:
+              - text: Open badge
+              - img [ref=e1630]
+        - link "Emergency Preparedness Emergency Preparedness Eagle required Not started 0 of 58 requirements complete 0% Open badge" [ref=e1633] [cursor=pointer]:
+          - /url: /merit-badges/mb_emergency_preparedness
+          - generic [ref=e1634]:
+            - generic [ref=e1635]:
+              - img "Emergency Preparedness" [ref=e1637]
+              - generic [ref=e1638]:
+                - generic [ref=e1639]:
+                  - heading "Emergency Preparedness" [level=3] [ref=e1640]
+                  - generic [ref=e1641]: Eagle required
+                  - generic [ref=e1642]: Not started
+                - generic [ref=e1643]:
+                  - generic [ref=e1644]: 0 of 58 requirements complete
+                  - generic [ref=e1645]: 0%
+            - generic [ref=e1647]:
+              - text: Open badge
+              - img [ref=e1648]
+        - link "Energy Energy Not started 0 of 27 requirements complete 0% Open badge" [ref=e1651] [cursor=pointer]:
+          - /url: /merit-badges/mb_energy
+          - generic [ref=e1652]:
+            - generic [ref=e1653]:
+              - img "Energy" [ref=e1655]
+              - generic [ref=e1656]:
+                - generic [ref=e1657]:
+                  - heading "Energy" [level=3] [ref=e1658]
+                  - generic [ref=e1659]: Not started
+                - generic [ref=e1660]:
+                  - generic [ref=e1661]: 0 of 27 requirements complete
+                  - generic [ref=e1662]: 0%
+            - generic [ref=e1664]:
+              - text: Open badge
+              - img [ref=e1665]
+        - link "Engineering Engineering Not started 0 of 14 requirements complete 0% Open badge" [ref=e1668] [cursor=pointer]:
+          - /url: /merit-badges/mb_engineering
+          - generic [ref=e1669]:
+            - generic [ref=e1670]:
+              - img "Engineering" [ref=e1672]
+              - generic [ref=e1673]:
+                - generic [ref=e1674]:
+                  - heading "Engineering" [level=3] [ref=e1675]
+                  - generic [ref=e1676]: Not started
+                - generic [ref=e1677]:
+                  - generic [ref=e1678]: 0 of 14 requirements complete
+                  - generic [ref=e1679]: 0%
+            - generic [ref=e1681]:
+              - text: Open badge
+              - img [ref=e1682]
+        - link "Entrepreneurship Entrepreneurship Not started 0 of 26 requirements complete 0% Open badge" [ref=e1685] [cursor=pointer]:
+          - /url: /merit-badges/mb_entrepreneurship
+          - generic [ref=e1686]:
+            - generic [ref=e1687]:
+              - img "Entrepreneurship" [ref=e1689]
+              - generic [ref=e1690]:
+                - generic [ref=e1691]:
+                  - heading "Entrepreneurship" [level=3] [ref=e1692]
+                  - generic [ref=e1693]: Not started
+                - generic [ref=e1694]:
+                  - generic [ref=e1695]: 0 of 26 requirements complete
+                  - generic [ref=e1696]: 0%
+            - generic [ref=e1698]:
+              - text: Open badge
+              - img [ref=e1699]
+        - link "Environmental Science Environmental Science Eagle required Not started 0 of 12 requirements complete 0% Open badge" [ref=e1702] [cursor=pointer]:
+          - /url: /merit-badges/mb_environmental_science
+          - generic [ref=e1703]:
+            - generic [ref=e1704]:
+              - img "Environmental Science" [ref=e1706]
+              - generic [ref=e1707]:
+                - generic [ref=e1708]:
+                  - heading "Environmental Science" [level=3] [ref=e1709]
+                  - generic [ref=e1710]: Eagle required
+                  - generic [ref=e1711]: Not started
+                - generic [ref=e1712]:
+                  - generic [ref=e1713]: 0 of 12 requirements complete
+                  - generic [ref=e1714]: 0%
+            - generic [ref=e1716]:
+              - text: Open badge
+              - img [ref=e1717]
+        - link "Exploration Exploration Not started 0 of 23 requirements complete 0% Open badge" [ref=e1720] [cursor=pointer]:
+          - /url: /merit-badges/mb_exploration
+          - generic [ref=e1721]:
+            - generic [ref=e1722]:
+              - img "Exploration" [ref=e1724]
+              - generic [ref=e1725]:
+                - generic [ref=e1726]:
+                  - heading "Exploration" [level=3] [ref=e1727]
+                  - generic [ref=e1728]: Not started
+                - generic [ref=e1729]:
+                  - generic [ref=e1730]: 0 of 23 requirements complete
+                  - generic [ref=e1731]: 0%
+            - generic [ref=e1733]:
+              - text: Open badge
+              - img [ref=e1734]
+        - link "Family Life Family Life Eagle required Not started 0 of 17 requirements complete 0% Open badge" [ref=e1737] [cursor=pointer]:
+          - /url: /merit-badges/mb_family_life
+          - generic [ref=e1738]:
+            - generic [ref=e1739]:
+              - img "Family Life" [ref=e1741]
+              - generic [ref=e1742]:
+                - generic [ref=e1743]:
+                  - heading "Family Life" [level=3] [ref=e1744]
+                  - generic [ref=e1745]: Eagle required
+                  - generic [ref=e1746]: Not started
+                - generic [ref=e1747]:
+                  - generic [ref=e1748]: 0 of 17 requirements complete
+                  - generic [ref=e1749]: 0%
+            - generic [ref=e1751]:
+              - text: Open badge
+              - img [ref=e1752]
+        - link "Farm Mechanics Farm Mechanics Not started 0 of 15 requirements complete 0% Open badge" [ref=e1755] [cursor=pointer]:
+          - /url: /merit-badges/mb_farm_mechanics
+          - generic [ref=e1756]:
+            - generic [ref=e1757]:
+              - img "Farm Mechanics" [ref=e1759]
+              - generic [ref=e1760]:
+                - generic [ref=e1761]:
+                  - heading "Farm Mechanics" [level=3] [ref=e1762]
+                  - generic [ref=e1763]: Not started
+                - generic [ref=e1764]:
+                  - generic [ref=e1765]: 0 of 15 requirements complete
+                  - generic [ref=e1766]: 0%
+            - generic [ref=e1768]:
+              - text: Open badge
+              - img [ref=e1769]
+        - link "Fingerprinting Fingerprinting Not started 0 of 10 requirements complete 0% Open badge" [ref=e1772] [cursor=pointer]:
+          - /url: /merit-badges/mb_fingerprinting
+          - generic [ref=e1773]:
+            - generic [ref=e1774]:
+              - img "Fingerprinting" [ref=e1776]
+              - generic [ref=e1777]:
+                - generic [ref=e1778]:
+                  - heading "Fingerprinting" [level=3] [ref=e1779]
+                  - generic [ref=e1780]: Not started
+                - generic [ref=e1781]:
+                  - generic [ref=e1782]: 0 of 10 requirements complete
+                  - generic [ref=e1783]: 0%
+            - generic [ref=e1785]:
+              - text: Open badge
+              - img [ref=e1786]
+        - link "Fire Safety Fire Safety Not started 0 of 39 requirements complete 0% Open badge" [ref=e1789] [cursor=pointer]:
+          - /url: /merit-badges/mb_fire_safety
+          - generic [ref=e1790]:
+            - generic [ref=e1791]:
+              - img "Fire Safety" [ref=e1793]
+              - generic [ref=e1794]:
+                - generic [ref=e1795]:
+                  - heading "Fire Safety" [level=3] [ref=e1796]
+                  - generic [ref=e1797]: Not started
+                - generic [ref=e1798]:
+                  - generic [ref=e1799]: 0 of 39 requirements complete
+                  - generic [ref=e1800]: 0%
+            - generic [ref=e1802]:
+              - text: Open badge
+              - img [ref=e1803]
+        - link "First Aid First Aid Eagle required Not started 0 of 89 requirements complete 0% Open badge" [ref=e1806] [cursor=pointer]:
+          - /url: /merit-badges/mb_first_aid
+          - generic [ref=e1807]:
+            - generic [ref=e1808]:
+              - img "First Aid" [ref=e1810]
+              - generic [ref=e1811]:
+                - generic [ref=e1812]:
+                  - heading "First Aid" [level=3] [ref=e1813]
+                  - generic [ref=e1814]: Eagle required
+                  - generic [ref=e1815]: Not started
+                - generic [ref=e1816]:
+                  - generic [ref=e1817]: 0 of 89 requirements complete
+                  - generic [ref=e1818]: 0%
+            - generic [ref=e1820]:
+              - text: Open badge
+              - img [ref=e1821]
+        - link "Fishing Fishing Not started 0 of 14 requirements complete 0% Open badge" [ref=e1824] [cursor=pointer]:
+          - /url: /merit-badges/mb_fishing
+          - generic [ref=e1825]:
+            - generic [ref=e1826]:
+              - img "Fishing" [ref=e1828]
+              - generic [ref=e1829]:
+                - generic [ref=e1830]:
+                  - heading "Fishing" [level=3] [ref=e1831]
+                  - generic [ref=e1832]: Not started
+                - generic [ref=e1833]:
+                  - generic [ref=e1834]: 0 of 14 requirements complete
+                  - generic [ref=e1835]: 0%
+            - generic [ref=e1837]:
+              - text: Open badge
+              - img [ref=e1838]
+        - link "Fly-Fishing Fly-Fishing Not started 0 of 18 requirements complete 0% Open badge" [ref=e1841] [cursor=pointer]:
+          - /url: /merit-badges/mb_fly_fishing
+          - generic [ref=e1842]:
+            - generic [ref=e1843]:
+              - img "Fly-Fishing" [ref=e1845]
+              - generic [ref=e1846]:
+                - generic [ref=e1847]:
+                  - heading "Fly-Fishing" [level=3] [ref=e1848]
+                  - generic [ref=e1849]: Not started
+                - generic [ref=e1850]:
+                  - generic [ref=e1851]: 0 of 18 requirements complete
+                  - generic [ref=e1852]: 0%
+            - generic [ref=e1854]:
+              - text: Open badge
+              - img [ref=e1855]
+        - link "Forestry Forestry Not started 0 of 25 requirements complete 0% Open badge" [ref=e1858] [cursor=pointer]:
+          - /url: /merit-badges/mb_forestry
+          - generic [ref=e1859]:
+            - generic [ref=e1860]:
+              - img "Forestry" [ref=e1862]
+              - generic [ref=e1863]:
+                - generic [ref=e1864]:
+                  - heading "Forestry" [level=3] [ref=e1865]
+                  - generic [ref=e1866]: Not started
+                - generic [ref=e1867]:
+                  - generic [ref=e1868]: 0 of 25 requirements complete
+                  - generic [ref=e1869]: 0%
+            - generic [ref=e1871]:
+              - text: Open badge
+              - img [ref=e1872]
+        - link "Game Design Game Design Not started 0 of 19 requirements complete 0% Open badge" [ref=e1875] [cursor=pointer]:
+          - /url: /merit-badges/mb_game_design
+          - generic [ref=e1876]:
+            - generic [ref=e1877]:
+              - img "Game Design" [ref=e1879]
+              - generic [ref=e1880]:
+                - generic [ref=e1881]:
+                  - heading "Game Design" [level=3] [ref=e1882]
+                  - generic [ref=e1883]: Not started
+                - generic [ref=e1884]:
+                  - generic [ref=e1885]: 0 of 19 requirements complete
+                  - generic [ref=e1886]: 0%
+            - generic [ref=e1888]:
+              - text: Open badge
+              - img [ref=e1889]
+        - link "Gardening Gardening Not started 0 of 13 requirements complete 0% Open badge" [ref=e1892] [cursor=pointer]:
+          - /url: /merit-badges/mb_gardening
+          - generic [ref=e1893]:
+            - generic [ref=e1894]:
+              - img "Gardening" [ref=e1896]
+              - generic [ref=e1897]:
+                - generic [ref=e1898]:
+                  - heading "Gardening" [level=3] [ref=e1899]
+                  - generic [ref=e1900]: Not started
+                - generic [ref=e1901]:
+                  - generic [ref=e1902]: 0 of 13 requirements complete
+                  - generic [ref=e1903]: 0%
+            - generic [ref=e1905]:
+              - text: Open badge
+              - img [ref=e1906]
+        - link "Genealogy Genealogy Not started 0 of 21 requirements complete 0% Open badge" [ref=e1909] [cursor=pointer]:
+          - /url: /merit-badges/mb_genealogy
+          - generic [ref=e1910]:
+            - generic [ref=e1911]:
+              - img "Genealogy" [ref=e1913]
+              - generic [ref=e1914]:
+                - generic [ref=e1915]:
+                  - heading "Genealogy" [level=3] [ref=e1916]
+                  - generic [ref=e1917]: Not started
+                - generic [ref=e1918]:
+                  - generic [ref=e1919]: 0 of 21 requirements complete
+                  - generic [ref=e1920]: 0%
+            - generic [ref=e1922]:
+              - text: Open badge
+              - img [ref=e1923]
+        - link "Geocaching Geocaching Not started 0 of 14 requirements complete 0% Open badge" [ref=e1926] [cursor=pointer]:
+          - /url: /merit-badges/mb_geocaching
+          - generic [ref=e1927]:
+            - generic [ref=e1928]:
+              - img "Geocaching" [ref=e1930]
+              - generic [ref=e1931]:
+                - generic [ref=e1932]:
+                  - heading "Geocaching" [level=3] [ref=e1933]
+                  - generic [ref=e1934]: Not started
+                - generic [ref=e1935]:
+                  - generic [ref=e1936]: 0 of 14 requirements complete
+                  - generic [ref=e1937]: 0%
+            - generic [ref=e1939]:
+              - text: Open badge
+              - img [ref=e1940]
+        - link "Geology Geology Not started 0 of 5 requirements complete 0% Open badge" [ref=e1943] [cursor=pointer]:
+          - /url: /merit-badges/mb_geology
+          - generic [ref=e1944]:
+            - generic [ref=e1945]:
+              - img "Geology" [ref=e1947]
+              - generic [ref=e1948]:
+                - generic [ref=e1949]:
+                  - heading "Geology" [level=3] [ref=e1950]
+                  - generic [ref=e1951]: Not started
+                - generic [ref=e1952]:
+                  - generic [ref=e1953]: 0 of 5 requirements complete
+                  - generic [ref=e1954]: 0%
+            - generic [ref=e1956]:
+              - text: Open badge
+              - img [ref=e1957]
+        - link "Golf Golf Not started 0 of 2 requirements complete 0% Open badge" [ref=e1960] [cursor=pointer]:
+          - /url: /merit-badges/mb_golf
+          - generic [ref=e1961]:
+            - generic [ref=e1962]:
+              - img "Golf" [ref=e1964]
+              - generic [ref=e1965]:
+                - generic [ref=e1966]:
+                  - heading "Golf" [level=3] [ref=e1967]
+                  - generic [ref=e1968]: Not started
+                - generic [ref=e1969]:
+                  - generic [ref=e1970]: 0 of 2 requirements complete
+                  - generic [ref=e1971]: 0%
+            - generic [ref=e1973]:
+              - text: Open badge
+              - img [ref=e1974]
+        - link "Graphic Arts Graphic Arts Not started 0 of 11 requirements complete 0% Open badge" [ref=e1977] [cursor=pointer]:
+          - /url: /merit-badges/mb_graphic_arts
+          - generic [ref=e1978]:
+            - generic [ref=e1979]:
+              - img "Graphic Arts" [ref=e1981]
+              - generic [ref=e1982]:
+                - generic [ref=e1983]:
+                  - heading "Graphic Arts" [level=3] [ref=e1984]
+                  - generic [ref=e1985]: Not started
+                - generic [ref=e1986]:
+                  - generic [ref=e1987]: 0 of 11 requirements complete
+                  - generic [ref=e1988]: 0%
+            - generic [ref=e1990]:
+              - text: Open badge
+              - img [ref=e1991]
+        - link "Hiking Hiking Eagle required Not started 0 of 12 requirements complete 0% Open badge" [ref=e1994] [cursor=pointer]:
+          - /url: /merit-badges/mb_hiking
+          - generic [ref=e1995]:
+            - generic [ref=e1996]:
+              - img "Hiking" [ref=e1998]
+              - generic [ref=e1999]:
+                - generic [ref=e2000]:
+                  - heading "Hiking" [level=3] [ref=e2001]
+                  - generic [ref=e2002]: Eagle required
+                  - generic [ref=e2003]: Not started
+                - generic [ref=e2004]:
+                  - generic [ref=e2005]: 0 of 12 requirements complete
+                  - generic [ref=e2006]: 0%
+            - generic [ref=e2008]:
+              - text: Open badge
+              - img [ref=e2009]
+        - link "Home Repairs Home Repairs Not started 0 of 16 requirements complete 0% Open badge" [ref=e2012] [cursor=pointer]:
+          - /url: /merit-badges/mb_home_repairs
+          - generic [ref=e2013]:
+            - generic [ref=e2014]:
+              - img "Home Repairs" [ref=e2016]
+              - generic [ref=e2017]:
+                - generic [ref=e2018]:
+                  - heading "Home Repairs" [level=3] [ref=e2019]
+                  - generic [ref=e2020]: Not started
+                - generic [ref=e2021]:
+                  - generic [ref=e2022]: 0 of 16 requirements complete
+                  - generic [ref=e2023]: 0%
+            - generic [ref=e2025]:
+              - text: Open badge
+              - img [ref=e2026]
+        - link "Horsemanship Horsemanship Not started 0 of 20 requirements complete 0% Open badge" [ref=e2029] [cursor=pointer]:
+          - /url: /merit-badges/mb_horsemanship
+          - generic [ref=e2030]:
+            - generic [ref=e2031]:
+              - img "Horsemanship" [ref=e2033]
+              - generic [ref=e2034]:
+                - generic [ref=e2035]:
+                  - heading "Horsemanship" [level=3] [ref=e2036]
+                  - generic [ref=e2037]: Not started
+                - generic [ref=e2038]:
+                  - generic [ref=e2039]: 0 of 20 requirements complete
+                  - generic [ref=e2040]: 0%
+            - generic [ref=e2042]:
+              - text: Open badge
+              - img [ref=e2043]
+        - link "Indian Lore Indian Lore Not started 0 of 9 requirements complete 0% Open badge" [ref=e2046] [cursor=pointer]:
+          - /url: /merit-badges/mb_indian_lore
+          - generic [ref=e2047]:
+            - generic [ref=e2048]:
+              - img "Indian Lore" [ref=e2050]
+              - generic [ref=e2051]:
+                - generic [ref=e2052]:
+                  - heading "Indian Lore" [level=3] [ref=e2053]
+                  - generic [ref=e2054]: Not started
+                - generic [ref=e2055]:
+                  - generic [ref=e2056]: 0 of 9 requirements complete
+                  - generic [ref=e2057]: 0%
+            - generic [ref=e2059]:
+              - text: Open badge
+              - img [ref=e2060]
+        - link "Insect Study Insect Study Not started 0 of 23 requirements complete 0% Open badge" [ref=e2063] [cursor=pointer]:
+          - /url: /merit-badges/mb_insect_study
+          - generic [ref=e2064]:
+            - generic [ref=e2065]:
+              - img "Insect Study" [ref=e2067]
+              - generic [ref=e2068]:
+                - generic [ref=e2069]:
+                  - heading "Insect Study" [level=3] [ref=e2070]
+                  - generic [ref=e2071]: Not started
+                - generic [ref=e2072]:
+                  - generic [ref=e2073]: 0 of 23 requirements complete
+                  - generic [ref=e2074]: 0%
+            - generic [ref=e2076]:
+              - text: Open badge
+              - img [ref=e2077]
+        - link "Inventing Inventing Not started 0 of 15 requirements complete 0% Open badge" [ref=e2080] [cursor=pointer]:
+          - /url: /merit-badges/mb_inventing
+          - generic [ref=e2081]:
+            - generic [ref=e2082]:
+              - img "Inventing" [ref=e2084]
+              - generic [ref=e2085]:
+                - generic [ref=e2086]:
+                  - heading "Inventing" [level=3] [ref=e2087]
+                  - generic [ref=e2088]: Not started
+                - generic [ref=e2089]:
+                  - generic [ref=e2090]: 0 of 15 requirements complete
+                  - generic [ref=e2091]: 0%
+            - generic [ref=e2093]:
+              - text: Open badge
+              - img [ref=e2094]
+        - link "Journalism Journalism Not started 0 of 5 requirements complete 0% Open badge" [ref=e2097] [cursor=pointer]:
+          - /url: /merit-badges/mb_journalism
+          - generic [ref=e2098]:
+            - generic [ref=e2099]:
+              - img "Journalism" [ref=e2101]
+              - generic [ref=e2102]:
+                - generic [ref=e2103]:
+                  - heading "Journalism" [level=3] [ref=e2104]
+                  - generic [ref=e2105]: Not started
+                - generic [ref=e2106]:
+                  - generic [ref=e2107]: 0 of 5 requirements complete
+                  - generic [ref=e2108]: 0%
+            - generic [ref=e2110]:
+              - text: Open badge
+              - img [ref=e2111]
+        - link "Kayaking Kayaking Not started 0 of 30 requirements complete 0% Open badge" [ref=e2114] [cursor=pointer]:
+          - /url: /merit-badges/mb_kayaking
+          - generic [ref=e2115]:
+            - generic [ref=e2116]:
+              - img "Kayaking" [ref=e2118]
+              - generic [ref=e2119]:
+                - generic [ref=e2120]:
+                  - heading "Kayaking" [level=3] [ref=e2121]
+                  - generic [ref=e2122]: Not started
+                - generic [ref=e2123]:
+                  - generic [ref=e2124]: 0 of 30 requirements complete
+                  - generic [ref=e2125]: 0%
+            - generic [ref=e2127]:
+              - text: Open badge
+              - img [ref=e2128]
+        - link "Landscape Architecture Landscape Architecture Not started 0 of 10 requirements complete 0% Open badge" [ref=e2131] [cursor=pointer]:
+          - /url: /merit-badges/mb_landscape_architecture
+          - generic [ref=e2132]:
+            - generic [ref=e2133]:
+              - img "Landscape Architecture" [ref=e2135]
+              - generic [ref=e2136]:
+                - generic [ref=e2137]:
+                  - heading "Landscape Architecture" [level=3] [ref=e2138]
+                  - generic [ref=e2139]: Not started
+                - generic [ref=e2140]:
+                  - generic [ref=e2141]: 0 of 10 requirements complete
+                  - generic [ref=e2142]: 0%
+            - generic [ref=e2144]:
+              - text: Open badge
+              - img [ref=e2145]
+        - link "Law Law Not started 0 of 23 requirements complete 0% Open badge" [ref=e2148] [cursor=pointer]:
+          - /url: /merit-badges/mb_law
+          - generic [ref=e2149]:
+            - generic [ref=e2150]:
+              - img "Law" [ref=e2152]
+              - generic [ref=e2153]:
+                - generic [ref=e2154]:
+                  - heading "Law" [level=3] [ref=e2155]
+                  - generic [ref=e2156]: Not started
+                - generic [ref=e2157]:
+                  - generic [ref=e2158]: 0 of 23 requirements complete
+                  - generic [ref=e2159]: 0%
+            - generic [ref=e2161]:
+              - text: Open badge
+              - img [ref=e2162]
+        - link "Leatherwork Leatherwork Not started 0 of 13 requirements complete 0% Open badge" [ref=e2165] [cursor=pointer]:
+          - /url: /merit-badges/mb_leatherwork
+          - generic [ref=e2166]:
+            - generic [ref=e2167]:
+              - img "Leatherwork" [ref=e2169]
+              - generic [ref=e2170]:
+                - generic [ref=e2171]:
+                  - heading "Leatherwork" [level=3] [ref=e2172]
+                  - generic [ref=e2173]: Not started
+                - generic [ref=e2174]:
+                  - generic [ref=e2175]: 0 of 13 requirements complete
+                  - generic [ref=e2176]: 0%
+            - generic [ref=e2178]:
+              - text: Open badge
+              - img [ref=e2179]
+        - link "Lifesaving Lifesaving Eagle required Not started 0 of 30 requirements complete 0% Open badge" [ref=e2182] [cursor=pointer]:
+          - /url: /merit-badges/mb_lifesaving
+          - generic [ref=e2183]:
+            - generic [ref=e2184]:
+              - img "Lifesaving" [ref=e2186]
+              - generic [ref=e2187]:
+                - generic [ref=e2188]:
+                  - heading "Lifesaving" [level=3] [ref=e2189]
+                  - generic [ref=e2190]: Eagle required
+                  - generic [ref=e2191]: Not started
+                - generic [ref=e2192]:
+                  - generic [ref=e2193]: 0 of 30 requirements complete
+                  - generic [ref=e2194]: 0%
+            - generic [ref=e2196]:
+              - text: Open badge
+              - img [ref=e2197]
+        - link "Mammal Study Mammal Study Not started 0 of 5 requirements complete 0% Open badge" [ref=e2200] [cursor=pointer]:
+          - /url: /merit-badges/mb_mammal_study
+          - generic [ref=e2201]:
+            - generic [ref=e2202]:
+              - img "Mammal Study" [ref=e2204]
+              - generic [ref=e2205]:
+                - generic [ref=e2206]:
+                  - heading "Mammal Study" [level=3] [ref=e2207]
+                  - generic [ref=e2208]: Not started
+                - generic [ref=e2209]:
+                  - generic [ref=e2210]: 0 of 5 requirements complete
+                  - generic [ref=e2211]: 0%
+            - generic [ref=e2213]:
+              - text: Open badge
+              - img [ref=e2214]
+        - link "Metalwork Metalwork Not started 0 of 10 requirements complete 0% Open badge" [ref=e2217] [cursor=pointer]:
+          - /url: /merit-badges/mb_metalwork
+          - generic [ref=e2218]:
+            - generic [ref=e2219]:
+              - img "Metalwork" [ref=e2221]
+              - generic [ref=e2222]:
+                - generic [ref=e2223]:
+                  - heading "Metalwork" [level=3] [ref=e2224]
+                  - generic [ref=e2225]: Not started
+                - generic [ref=e2226]:
+                  - generic [ref=e2227]: 0 of 10 requirements complete
+                  - generic [ref=e2228]: 0%
+            - generic [ref=e2230]:
+              - text: Open badge
+              - img [ref=e2231]
+        - link "Mining in Society Mining in Society Not started 0 of 14 requirements complete 0% Open badge" [ref=e2234] [cursor=pointer]:
+          - /url: /merit-badges/mb_mining_in_society
+          - generic [ref=e2235]:
+            - generic [ref=e2236]:
+              - img "Mining in Society" [ref=e2238]
+              - generic [ref=e2239]:
+                - generic [ref=e2240]:
+                  - heading "Mining in Society" [level=3] [ref=e2241]
+                  - generic [ref=e2242]: Not started
+                - generic [ref=e2243]:
+                  - generic [ref=e2244]: 0 of 14 requirements complete
+                  - generic [ref=e2245]: 0%
+            - generic [ref=e2247]:
+              - text: Open badge
+              - img [ref=e2248]
+        - link "Model Design and Building Model Design and Building Not started 0 of 9 requirements complete 0% Open badge" [ref=e2251] [cursor=pointer]:
+          - /url: /merit-badges/mb_model_design_and_building
+          - generic [ref=e2252]:
+            - generic [ref=e2253]:
+              - img "Model Design and Building" [ref=e2255]
+              - generic [ref=e2256]:
+                - generic [ref=e2257]:
+                  - heading "Model Design and Building" [level=3] [ref=e2258]
+                  - generic [ref=e2259]: Not started
+                - generic [ref=e2260]:
+                  - generic [ref=e2261]: 0 of 9 requirements complete
+                  - generic [ref=e2262]: 0%
+            - generic [ref=e2264]:
+              - text: Open badge
+              - img [ref=e2265]
+        - link "Motorboating Motorboating Not started 0 of 25 requirements complete 0% Open badge" [ref=e2268] [cursor=pointer]:
+          - /url: /merit-badges/mb_motorboating
+          - generic [ref=e2269]:
+            - generic [ref=e2270]:
+              - img "Motorboating" [ref=e2272]
+              - generic [ref=e2273]:
+                - generic [ref=e2274]:
+                  - heading "Motorboating" [level=3] [ref=e2275]
+                  - generic [ref=e2276]: Not started
+                - generic [ref=e2277]:
+                  - generic [ref=e2278]: 0 of 25 requirements complete
+                  - generic [ref=e2279]: 0%
+            - generic [ref=e2281]:
+              - text: Open badge
+              - img [ref=e2282]
+        - link "Moviemaking Moviemaking Not started 0 of 16 requirements complete 0% Open badge" [ref=e2285] [cursor=pointer]:
+          - /url: /merit-badges/mb_moviemaking
+          - generic [ref=e2286]:
+            - generic [ref=e2287]:
+              - img "Moviemaking" [ref=e2289]
+              - generic [ref=e2290]:
+                - generic [ref=e2291]:
+                  - heading "Moviemaking" [level=3] [ref=e2292]
+                  - generic [ref=e2293]: Not started
+                - generic [ref=e2294]:
+                  - generic [ref=e2295]: 0 of 16 requirements complete
+                  - generic [ref=e2296]: 0%
+            - generic [ref=e2298]:
+              - text: Open badge
+              - img [ref=e2299]
+        - link "Music Music Not started 0 of 6 requirements complete 0% Open badge" [ref=e2302] [cursor=pointer]:
+          - /url: /merit-badges/mb_music
+          - generic [ref=e2303]:
+            - generic [ref=e2304]:
+              - img "Music" [ref=e2306]
+              - generic [ref=e2307]:
+                - generic [ref=e2308]:
+                  - heading "Music" [level=3] [ref=e2309]
+                  - generic [ref=e2310]: Not started
+                - generic [ref=e2311]:
+                  - generic [ref=e2312]: 0 of 6 requirements complete
+                  - generic [ref=e2313]: 0%
+            - generic [ref=e2315]:
+              - text: Open badge
+              - img [ref=e2316]
+        - link "Nature Nature Not started 0 of 34 requirements complete 0% Open badge" [ref=e2319] [cursor=pointer]:
+          - /url: /merit-badges/mb_nature
+          - generic [ref=e2320]:
+            - generic [ref=e2321]:
+              - img "Nature" [ref=e2323]
+              - generic [ref=e2324]:
+                - generic [ref=e2325]:
+                  - heading "Nature" [level=3] [ref=e2326]
+                  - generic [ref=e2327]: Not started
+                - generic [ref=e2328]:
+                  - generic [ref=e2329]: 0 of 34 requirements complete
+                  - generic [ref=e2330]: 0%
+            - generic [ref=e2332]:
+              - text: Open badge
+              - img [ref=e2333]
+        - link "Nuclear Science Nuclear Science Not started 0 of 14 requirements complete 0% Open badge" [ref=e2336] [cursor=pointer]:
+          - /url: /merit-badges/mb_nuclear_science
+          - generic [ref=e2337]:
+            - generic [ref=e2338]:
+              - img "Nuclear Science" [ref=e2340]
+              - generic [ref=e2341]:
+                - generic [ref=e2342]:
+                  - heading "Nuclear Science" [level=3] [ref=e2343]
+                  - generic [ref=e2344]: Not started
+                - generic [ref=e2345]:
+                  - generic [ref=e2346]: 0 of 14 requirements complete
+                  - generic [ref=e2347]: 0%
+            - generic [ref=e2349]:
+              - text: Open badge
+              - img [ref=e2350]
+        - link "Oceanography Oceanography Not started 0 of 11 requirements complete 0% Open badge" [ref=e2353] [cursor=pointer]:
+          - /url: /merit-badges/mb_oceanography
+          - generic [ref=e2354]:
+            - generic [ref=e2355]:
+              - img "Oceanography" [ref=e2357]
+              - generic [ref=e2358]:
+                - generic [ref=e2359]:
+                  - heading "Oceanography" [level=3] [ref=e2360]
+                  - generic [ref=e2361]: Not started
+                - generic [ref=e2362]:
+                  - generic [ref=e2363]: 0 of 11 requirements complete
+                  - generic [ref=e2364]: 0%
+            - generic [ref=e2366]:
+              - text: Open badge
+              - img [ref=e2367]
+        - link "Orienteering Orienteering Not started 0 of 19 requirements complete 0% Open badge" [ref=e2370] [cursor=pointer]:
+          - /url: /merit-badges/mb_orienteering
+          - generic [ref=e2371]:
+            - generic [ref=e2372]:
+              - img "Orienteering" [ref=e2374]
+              - generic [ref=e2375]:
+                - generic [ref=e2376]:
+                  - heading "Orienteering" [level=3] [ref=e2377]
+                  - generic [ref=e2378]: Not started
+                - generic [ref=e2379]:
+                  - generic [ref=e2380]: 0 of 19 requirements complete
+                  - generic [ref=e2381]: 0%
+            - generic [ref=e2383]:
+              - text: Open badge
+              - img [ref=e2384]
+        - link "Painting Painting Not started 0 of 11 requirements complete 0% Open badge" [ref=e2387] [cursor=pointer]:
+          - /url: /merit-badges/mb_painting
+          - generic [ref=e2388]:
+            - generic [ref=e2389]:
+              - img "Painting" [ref=e2391]
+              - generic [ref=e2392]:
+                - generic [ref=e2393]:
+                  - heading "Painting" [level=3] [ref=e2394]
+                  - generic [ref=e2395]: Not started
+                - generic [ref=e2396]:
+                  - generic [ref=e2397]: 0 of 11 requirements complete
+                  - generic [ref=e2398]: 0%
+            - generic [ref=e2400]:
+              - text: Open badge
+              - img [ref=e2401]
+        - link "Personal Fitness Personal Fitness Eagle required Not started 0 of 34 requirements complete 0% Open badge" [ref=e2404] [cursor=pointer]:
+          - /url: /merit-badges/mb_personal_fitness
+          - generic [ref=e2405]:
+            - generic [ref=e2406]:
+              - img "Personal Fitness" [ref=e2408]
+              - generic [ref=e2409]:
+                - generic [ref=e2410]:
+                  - heading "Personal Fitness" [level=3] [ref=e2411]
+                  - generic [ref=e2412]: Eagle required
+                  - generic [ref=e2413]: Not started
+                - generic [ref=e2414]:
+                  - generic [ref=e2415]: 0 of 34 requirements complete
+                  - generic [ref=e2416]: 0%
+            - generic [ref=e2418]:
+              - text: Open badge
+              - img [ref=e2419]
+        - link "Personal Management Personal Management Eagle required Not started 0 of 53 requirements complete 0% Open badge" [ref=e2422] [cursor=pointer]:
+          - /url: /merit-badges/mb_personal_management
+          - generic [ref=e2423]:
+            - generic [ref=e2424]:
+              - img "Personal Management" [ref=e2426]
+              - generic [ref=e2427]:
+                - generic [ref=e2428]:
+                  - heading "Personal Management" [level=3] [ref=e2429]
+                  - generic [ref=e2430]: Eagle required
+                  - generic [ref=e2431]: Not started
+                - generic [ref=e2432]:
+                  - generic [ref=e2433]: 0 of 53 requirements complete
+                  - generic [ref=e2434]: 0%
+            - generic [ref=e2436]:
+              - text: Open badge
+              - img [ref=e2437]
+        - link "Pets Pets Not started 0 of 4 requirements complete 0% Open badge" [ref=e2440] [cursor=pointer]:
+          - /url: /merit-badges/mb_pets
+          - generic [ref=e2441]:
+            - generic [ref=e2442]:
+              - img "Pets" [ref=e2444]
+              - generic [ref=e2445]:
+                - generic [ref=e2446]:
+                  - heading "Pets" [level=3] [ref=e2447]
+                  - generic [ref=e2448]: Not started
+                - generic [ref=e2449]:
+                  - generic [ref=e2450]: 0 of 4 requirements complete
+                  - generic [ref=e2451]: 0%
+            - generic [ref=e2453]:
+              - text: Open badge
+              - img [ref=e2454]
+        - link "Photography Photography Not started 0 of 23 requirements complete 0% Open badge" [ref=e2457] [cursor=pointer]:
+          - /url: /merit-badges/mb_photography
+          - generic [ref=e2458]:
+            - generic [ref=e2459]:
+              - img "Photography" [ref=e2461]
+              - generic [ref=e2462]:
+                - generic [ref=e2463]:
+                  - heading "Photography" [level=3] [ref=e2464]
+                  - generic [ref=e2465]: Not started
+                - generic [ref=e2466]:
+                  - generic [ref=e2467]: 0 of 23 requirements complete
+                  - generic [ref=e2468]: 0%
+            - generic [ref=e2470]:
+              - text: Open badge
+              - img [ref=e2471]
+        - link "Pioneering Pioneering Not started 0 of 21 requirements complete 0% Open badge" [ref=e2474] [cursor=pointer]:
+          - /url: /merit-badges/mb_pioneering
+          - generic [ref=e2475]:
+            - generic [ref=e2476]:
+              - img "Pioneering" [ref=e2478]
+              - generic [ref=e2479]:
+                - generic [ref=e2480]:
+                  - heading "Pioneering" [level=3] [ref=e2481]
+                  - generic [ref=e2482]: Not started
+                - generic [ref=e2483]:
+                  - generic [ref=e2484]: 0 of 21 requirements complete
+                  - generic [ref=e2485]: 0%
+            - generic [ref=e2487]:
+              - text: Open badge
+              - img [ref=e2488]
+        - link "Plant Science Plant Science Not started 0 of 8 requirements complete 0% Open badge" [ref=e2491] [cursor=pointer]:
+          - /url: /merit-badges/mb_plant_science
+          - generic [ref=e2492]:
+            - generic [ref=e2493]:
+              - img "Plant Science" [ref=e2495]
+              - generic [ref=e2496]:
+                - generic [ref=e2497]:
+                  - heading "Plant Science" [level=3] [ref=e2498]
+                  - generic [ref=e2499]: Not started
+                - generic [ref=e2500]:
+                  - generic [ref=e2501]: 0 of 8 requirements complete
+                  - generic [ref=e2502]: 0%
+            - generic [ref=e2504]:
+              - text: Open badge
+              - img [ref=e2505]
+        - link "Plumbing Plumbing Not started 0 of 13 requirements complete 0% Open badge" [ref=e2508] [cursor=pointer]:
+          - /url: /merit-badges/mb_plumbing
+          - generic [ref=e2509]:
+            - generic [ref=e2510]:
+              - img "Plumbing" [ref=e2512]
+              - generic [ref=e2513]:
+                - generic [ref=e2514]:
+                  - heading "Plumbing" [level=3] [ref=e2515]
+                  - generic [ref=e2516]: Not started
+                - generic [ref=e2517]:
+                  - generic [ref=e2518]: 0 of 13 requirements complete
+                  - generic [ref=e2519]: 0%
+            - generic [ref=e2521]:
+              - text: Open badge
+              - img [ref=e2522]
+        - link "Pottery Pottery Not started 0 of 14 requirements complete 0% Open badge" [ref=e2525] [cursor=pointer]:
+          - /url: /merit-badges/mb_pottery
+          - generic [ref=e2526]:
+            - generic [ref=e2527]:
+              - img "Pottery" [ref=e2529]
+              - generic [ref=e2530]:
+                - generic [ref=e2531]:
+                  - heading "Pottery" [level=3] [ref=e2532]
+                  - generic [ref=e2533]: Not started
+                - generic [ref=e2534]:
+                  - generic [ref=e2535]: 0 of 14 requirements complete
+                  - generic [ref=e2536]: 0%
+            - generic [ref=e2538]:
+              - text: Open badge
+              - img [ref=e2539]
+        - link "Programming Programming Not started 0 of 12 requirements complete 0% Open badge" [ref=e2542] [cursor=pointer]:
+          - /url: /merit-badges/mb_programming
+          - generic [ref=e2543]:
+            - generic [ref=e2544]:
+              - img "Programming" [ref=e2546]
+              - generic [ref=e2547]:
+                - generic [ref=e2548]:
+                  - heading "Programming" [level=3] [ref=e2549]
+                  - generic [ref=e2550]: Not started
+                - generic [ref=e2551]:
+                  - generic [ref=e2552]: 0 of 12 requirements complete
+                  - generic [ref=e2553]: 0%
+            - generic [ref=e2555]:
+              - text: Open badge
+              - img [ref=e2556]
+        - link "Public Health Public Health Not started 0 of 18 requirements complete 0% Open badge" [ref=e2559] [cursor=pointer]:
+          - /url: /merit-badges/mb_public_health
+          - generic [ref=e2560]:
+            - generic [ref=e2561]:
+              - img "Public Health" [ref=e2563]
+              - generic [ref=e2564]:
+                - generic [ref=e2565]:
+                  - heading "Public Health" [level=3] [ref=e2566]
+                  - generic [ref=e2567]: Not started
+                - generic [ref=e2568]:
+                  - generic [ref=e2569]: 0 of 18 requirements complete
+                  - generic [ref=e2570]: 0%
+            - generic [ref=e2572]:
+              - text: Open badge
+              - img [ref=e2573]
+        - link "Public Speaking Public Speaking Not started 0 of 5 requirements complete 0% Open badge" [ref=e2576] [cursor=pointer]:
+          - /url: /merit-badges/mb_public_speaking
+          - generic [ref=e2577]:
+            - generic [ref=e2578]:
+              - img "Public Speaking" [ref=e2580]
+              - generic [ref=e2581]:
+                - generic [ref=e2582]:
+                  - heading "Public Speaking" [level=3] [ref=e2583]
+                  - generic [ref=e2584]: Not started
+                - generic [ref=e2585]:
+                  - generic [ref=e2586]: 0 of 5 requirements complete
+                  - generic [ref=e2587]: 0%
+            - generic [ref=e2589]:
+              - text: Open badge
+              - img [ref=e2590]
+        - link "Pulp and Paper Pulp and Paper Not started 0 of 14 requirements complete 0% Open badge" [ref=e2593] [cursor=pointer]:
+          - /url: /merit-badges/mb_pulp_and_paper
+          - generic [ref=e2594]:
+            - generic [ref=e2595]:
+              - img "Pulp and Paper" [ref=e2597]
+              - generic [ref=e2598]:
+                - generic [ref=e2599]:
+                  - heading "Pulp and Paper" [level=3] [ref=e2600]
+                  - generic [ref=e2601]: Not started
+                - generic [ref=e2602]:
+                  - generic [ref=e2603]: 0 of 14 requirements complete
+                  - generic [ref=e2604]: 0%
+            - generic [ref=e2606]:
+              - text: Open badge
+              - img [ref=e2607]
+        - link "Radio Radio Not started 0 of 21 requirements complete 0% Open badge" [ref=e2610] [cursor=pointer]:
+          - /url: /merit-badges/mb_radio
+          - generic [ref=e2611]:
+            - generic [ref=e2612]:
+              - img "Radio" [ref=e2614]
+              - generic [ref=e2615]:
+                - generic [ref=e2616]:
+                  - heading "Radio" [level=3] [ref=e2617]
+                  - generic [ref=e2618]: Not started
+                - generic [ref=e2619]:
+                  - generic [ref=e2620]: 0 of 21 requirements complete
+                  - generic [ref=e2621]: 0%
+            - generic [ref=e2623]:
+              - text: Open badge
+              - img [ref=e2624]
+        - link "Railroading Railroading Not started 0 of 22 requirements complete 0% Open badge" [ref=e2627] [cursor=pointer]:
+          - /url: /merit-badges/mb_railroading
+          - generic [ref=e2628]:
+            - generic [ref=e2629]:
+              - img "Railroading" [ref=e2631]
+              - generic [ref=e2632]:
+                - generic [ref=e2633]:
+                  - heading "Railroading" [level=3] [ref=e2634]
+                  - generic [ref=e2635]: Not started
+                - generic [ref=e2636]:
+                  - generic [ref=e2637]: 0 of 22 requirements complete
+                  - generic [ref=e2638]: 0%
+            - generic [ref=e2640]:
+              - text: Open badge
+              - img [ref=e2641]
+        - link "Reading Reading Not started 0 of 11 requirements complete 0% Open badge" [ref=e2644] [cursor=pointer]:
+          - /url: /merit-badges/mb_reading
+          - generic [ref=e2645]:
+            - generic [ref=e2646]:
+              - img "Reading" [ref=e2648]
+              - generic [ref=e2649]:
+                - generic [ref=e2650]:
+                  - heading "Reading" [level=3] [ref=e2651]
+                  - generic [ref=e2652]: Not started
+                - generic [ref=e2653]:
+                  - generic [ref=e2654]: 0 of 11 requirements complete
+                  - generic [ref=e2655]: 0%
+            - generic [ref=e2657]:
+              - text: Open badge
+              - img [ref=e2658]
+        - link "Reptile and Amphibian Study Reptile and Amphibian Study Not started 0 of 14 requirements complete 0% Open badge" [ref=e2661] [cursor=pointer]:
+          - /url: /merit-badges/mb_reptile_and_amphibian_study
+          - generic [ref=e2662]:
+            - generic [ref=e2663]:
+              - img "Reptile and Amphibian Study" [ref=e2665]
+              - generic [ref=e2666]:
+                - generic [ref=e2667]:
+                  - heading "Reptile and Amphibian Study" [level=3] [ref=e2668]
+                  - generic [ref=e2669]: Not started
+                - generic [ref=e2670]:
+                  - generic [ref=e2671]: 0 of 14 requirements complete
+                  - generic [ref=e2672]: 0%
+            - generic [ref=e2674]:
+              - text: Open badge
+              - img [ref=e2675]
+        - link "Rifle Shooting Rifle Shooting Not started 0 of 14 requirements complete 0% Open badge" [ref=e2678] [cursor=pointer]:
+          - /url: /merit-badges/mb_rifle_shooting
+          - generic [ref=e2679]:
+            - generic [ref=e2680]:
+              - img "Rifle Shooting" [ref=e2682]
+              - generic [ref=e2683]:
+                - generic [ref=e2684]:
+                  - heading "Rifle Shooting" [level=3] [ref=e2685]
+                  - generic [ref=e2686]: Not started
+                - generic [ref=e2687]:
+                  - generic [ref=e2688]: 0 of 14 requirements complete
+                  - generic [ref=e2689]: 0%
+            - generic [ref=e2691]:
+              - text: Open badge
+              - img [ref=e2692]
+        - link "Robotics Robotics Not started 0 of 17 requirements complete 0% Open badge" [ref=e2695] [cursor=pointer]:
+          - /url: /merit-badges/mb_robotics
+          - generic [ref=e2696]:
+            - generic [ref=e2697]:
+              - img "Robotics" [ref=e2699]
+              - generic [ref=e2700]:
+                - generic [ref=e2701]:
+                  - heading "Robotics" [level=3] [ref=e2702]
+                  - generic [ref=e2703]: Not started
+                - generic [ref=e2704]:
+                  - generic [ref=e2705]: 0 of 17 requirements complete
+                  - generic [ref=e2706]: 0%
+            - generic [ref=e2708]:
+              - text: Open badge
+              - img [ref=e2709]
+        - link "Rowing Rowing Not started 0 of 19 requirements complete 0% Open badge" [ref=e2712] [cursor=pointer]:
+          - /url: /merit-badges/mb_rowing
+          - generic [ref=e2713]:
+            - generic [ref=e2714]:
+              - img "Rowing" [ref=e2716]
+              - generic [ref=e2717]:
+                - generic [ref=e2718]:
+                  - heading "Rowing" [level=3] [ref=e2719]
+                  - generic [ref=e2720]: Not started
+                - generic [ref=e2721]:
+                  - generic [ref=e2722]: 0 of 19 requirements complete
+                  - generic [ref=e2723]: 0%
+            - generic [ref=e2725]:
+              - text: Open badge
+              - img [ref=e2726]
+        - link "Safety Safety Not started 0 of 18 requirements complete 0% Open badge" [ref=e2729] [cursor=pointer]:
+          - /url: /merit-badges/mb_safety
+          - generic [ref=e2730]:
+            - generic [ref=e2731]:
+              - img "Safety" [ref=e2733]
+              - generic [ref=e2734]:
+                - generic [ref=e2735]:
+                  - heading "Safety" [level=3] [ref=e2736]
+                  - generic [ref=e2737]: Not started
+                - generic [ref=e2738]:
+                  - generic [ref=e2739]: 0 of 18 requirements complete
+                  - generic [ref=e2740]: 0%
+            - generic [ref=e2742]:
+              - text: Open badge
+              - img [ref=e2743]
+        - link "Salesmanship Salesmanship Not started 0 of 12 requirements complete 0% Open badge" [ref=e2746] [cursor=pointer]:
+          - /url: /merit-badges/mb_salesmanship
+          - generic [ref=e2747]:
+            - generic [ref=e2748]:
+              - img "Salesmanship" [ref=e2750]
+              - generic [ref=e2751]:
+                - generic [ref=e2752]:
+                  - heading "Salesmanship" [level=3] [ref=e2753]
+                  - generic [ref=e2754]: Not started
+                - generic [ref=e2755]:
+                  - generic [ref=e2756]: 0 of 12 requirements complete
+                  - generic [ref=e2757]: 0%
+            - generic [ref=e2759]:
+              - text: Open badge
+              - img [ref=e2760]
+        - link "Scholarship Scholarship Not started 0 of 6 requirements complete 0% Open badge" [ref=e2763] [cursor=pointer]:
+          - /url: /merit-badges/mb_scholarship
+          - generic [ref=e2764]:
+            - generic [ref=e2765]:
+              - img "Scholarship" [ref=e2767]
+              - generic [ref=e2768]:
+                - generic [ref=e2769]:
+                  - heading "Scholarship" [level=3] [ref=e2770]
+                  - generic [ref=e2771]: Not started
+                - generic [ref=e2772]:
+                  - generic [ref=e2773]: 0 of 6 requirements complete
+                  - generic [ref=e2774]: 0%
+            - generic [ref=e2776]:
+              - text: Open badge
+              - img [ref=e2777]
+        - link "Scouting Heritage Scouting Heritage Not started 0 of 19 requirements complete 0% Open badge" [ref=e2780] [cursor=pointer]:
+          - /url: /merit-badges/mb_scouting_heritage
+          - generic [ref=e2781]:
+            - generic [ref=e2782]:
+              - img "Scouting Heritage" [ref=e2784]
+              - generic [ref=e2785]:
+                - generic [ref=e2786]:
+                  - heading "Scouting Heritage" [level=3] [ref=e2787]
+                  - generic [ref=e2788]: Not started
+                - generic [ref=e2789]:
+                  - generic [ref=e2790]: 0 of 19 requirements complete
+                  - generic [ref=e2791]: 0%
+            - generic [ref=e2793]:
+              - text: Open badge
+              - img [ref=e2794]
+        - link "Scuba Diving Scuba Diving Not started 0 of 7 requirements complete 0% Open badge" [ref=e2797] [cursor=pointer]:
+          - /url: /merit-badges/mb_scuba_diving
+          - generic [ref=e2798]:
+            - generic [ref=e2799]:
+              - img "Scuba Diving" [ref=e2801]
+              - generic [ref=e2802]:
+                - generic [ref=e2803]:
+                  - heading "Scuba Diving" [level=3] [ref=e2804]
+                  - generic [ref=e2805]: Not started
+                - generic [ref=e2806]:
+                  - generic [ref=e2807]: 0 of 7 requirements complete
+                  - generic [ref=e2808]: 0%
+            - generic [ref=e2810]:
+              - text: Open badge
+              - img [ref=e2811]
+        - link "Sculpture Sculpture Not started 0 of 4 requirements complete 0% Open badge" [ref=e2814] [cursor=pointer]:
+          - /url: /merit-badges/mb_sculpture
+          - generic [ref=e2815]:
+            - generic [ref=e2816]:
+              - img "Sculpture" [ref=e2818]
+              - generic [ref=e2819]:
+                - generic [ref=e2820]:
+                  - heading "Sculpture" [level=3] [ref=e2821]
+                  - generic [ref=e2822]: Not started
+                - generic [ref=e2823]:
+                  - generic [ref=e2824]: 0 of 4 requirements complete
+                  - generic [ref=e2825]: 0%
+            - generic [ref=e2827]:
+              - text: Open badge
+              - img [ref=e2828]
+        - link "Shotgun Shooting Shotgun Shooting Not started 0 of 14 requirements complete 0% Open badge" [ref=e2831] [cursor=pointer]:
+          - /url: /merit-badges/mb_shotgun_shooting
+          - generic [ref=e2832]:
+            - generic [ref=e2833]:
+              - img "Shotgun Shooting" [ref=e2835]
+              - generic [ref=e2836]:
+                - generic [ref=e2837]:
+                  - heading "Shotgun Shooting" [level=3] [ref=e2838]
+                  - generic [ref=e2839]: Not started
+                - generic [ref=e2840]:
+                  - generic [ref=e2841]: 0 of 14 requirements complete
+                  - generic [ref=e2842]: 0%
+            - generic [ref=e2844]:
+              - text: Open badge
+              - img [ref=e2845]
+        - link "Signs, Signals, and Codes Signs, Signals, and Codes Not started 0 of 20 requirements complete 0% Open badge" [ref=e2848] [cursor=pointer]:
+          - /url: /merit-badges/mb_signs_signals_and_codes
+          - generic [ref=e2849]:
+            - generic [ref=e2850]:
+              - img "Signs, Signals, and Codes" [ref=e2852]
+              - generic [ref=e2853]:
+                - generic [ref=e2854]:
+                  - heading "Signs, Signals, and Codes" [level=3] [ref=e2855]
+                  - generic [ref=e2856]: Not started
+                - generic [ref=e2857]:
+                  - generic [ref=e2858]: 0 of 20 requirements complete
+                  - generic [ref=e2859]: 0%
+            - generic [ref=e2861]:
+              - text: Open badge
+              - img [ref=e2862]
+        - link "Skating Skating Not started 0 of 3 requirements complete 0% Open badge" [ref=e2865] [cursor=pointer]:
+          - /url: /merit-badges/mb_skating
+          - generic [ref=e2866]:
+            - generic [ref=e2867]:
+              - img "Skating" [ref=e2869]
+              - generic [ref=e2870]:
+                - generic [ref=e2871]:
+                  - heading "Skating" [level=3] [ref=e2872]
+                  - generic [ref=e2873]: Not started
+                - generic [ref=e2874]:
+                  - generic [ref=e2875]: 0 of 3 requirements complete
+                  - generic [ref=e2876]: 0%
+            - generic [ref=e2878]:
+              - text: Open badge
+              - img [ref=e2879]
+        - link "Small-Boat Sailing Small-Boat Sailing Not started 0 of 27 requirements complete 0% Open badge" [ref=e2882] [cursor=pointer]:
+          - /url: /merit-badges/mb_small_boat_sailing
+          - generic [ref=e2883]:
+            - generic [ref=e2884]:
+              - img "Small-Boat Sailing" [ref=e2886]
+              - generic [ref=e2887]:
+                - generic [ref=e2888]:
+                  - heading "Small-Boat Sailing" [level=3] [ref=e2889]
+                  - generic [ref=e2890]: Not started
+                - generic [ref=e2891]:
+                  - generic [ref=e2892]: 0 of 27 requirements complete
+                  - generic [ref=e2893]: 0%
+            - generic [ref=e2895]:
+              - text: Open badge
+              - img [ref=e2896]
+        - link "Snow Sports Snow Sports Not started 0 of 11 requirements complete 0% Open badge" [ref=e2899] [cursor=pointer]:
+          - /url: /merit-badges/mb_snow_sports
+          - generic [ref=e2900]:
+            - generic [ref=e2901]:
+              - img "Snow Sports" [ref=e2903]
+              - generic [ref=e2904]:
+                - generic [ref=e2905]:
+                  - heading "Snow Sports" [level=3] [ref=e2906]
+                  - generic [ref=e2907]: Not started
+                - generic [ref=e2908]:
+                  - generic [ref=e2909]: 0 of 11 requirements complete
+                  - generic [ref=e2910]: 0%
+            - generic [ref=e2912]:
+              - text: Open badge
+              - img [ref=e2913]
+        - link "Soil and Water Conservation Soil and Water Conservation Not started 0 of 26 requirements complete 0% Open badge" [ref=e2916] [cursor=pointer]:
+          - /url: /merit-badges/mb_soil_and_water_conservation
+          - generic [ref=e2917]:
+            - generic [ref=e2918]:
+              - img "Soil and Water Conservation" [ref=e2920]
+              - generic [ref=e2921]:
+                - generic [ref=e2922]:
+                  - heading "Soil and Water Conservation" [level=3] [ref=e2923]
+                  - generic [ref=e2924]: Not started
+                - generic [ref=e2925]:
+                  - generic [ref=e2926]: 0 of 26 requirements complete
+                  - generic [ref=e2927]: 0%
+            - generic [ref=e2929]:
+              - text: Open badge
+              - img [ref=e2930]
+        - link "Space Exploration Space Exploration Not started 0 of 27 requirements complete 0% Open badge" [ref=e2933] [cursor=pointer]:
+          - /url: /merit-badges/mb_space_exploration
+          - generic [ref=e2934]:
+            - generic [ref=e2935]:
+              - img "Space Exploration" [ref=e2937]
+              - generic [ref=e2938]:
+                - generic [ref=e2939]:
+                  - heading "Space Exploration" [level=3] [ref=e2940]
+                  - generic [ref=e2941]: Not started
+                - generic [ref=e2942]:
+                  - generic [ref=e2943]: 0 of 27 requirements complete
+                  - generic [ref=e2944]: 0%
+            - generic [ref=e2946]:
+              - text: Open badge
+              - img [ref=e2947]
+        - link "Sports Sports Not started 0 of 19 requirements complete 0% Open badge" [ref=e2950] [cursor=pointer]:
+          - /url: /merit-badges/mb_sports
+          - generic [ref=e2951]:
+            - generic [ref=e2952]:
+              - img "Sports" [ref=e2954]
+              - generic [ref=e2955]:
+                - generic [ref=e2956]:
+                  - heading "Sports" [level=3] [ref=e2957]
+                  - generic [ref=e2958]: Not started
+                - generic [ref=e2959]:
+                  - generic [ref=e2960]: 0 of 19 requirements complete
+                  - generic [ref=e2961]: 0%
+            - generic [ref=e2963]:
+              - text: Open badge
+              - img [ref=e2964]
+        - link "Stamp Collecting Stamp Collecting Not started 0 of 18 requirements complete 0% Open badge" [ref=e2967] [cursor=pointer]:
+          - /url: /merit-badges/mb_stamp_collecting
+          - generic [ref=e2968]:
+            - generic [ref=e2969]:
+              - img "Stamp Collecting" [ref=e2971]
+              - generic [ref=e2972]:
+                - generic [ref=e2973]:
+                  - heading "Stamp Collecting" [level=3] [ref=e2974]
+                  - generic [ref=e2975]: Not started
+                - generic [ref=e2976]:
+                  - generic [ref=e2977]: 0 of 18 requirements complete
+                  - generic [ref=e2978]: 0%
+            - generic [ref=e2980]:
+              - text: Open badge
+              - img [ref=e2981]
+        - link "Surveying Surveying Not started 0 of 9 requirements complete 0% Open badge" [ref=e2984] [cursor=pointer]:
+          - /url: /merit-badges/mb_surveying
+          - generic [ref=e2985]:
+            - generic [ref=e2986]:
+              - img "Surveying" [ref=e2988]
+              - generic [ref=e2989]:
+                - generic [ref=e2990]:
+                  - heading "Surveying" [level=3] [ref=e2991]
+                  - generic [ref=e2992]: Not started
+                - generic [ref=e2993]:
+                  - generic [ref=e2994]: 0 of 9 requirements complete
+                  - generic [ref=e2995]: 0%
+            - generic [ref=e2997]:
+              - text: Open badge
+              - img [ref=e2998]
+        - link "Sustainability Sustainability Eagle required Not started 0 of 12 requirements complete 0% Open badge" [ref=e3001] [cursor=pointer]:
+          - /url: /merit-badges/mb_sustainability
+          - generic [ref=e3002]:
+            - generic [ref=e3003]:
+              - img "Sustainability" [ref=e3005]
+              - generic [ref=e3006]:
+                - generic [ref=e3007]:
+                  - heading "Sustainability" [level=3] [ref=e3008]
+                  - generic [ref=e3009]: Eagle required
+                  - generic [ref=e3010]: Not started
+                - generic [ref=e3011]:
+                  - generic [ref=e3012]: 0 of 12 requirements complete
+                  - generic [ref=e3013]: 0%
+            - generic [ref=e3015]:
+              - text: Open badge
+              - img [ref=e3016]
+        - link "Swimming Swimming Eagle required Not started 0 of 20 requirements complete 0% Open badge" [ref=e3019] [cursor=pointer]:
+          - /url: /merit-badges/mb_swimming
+          - generic [ref=e3020]:
+            - generic [ref=e3021]:
+              - img "Swimming" [ref=e3023]
+              - generic [ref=e3024]:
+                - generic [ref=e3025]:
+                  - heading "Swimming" [level=3] [ref=e3026]
+                  - generic [ref=e3027]: Eagle required
+                  - generic [ref=e3028]: Not started
+                - generic [ref=e3029]:
+                  - generic [ref=e3030]: 0 of 20 requirements complete
+                  - generic [ref=e3031]: 0%
+            - generic [ref=e3033]:
+              - text: Open badge
+              - img [ref=e3034]
+        - link "Textile Textile Not started 0 of 10 requirements complete 0% Open badge" [ref=e3037] [cursor=pointer]:
+          - /url: /merit-badges/mb_textile
+          - generic [ref=e3038]:
+            - generic [ref=e3039]:
+              - img "Textile" [ref=e3041]
+              - generic [ref=e3042]:
+                - generic [ref=e3043]:
+                  - heading "Textile" [level=3] [ref=e3044]
+                  - generic [ref=e3045]: Not started
+                - generic [ref=e3046]:
+                  - generic [ref=e3047]: 0 of 10 requirements complete
+                  - generic [ref=e3048]: 0%
+            - generic [ref=e3050]:
+              - text: Open badge
+              - img [ref=e3051]
+        - link "Theater Theater Not started 0 of 7 requirements complete 0% Open badge" [ref=e3054] [cursor=pointer]:
+          - /url: /merit-badges/mb_theater
+          - generic [ref=e3055]:
+            - generic [ref=e3056]:
+              - img "Theater" [ref=e3058]
+              - generic [ref=e3059]:
+                - generic [ref=e3060]:
+                  - heading "Theater" [level=3] [ref=e3061]
+                  - generic [ref=e3062]: Not started
+                - generic [ref=e3063]:
+                  - generic [ref=e3064]: 0 of 7 requirements complete
+                  - generic [ref=e3065]: 0%
+            - generic [ref=e3067]:
+              - text: Open badge
+              - img [ref=e3068]
+        - link "Traffic Safety Traffic Safety Not started 0 of 15 requirements complete 0% Open badge" [ref=e3071] [cursor=pointer]:
+          - /url: /merit-badges/mb_traffic_safety
+          - generic [ref=e3072]:
+            - generic [ref=e3073]:
+              - img "Traffic Safety" [ref=e3075]
+              - generic [ref=e3076]:
+                - generic [ref=e3077]:
+                  - heading "Traffic Safety" [level=3] [ref=e3078]
+                  - generic [ref=e3079]: Not started
+                - generic [ref=e3080]:
+                  - generic [ref=e3081]: 0 of 15 requirements complete
+                  - generic [ref=e3082]: 0%
+            - generic [ref=e3084]:
+              - text: Open badge
+              - img [ref=e3085]
+        - link "Truck Transportation Truck Transportation Not started 0 of 20 requirements complete 0% Open badge" [ref=e3088] [cursor=pointer]:
+          - /url: /merit-badges/mb_truck_transportation
+          - generic [ref=e3089]:
+            - generic [ref=e3090]:
+              - img "Truck Transportation" [ref=e3092]
+              - generic [ref=e3093]:
+                - generic [ref=e3094]:
+                  - heading "Truck Transportation" [level=3] [ref=e3095]
+                  - generic [ref=e3096]: Not started
+                - generic [ref=e3097]:
+                  - generic [ref=e3098]: 0 of 20 requirements complete
+                  - generic [ref=e3099]: 0%
+            - generic [ref=e3101]:
+              - text: Open badge
+              - img [ref=e3102]
+        - link "Veterinary Medicine Veterinary Medicine Not started 0 of 15 requirements complete 0% Open badge" [ref=e3105] [cursor=pointer]:
+          - /url: /merit-badges/mb_veterinary_medicine
+          - generic [ref=e3106]:
+            - generic [ref=e3107]:
+              - img "Veterinary Medicine" [ref=e3109]
+              - generic [ref=e3110]:
+                - generic [ref=e3111]:
+                  - heading "Veterinary Medicine" [level=3] [ref=e3112]
+                  - generic [ref=e3113]: Not started
+                - generic [ref=e3114]:
+                  - generic [ref=e3115]: 0 of 15 requirements complete
+                  - generic [ref=e3116]: 0%
+            - generic [ref=e3118]:
+              - text: Open badge
+              - img [ref=e3119]
+        - link "Water Sports Water Sports Not started 0 of 11 requirements complete 0% Open badge" [ref=e3122] [cursor=pointer]:
+          - /url: /merit-badges/mb_water_sports
+          - generic [ref=e3123]:
+            - generic [ref=e3124]:
+              - img "Water Sports" [ref=e3126]
+              - generic [ref=e3127]:
+                - generic [ref=e3128]:
+                  - heading "Water Sports" [level=3] [ref=e3129]
+                  - generic [ref=e3130]: Not started
+                - generic [ref=e3131]:
+                  - generic [ref=e3132]: 0 of 11 requirements complete
+                  - generic [ref=e3133]: 0%
+            - generic [ref=e3135]:
+              - text: Open badge
+              - img [ref=e3136]
+        - link "Weather Weather Not started 0 of 11 requirements complete 0% Open badge" [ref=e3139] [cursor=pointer]:
+          - /url: /merit-badges/mb_weather
+          - generic [ref=e3140]:
+            - generic [ref=e3141]:
+              - img "Weather" [ref=e3143]
+              - generic [ref=e3144]:
+                - generic [ref=e3145]:
+                  - heading "Weather" [level=3] [ref=e3146]
+                  - generic [ref=e3147]: Not started
+                - generic [ref=e3148]:
+                  - generic [ref=e3149]: 0 of 11 requirements complete
+                  - generic [ref=e3150]: 0%
+            - generic [ref=e3152]:
+              - text: Open badge
+              - img [ref=e3153]
+        - link "Welding Welding Not started 0 of 17 requirements complete 0% Open badge" [ref=e3156] [cursor=pointer]:
+          - /url: /merit-badges/mb_welding
+          - generic [ref=e3157]:
+            - generic [ref=e3158]:
+              - img "Welding" [ref=e3160]
+              - generic [ref=e3161]:
+                - generic [ref=e3162]:
+                  - heading "Welding" [level=3] [ref=e3163]
+                  - generic [ref=e3164]: Not started
+                - generic [ref=e3165]:
+                  - generic [ref=e3166]: 0 of 17 requirements complete
+                  - generic [ref=e3167]: 0%
+            - generic [ref=e3169]:
+              - text: Open badge
+              - img [ref=e3170]
+        - link "Whitewater Whitewater Not started 0 of 38 requirements complete 0% Open badge" [ref=e3173] [cursor=pointer]:
+          - /url: /merit-badges/mb_whitewater
+          - generic [ref=e3174]:
+            - generic [ref=e3175]:
+              - img "Whitewater" [ref=e3177]
+              - generic [ref=e3178]:
+                - generic [ref=e3179]:
+                  - heading "Whitewater" [level=3] [ref=e3180]
+                  - generic [ref=e3181]: Not started
+                - generic [ref=e3182]:
+                  - generic [ref=e3183]: 0 of 38 requirements complete
+                  - generic [ref=e3184]: 0%
+            - generic [ref=e3186]:
+              - text: Open badge
+              - img [ref=e3187]
+        - link "Wilderness Survival Wilderness Survival Not started 0 of 19 requirements complete 0% Open badge" [ref=e3190] [cursor=pointer]:
+          - /url: /merit-badges/mb_wilderness_survival
+          - generic [ref=e3191]:
+            - generic [ref=e3192]:
+              - img "Wilderness Survival" [ref=e3194]
+              - generic [ref=e3195]:
+                - generic [ref=e3196]:
+                  - heading "Wilderness Survival" [level=3] [ref=e3197]
+                  - generic [ref=e3198]: Not started
+                - generic [ref=e3199]:
+                  - generic [ref=e3200]: 0 of 19 requirements complete
+                  - generic [ref=e3201]: 0%
+            - generic [ref=e3203]:
+              - text: Open badge
+              - img [ref=e3204]
+        - link "Wood Carving Wood Carving Not started 0 of 13 requirements complete 0% Open badge" [ref=e3207] [cursor=pointer]:
+          - /url: /merit-badges/mb_wood_carving
+          - generic [ref=e3208]:
+            - generic [ref=e3209]:
+              - img "Wood Carving" [ref=e3211]
+              - generic [ref=e3212]:
+                - generic [ref=e3213]:
+                  - heading "Wood Carving" [level=3] [ref=e3214]
+                  - generic [ref=e3215]: Not started
+                - generic [ref=e3216]:
+                  - generic [ref=e3217]: 0 of 13 requirements complete
+                  - generic [ref=e3218]: 0%
+            - generic [ref=e3220]:
+              - text: Open badge
+              - img [ref=e3221]
+        - link "Woodwork Woodwork Not started 0 of 12 requirements complete 0% Open badge" [ref=e3224] [cursor=pointer]:
+          - /url: /merit-badges/mb_woodwork
+          - generic [ref=e3225]:
+            - generic [ref=e3226]:
+              - img "Woodwork" [ref=e3228]
+              - generic [ref=e3229]:
+                - generic [ref=e3230]:
+                  - heading "Woodwork" [level=3] [ref=e3231]
+                  - generic [ref=e3232]: Not started
+                - generic [ref=e3233]:
+                  - generic [ref=e3234]: 0 of 12 requirements complete
+                  - generic [ref=e3235]: 0%
+            - generic [ref=e3237]:
+              - text: Open badge
+              - img [ref=e3238]
