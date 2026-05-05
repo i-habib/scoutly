@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { Award, CheckCircle2, ShieldCheck, Target } from 'lucide-react';
-import { RANK_COLORS, RANK_ORDER as RANK_PROGRESSION } from '../lib/constants';
+import { RANK_COLORS, RANK_ORDER as RANK_PROGRESSION, normalizeRankId } from '../lib/constants';
 import type { UserData } from '../data/userData';
 import rankRequirementsData from '../data/rank-reqs.json';
 import {
@@ -19,17 +19,18 @@ interface RankAdvancementProps {
 }
 
 export function RankAdvancement({ userData }: RankAdvancementProps) {
-  let currentRankId = userData.profile.currentRank || 'scout';
-  if (!currentRankId.startsWith('rank_')) {
-    currentRankId = `rank_${currentRankId}`;
-  }
-
-  const focusTrack = getUserFocusTrack(userData);
+  const currentRankId = userData.profile.currentRank || null;
   const workingRankId = getWorkingRankId(currentRankId);
+  const focusTrack = getUserFocusTrack(userData);
   const workingRankProgress = getRankProgressSummary(userData, workingRankId);
   const meritBadgeFocus = getMeritBadgeFocusSummary(userData);
 
-  const currentRankIndex = RANK_PROGRESSION.indexOf(currentRankId as typeof RANK_PROGRESSION[number]);
+  const normalizedCurrentRankId = currentRankId ? normalizeRankId(currentRankId) : 'rank_scout';
+  let currentRankIndex = RANK_PROGRESSION.indexOf(normalizedCurrentRankId as typeof RANK_PROGRESSION[number]);
+  // If no rank yet, start from -1 so nextRankIndex is 0 (Scout)
+  if (!currentRankId) {
+    currentRankIndex = -1;
+  }
   const nextRankIndex = currentRankIndex + 1;
 
   if (currentRankIndex === RANK_PROGRESSION.length - 1) {

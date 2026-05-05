@@ -7,7 +7,8 @@ import { generateEventRecommendations } from '../lib/calendarRecommendations';
 import type { Event } from '../data/userData';
 import { TentIcon } from '../components/ScoutIcons';
 import meritBadgesData from '../data/merit-badges.json';
-import { getUserTimezone } from '../lib/constants';
+import { getUserTimezone, RANK_COLORS } from '../lib/constants';
+import { getWorkingRankId } from '../lib/scoutFocus';
 import { useToast } from '../components/Toast';
 import { syncScoutbookCalendar, updateCalendarUrl } from '../services/storageService';
 
@@ -210,6 +211,7 @@ function EventsPage() {
   const { userData, isLoading, updateProfile } = useUserData();
   const { showToast, confirm } = useToast();
   const userTimezone = useMemo(() => getUserTimezone(), []);
+  const workingRankId = useMemo(() => getWorkingRankId(userData?.profile?.currentRank), [userData?.profile?.currentRank]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -542,7 +544,7 @@ function EventsPage() {
         <div className="mb-8">
           <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-emerald-600 rounded-xl flex items-center justify-center shadow-sm">
+              <div className={`w-14 h-14 ${RANK_COLORS[workingRankId]} rounded-xl flex items-center justify-center shadow-sm`}>
                 <Calendar className="w-7 h-7 text-white" size={28} strokeWidth={2.5} />
               </div>
               <div>

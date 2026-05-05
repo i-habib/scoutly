@@ -185,7 +185,7 @@ export function getSignoffPaceSummary(userData: UserData) {
   const signoffsPerMonth = reqsPerMeeting * timeline.meetingsPerMonth;
 
   if (reqsPerMeeting <= 1) {
-    return `Comfortable pace. ${progress.rankName} needs about ${signoffsPerMonth.toFixed(1)} signoffs per month, roughly ${displayPerMeeting} per meeting.`;
+    return `Comfortable pace. ${progress.rankName} needs roughly ${displayPerMeeting} signoffs per meeting.`;
   }
 
   if (reqsPerMeeting <= 2) {
@@ -193,10 +193,10 @@ export function getSignoffPaceSummary(userData: UserData) {
   }
 
   if (reqsPerMeeting <= 3) {
-    return `Push a little harder. ${progress.rankName} needs about ${signoffsPerMonth.toFixed(1)} signoffs per month, roughly ${displayPerMeeting} each meeting.`;
+    return `Push a little harder. ${progress.rankName} needs roughly ${displayPerMeeting} signoffs each meeting.`;
   }
 
-  return `Aggressive pace. ${progress.rankName} needs about ${signoffsPerMonth.toFixed(1)} signoffs per month, around ${displayPerMeeting} each meeting.`;
+  return `Aggressive pace. ${progress.rankName} needs around ${displayPerMeeting} signoffs each meeting.`;
 }
 
 export function getMeritBadgePaceSummary(userData: UserData) {
