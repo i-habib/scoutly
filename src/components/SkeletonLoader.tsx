@@ -4,7 +4,7 @@
 
 function Pulse({ className = '' }: { className?: string }) {
   return (
-    <div className={`animate-pulse rounded-xl bg-slate-200 ${className}`} />
+    <div className={`animate-pulse rounded-xl bg-stone-200 ${className}`} />
   );
 }
 
@@ -29,7 +29,7 @@ export function DashboardSkeleton() {
             </div>
             <div className="grid gap-3 sm:grid-cols-3 lg:min-w-[28rem]">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <div key={i} className="rounded-xl border border-stone-200 bg-stone-50 px-4 py-3">
                   <Pulse className="mb-2 h-3 w-16" />
                   <Pulse className="h-5 w-24" />
                 </div>
@@ -98,8 +98,8 @@ export function PageSkeleton() {
   return (
     <div className="app-shell flex min-h-screen items-center justify-center">
       <div className="text-center">
-        <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-[#24584b] border-t-transparent" />
-        <p className="text-slate-500">Loading...</p>
+        <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-stone-300 border-t-transparent" />
+        <p className="text-stone-400">Loading...</p>
       </div>
     </div>
   );

@@ -21,7 +21,7 @@ function MeritBadgeDetail() {
     return (
       <div className="app-shell flex min-h-screen items-center justify-center">
         <div className="text-center relative z-10">
-          <p className="text-xl text-slate-500">Merit Badge not found</p>
+          <p className="text-xl text-stone-500">Merit Badge not found</p>
         </div>
       </div>
     );
@@ -164,27 +164,24 @@ function MeritBadgeDetail() {
 
   return (
     <div className="app-shell">
-      <div className="app-shell__grid fixed inset-0" />
-      <div className="app-shell__glow app-shell__glow--top fixed" />
-      <div className="app-shell__glow app-shell__glow--bottom fixed" />
 
       {/* Content */}
       <div className="relative z-10 max-w-4xl mx-auto px-6 py-8">
         {/* Back Button */}
         <Link
           to="/merit-badges"
-          className="mb-6 inline-flex items-center gap-2 text-emerald-700 transition-colors hover:text-sky-700"
+          className="mb-6 inline-flex items-center gap-2 text-stone-600 transition-colors hover:text-stone-900"
         >
           <ChevronLeft className="w-5 h-5" />
           Back to Merit Badges
         </Link>
 
         {/* Badge Header */}
-        <div className="app-surface mb-6 rounded-3xl p-8">
+        <div className="app-surface mb-6 rounded-2xl p-8">
           <div className="flex items-start gap-6">
             {/* Badge Image */}
             <div className="shrink-0">
-              <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-3xl border-2 border-slate-200 bg-white shadow-sm">
+              <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-2xl border-2 border-stone-200 bg-white shadow-sm">
                 {'imageUrl' in badge && badge.imageUrl ? (
                   <img 
                     src={badge.imageUrl as string} 
@@ -198,10 +195,10 @@ function MeritBadgeDetail() {
                     }}
                   />
                 ) : null}
-                <MeritBadgeIcon className="hidden h-16 w-16 text-emerald-600" size={64} />
+                <MeritBadgeIcon className="hidden h-16 w-16 text-stone-500" size={64} />
               </div>
               {badge.eagleRequired && (
-                <div className="mt-3 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-center text-xs font-semibold text-amber-700">
+                <div className="mt-3 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-center text-xs font-semibold text-amber-800">
                   Eagle Required
                 </div>
               )}
@@ -209,31 +206,31 @@ function MeritBadgeDetail() {
 
             {/* Badge Info */}
             <div className="flex-1">
-              <h1 className="mb-3 text-4xl font-bold text-slate-950">{badge.name}</h1>
+              <h1 className="mb-3 text-3xl font-semibold tracking-tight text-stone-900">{badge.name}</h1>
               
               {/* Progress Bar */}
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-slate-500">Progress</span>
-                  <span className="font-semibold text-emerald-700">{completionPercentage}%</span>
+                  <span className="text-sm text-stone-500">Progress</span>
+                  <span className="font-semibold text-stone-900">{completionPercentage}%</span>
                 </div>
-                <div className="h-3 w-full overflow-hidden rounded-full bg-slate-100">
+                <div className="h-3 w-full overflow-hidden rounded-full bg-stone-100">
                   <div
-                    className="h-full bg-linear-to-r from-emerald-500 to-sky-600 transition-all duration-500"
+                    className="h-full bg-stone-800 transition-all duration-500"
                     style={{ width: `${completionPercentage}%` }}
                   />
                 </div>
                 <button
                   onClick={handleToggleAll}
-                  className="mt-3 rounded-xl bg-linear-to-r from-[#1f3448] to-[#2f4f6f] px-3 py-2 text-xs font-semibold text-white shadow-[0_10px_20px_rgba(24,35,47,0.2)] transition-all hover:brightness-105"
+                  className="mt-3 rounded-xl bg-stone-800 px-4 py-2.5 text-sm font-medium text-white hover:bg-stone-700"
                 >
                   {isFullyCompleted ? 'Unmark All' : 'Mark All Complete'}
                 </button>
               </div>
 
-              <div className="flex items-center gap-4 text-sm text-slate-500">
+              <div className="flex items-center gap-4 text-sm text-stone-500">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <CheckCircle2 className="w-4 h-4 text-stone-600" />
                   <span>{completedCount} / {totalCount} completed</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -245,7 +242,7 @@ function MeritBadgeDetail() {
               {/* Completion Status */}
               {isFullyCompleted && (
                 <div className="mt-4">
-                  <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700">
+                  <div className="flex items-center gap-2 rounded-xl border border-stone-200 bg-stone-50 px-4 py-2 text-sm font-medium text-stone-700">
                     <CheckCircle2 className="w-4 h-4" />
                     Badge Complete!
                   </div>
@@ -256,12 +253,12 @@ function MeritBadgeDetail() {
 
           {/* Helpful Tip */}
           {'tip' in badge && badge.tip && (
-            <div className="mt-6 rounded-2xl border border-sky-200 bg-sky-50 p-4">
+            <div className="mt-6 rounded-2xl border border-stone-200 bg-stone-50 p-4">
               <div className="flex items-start gap-3">
-                <Lightbulb className="mt-0.5 h-5 w-5 shrink-0 text-sky-600" />
+                <Lightbulb className="mt-0.5 h-5 w-5 shrink-0 text-stone-600" />
                 <div>
-                  <h3 className="mb-1 font-semibold text-sky-700">Helpful Tip</h3>
-                  <p className="text-sm text-slate-600">{badge.tip as string}</p>
+                  <h3 className="mb-1 font-semibold text-stone-700">Helpful Tip</h3>
+                  <p className="text-sm text-stone-500">{badge.tip as string}</p>
                 </div>
               </div>
             </div>
@@ -270,8 +267,8 @@ function MeritBadgeDetail() {
 
         {/* Requirements */}
         <div className="space-y-4">
-          <h2 className="mb-4 flex items-center gap-2 text-2xl font-bold text-slate-950">
-            <BookOpen className="w-6 h-6 text-emerald-600" />
+          <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold text-stone-900">
+            <BookOpen className="w-6 h-6 text-stone-500" />
             Requirements
           </h2>
 
@@ -293,7 +290,7 @@ function MeritBadgeDetail() {
             return (
               <div
                 key={index}
-                className="app-surface rounded-2xl p-6 transition-all hover:border-slate-300"
+                className="app-surface rounded-2xl p-6 transition-all hover:border-stone-300"
               >
                 <div className="space-y-4">
                   {/* Main Requirement */}
@@ -303,13 +300,13 @@ function MeritBadgeDetail() {
                   >
                     <div className="shrink-0 mt-1">
                       {progress[`req_${index}`] ? (
-                        <CheckCircle2 className="w-6 h-6 text-emerald-600" />
+                        <CheckCircle2 className="w-6 h-6 text-stone-700" />
                       ) : (
-                        <Circle className="w-6 h-6 text-slate-300 transition-colors group-hover:text-slate-500" />
+                          <Circle className="w-6 h-6 text-stone-300 transition-colors group-hover:text-stone-400" />
                       )}
                     </div>
                     <div className="flex-1">
-                      <p className="leading-relaxed text-slate-600 transition-colors group-hover:text-slate-900">
+                      <p className="leading-relaxed text-stone-500 transition-colors group-hover:text-stone-800">
                         {req.text}
                       </p>
                       
@@ -317,11 +314,11 @@ function MeritBadgeDetail() {
                       {showProgress && (
                         <div className="mt-2 flex items-center gap-2">
                           <div className="flex items-center gap-1.5 text-xs">
-                            <span className="font-semibold text-emerald-700">{completedSubReqCount}</span>
-                            <span className="text-slate-400">/</span>
-                            <span className="text-slate-500">{requiredCount} required</span>
+                            <span className="font-semibold text-stone-900">{completedSubReqCount}</span>
+                            <span className="text-stone-400">/</span>
+                            <span className="text-stone-500">{requiredCount} required</span>
                             {requiredCount < totalSubReqs && (
-                              <span className="text-slate-400">({totalSubReqs} total)</span>
+                              <span className="text-stone-400">({totalSubReqs} total)</span>
                             )}
                           </div>
                         </div>
@@ -340,12 +337,12 @@ function MeritBadgeDetail() {
                         >
                           <div className="shrink-0 mt-1">
                             {progress[`req_${index}_${subIndex}`] ? (
-                              <CheckCircle2 className="w-5 h-5 text-sky-600" />
+                              <CheckCircle2 className="w-5 h-5 text-stone-700" />
                             ) : (
-                              <Circle className="w-5 h-5 text-slate-300 transition-colors group-hover:text-slate-500" />
+                              <Circle className="w-5 h-5 text-stone-300 transition-colors group-hover:text-stone-400" />
                             )}
                           </div>
-                          <p className="flex-1 text-sm leading-relaxed text-slate-500 transition-colors group-hover:text-slate-700">
+                          <p className="flex-1 text-sm leading-relaxed text-stone-500 transition-colors group-hover:text-stone-600">
                             {subReq}
                           </p>
                         </div>
@@ -360,12 +357,12 @@ function MeritBadgeDetail() {
 
         {/* Completion Message */}
         {completionPercentage === 100 && (
-          <div className="mt-8 rounded-3xl border border-emerald-200 bg-linear-to-r from-emerald-50 to-sky-50 p-6">
+          <div className="mt-8 rounded-2xl border border-stone-200 bg-stone-50 p-6">
             <div className="flex items-center gap-3">
-              <CheckCircle2 className="w-8 h-8 text-emerald-600" />
+              <CheckCircle2 className="w-8 h-8 text-stone-700" />
               <div>
-                <h3 className="text-xl font-bold text-slate-950">Congratulations!</h3>
-                <p className="text-slate-600">You've completed all requirements for {badge.name}. Don't forget to get it signed off!</p>
+                <h3 className="text-xl font-semibold text-stone-900">Congratulations!</h3>
+                <p className="text-stone-500">You've completed all requirements for {badge.name}. Don't forget to get it signed off!</p>
               </div>
             </div>
           </div>

@@ -412,6 +412,7 @@ function scoreRequirementForEvent(requirement: RequirementCandidate, event: Even
       score -= 100;
     }
     if (lower.includes('troop meeting')) score += 35;
+    if (lower.includes('outdoor code')) score += 25;
     if (hasAny(lower, ['explain', 'describe', 'discuss', 'repeat from memory', 'teach'])) {
       score += 20;
     }

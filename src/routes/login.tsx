@@ -75,15 +75,15 @@ function LoginPage() {
       <div className="app-shell__glow app-shell__glow--top" />
       <div className="app-shell__glow app-shell__glow--bottom" />
 
-      <div className="app-surface relative z-10 w-full max-w-lg rounded-3xl p-8">
+      <div className="app-surface relative z-10 w-full max-w-lg rounded-2xl p-8">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-500 to-sky-600 text-white shadow-[0_16px_35px_rgba(14,165,233,0.25)]">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-stone-800 text-white shadow-sm">
             <ScoutFleurDeLis size={28} />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-950">
+          <h1 className="text-3xl font-semibold tracking-tight text-stone-900">
             {mode === 'signin' ? 'Welcome back to Scoutly' : 'Create your Scoutly account'}
           </h1>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
+          <p className="mt-2 text-sm leading-6 text-stone-500">
             {mode === 'signin'
               ? 'Sign in to sync your progress and open your planning workspace.'
               : 'Create an account to sync your progress securely across devices.'}
@@ -92,7 +92,7 @@ function LoginPage() {
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-slate-700">
+            <label htmlFor="email" className="block text-sm font-medium text-stone-600">
               Email
             </label>
             <input
@@ -100,7 +100,7 @@ function LoginPage() {
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="mt-1 w-full rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100"
+              className="mt-1 w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 placeholder-stone-400  outline-none transition focus:border-stone-400 focus:ring-2 focus:ring-stone-300"
               placeholder="you@example.com"
               required
               autoComplete="email"
@@ -108,7 +108,7 @@ function LoginPage() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+            <label htmlFor="password" className="block text-sm font-medium text-stone-600">
               Password
             </label>
             <input
@@ -116,7 +116,7 @@ function LoginPage() {
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="mt-1 w-full rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100"
+              className="mt-1 w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 placeholder-stone-400  outline-none transition focus:border-stone-400 focus:ring-2 focus:ring-stone-300"
               placeholder="Enter a strong password"
               required
               autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
@@ -125,7 +125,7 @@ function LoginPage() {
 
           {mode === 'signup' && (
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-stone-600">
                 Confirm Password
               </label>
               <input
@@ -133,7 +133,7 @@ function LoginPage() {
                 type="password"
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
-                className="mt-1 w-full rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100"
+                className="mt-1 w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 placeholder-stone-400  outline-none transition focus:border-stone-400 focus:ring-2 focus:ring-stone-300"
                 placeholder="Re-enter your password"
                 required
                 autoComplete="new-password"
@@ -156,38 +156,38 @@ function LoginPage() {
           <button
             type="submit"
             disabled={mode === 'signin' ? isSigningIn : isSigningUp}
-            className="group flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-emerald-600 to-sky-600 px-4 py-3 text-sm font-semibold tracking-wide text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)] hover:shadow-[0_12px_24px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 shadow-[0_16px_40px_rgba(14,165,233,0.22)] transition hover:from-emerald-500 hover:to-sky-500 disabled:cursor-not-allowed disabled:opacity-70"
+            className="group flex w-full items-center justify-center gap-2 rounded-xl bg-stone-800 px-4 py-3 text-sm font-medium tracking-wide text-white shadow-sm transition hover:bg-stone-700  disabled:cursor-not-allowed disabled:opacity-70"
           >
             {mode === 'signin' ? (isSigningIn ? 'Signing In...' : 'Sign In') : (isSigningUp ? 'Creating Account...' : 'Create Account')}
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </button>
         </form>
 
-        <div className="mt-8 text-center text-sm text-slate-600">
+        <div className="mt-8 text-center text-sm text-stone-500">
           {mode === 'signin' ? (
             <>
               Need an account?
-              <button type="button" onClick={toggleMode} className="ml-1 font-semibold text-sky-700 hover:text-sky-600">
+              <button type="button" onClick={toggleMode} className="ml-1 rounded-xl font-medium text-stone-700 hover:text-stone-600">
                 Create one
               </button>
             </>
           ) : (
             <>
               Already have an account?
-              <button type="button" onClick={toggleMode} className="ml-1 font-semibold text-sky-700 hover:text-sky-600">
+              <button type="button" onClick={toggleMode} className="ml-1 rounded-xl font-medium text-stone-700 hover:text-stone-600">
                 Sign in
               </button>
             </>
           )}
         </div>
 
-        <div className="mt-6 text-center text-xs text-slate-500">
+        <div className="mt-6 text-center text-xs text-stone-400">
           By continuing you agree to our{' '}
-          <span className="font-medium text-sky-700">Terms</span> and <span className="font-medium text-sky-700">Privacy Policy</span>.
+          <span className="font-medium text-stone-700">Terms</span> and <span className="font-medium text-stone-700">Privacy Policy</span>.
         </div>
 
         <div className="mt-8 text-center text-sm">
-          <Link to="/" className="text-slate-600 transition hover:text-slate-900">
+          <Link to="/" className="text-stone-500 transition hover:text-stone-900">
             ← Back to landing
           </Link>
         </div>

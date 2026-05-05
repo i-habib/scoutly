@@ -2,19 +2,18 @@
 
 :root {
   color-scheme: light;
-  --page-canvas: #f4f6f8;
-  --page-ink: #18232f;
-  --page-muted: #617080;
-  --surface-base: rgba(255, 255, 255, 0.92);
-  --surface-strong: rgba(255, 255, 255, 0.98);
-  --surface-border: rgba(133, 153, 174, 0.16);
-  --shadow-soft: 0 10px 30px rgba(24, 35, 47, 0.06);
-  --shadow-card: 0 12px 32px rgba(24, 35, 47, 0.08);
-  --brand-forest: #24584b;
-  --brand-moss: #4e7263;
-  --brand-gold: #c89b52;
-  --brand-navy: #1f3448;
-  --brand-stone: #e8e0d2;
+  --page-canvas: #faf8f5;
+  --page-ink: #292524;
+  --page-muted: #78716c;
+  --surface-base: #ffffff;
+  --surface-strong: #ffffff;
+  --surface-elevated: rgba(255, 255, 255, 0.94);
+  --surface-subtle: #f5f5f4;
+  --surface-border: #e7e5e4;
+  --surface-border-subtle: #d6d3d1;
+  --shadow-soft: 0 1px 3px rgba(28, 25, 23, 0.04);
+  --shadow-card: 0 4px 16px rgba(28, 25, 23, 0.06);
+  --shadow-elevated: 0 8px 30px rgba(28, 25, 23, 0.08);
 }
 
 html {
@@ -24,23 +23,11 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: var(--page-ink);
-  background: linear-gradient(180deg, #f8fafb 0%, #f3f6f8 100%);
+  background: var(--page-canvas);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  background:
-    radial-gradient(circle at top left, rgba(31, 52, 72, 0.03), transparent 26%),
-    linear-gradient(rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0));
-  mask-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.65), transparent 80%);
 }
 
 h1,
@@ -49,8 +36,8 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
-  letter-spacing: -0.02em;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -0.01em;
 }
 
 a {
@@ -66,18 +53,18 @@ textarea {
 }
 
 code {
-  font-family: "SFMono-Regular", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  font-family: "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
 }
 
 ::selection {
-  background: rgba(36, 88, 75, 0.16);
-  color: #10212d;
+  background: rgba(120, 113, 108, 0.2);
+  color: var(--page-ink);
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
@@ -85,146 +72,46 @@ code {
   }
 }
 
-@keyframes pulseGlow {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.48;
-  }
-  50% {
-    transform: scale(1.08);
-    opacity: 0.72;
-  }
-}
-
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
 .animate-fadeIn {
-  animation: fadeIn 0.35s ease-out;
+  animation: fadeIn 0.2s ease-out;
 }
 
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient 3s ease infinite;
+@keyframes pageSlideIn {
+  from {
+    opacity: 0;
+    transform: translate3d(22px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 .app-shell {
   position: relative;
   min-height: 100vh;
-  overflow: hidden;
-  isolation: isolate;
   color: var(--page-ink);
-}
-
-.app-shell__grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(94, 109, 125, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(94, 109, 125, 0.025) 1px, transparent 1px);
-  background-size: 40px 40px;
-  opacity: 0.18;
-  mask-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.45), transparent 88%);
-}
-
-.app-shell__glow {
-  position: absolute;
-  width: 34rem;
-  height: 34rem;
-  border-radius: 9999px;
-  filter: blur(100px);
-  opacity: 0.18;
-  pointer-events: none;
-  animation: pulseGlow 14s ease-in-out infinite;
-}
-
-.app-shell__glow--top {
-  top: -18rem;
-  left: -12rem;
-  background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05), transparent 60%);
-}
-
-.app-shell__glow--bottom {
-  right: -12rem;
-  bottom: -18rem;
-  background: radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.05), transparent 60%);
-  animation-delay: 5s;
 }
 
 .app-shell__content {
   position: relative;
   z-index: 10;
+  animation: pageSlideIn 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell__content {
+    animation: none;
+  }
 }
 
 .app-surface {
-  background: rgba(255, 255, 255, 0.94);
+  background: var(--surface-base);
   border: 1px solid var(--surface-border);
   box-shadow: var(--shadow-soft);
-  backdrop-filter: blur(8px);
 }
 
 .app-surface--soft {
-  background: rgba(255, 255, 255, 0.88);
+  background: var(--surface-subtle);
 }
-
-.light-overrides .bg-black {
-  background-color: transparent;
-}
-
-.light-overrides .bg-black\/30,
-.light-overrides .bg-black\/40 {
-  background-color: rgba(248, 245, 239, 0.84);
-}
-
-.light-overrides .bg-white\/5,
-.light-overrides .bg-white\/10,
-.light-overrides .bg-white\/10\/50 {
-  background-color: rgba(255, 255, 255, 0.78);
-}
-
-.light-overrides .border-white\/10,
-.light-overrides .border-white\/20 {
-  border-color: rgba(148, 163, 184, 0.28);
-}
-
-.light-overrides .text-white {
-  color: #18232f;
-}
-
-.light-overrides .text-slate-300 {
-  color: #415162;
-}
-
-.light-overrides .text-slate-400 {
-  color: #576779;
-}
-
-.light-overrides .text-slate-500 {
-  color: #657587;
-}
-
-.light-overrides .prose-invert {
-  color: #415162;
-}
-
-.light-overrides .prose-invert :where(h1, h2, h3, h4, strong) {
-  color: #18232f;
-}
-
-.light-overrides .prose-invert :where(code) {
-  color: #24584b;
-  background-color: rgba(221, 239, 230, 0.8);
-}
-
-
-

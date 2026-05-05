@@ -6,7 +6,7 @@ import {
   getWorkingRankId,
 } from './scoutFocus';
 
-function makeUserData(currentRank: string): UserData {
+function makeUserData(currentRank: string | null): UserData {
   const userData = structuredClone(initialUserData);
   userData.profile.currentRank = currentRank;
   return userData;
@@ -14,12 +14,14 @@ function makeUserData(currentRank: string): UserData {
 
 describe('scout focus helpers', () => {
   it('maps current ranks to the next working rank', () => {
+    expect(getWorkingRankId(null)).toBe('rank_scout');
     expect(getWorkingRankId('rank_scout')).toBe('rank_tenderfoot');
     expect(getWorkingRankId('rank_first_class')).toBe('rank_star');
     expect(getWorkingRankId('rank_eagle')).toBe('rank_eagle');
   });
 
   it('treats tenderfoot through first class as signoff-focused ranks', () => {
+    expect(getFocusTrackForRank('rank_scout')).toBe('signoffs');
     expect(getFocusTrackForRank('rank_tenderfoot')).toBe('signoffs');
     expect(getFocusTrackForRank('rank_first_class')).toBe('signoffs');
   });
@@ -30,6 +32,7 @@ describe('scout focus helpers', () => {
   });
 
   it('uses the in-progress rank to decide the user focus track', () => {
+    expect(getUserFocusTrack(makeUserData(null))).toBe('signoffs');
     expect(getUserFocusTrack(makeUserData('rank_second_class'))).toBe('signoffs');
     expect(getUserFocusTrack(makeUserData('rank_first_class'))).toBe('meritBadges');
   });

@@ -4,10 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import {
   ArrowLeft,
   ArrowRight,
-  CalendarRange,
   CheckCircle2,
   Link2,
-  RefreshCw,
   Sparkles,
   UserRound,
   Users,
@@ -21,7 +19,6 @@ import { isOnboardingComplete } from '../lib/onboarding';
 import {
   type OnboardingErrors,
   type OnboardingFormState,
-  validateCalendarUrl,
   validateStepOne,
   validateStepTwo,
 } from '../lib/onboardingValidation';
@@ -71,7 +68,7 @@ function createOnboardingFormState(profile?: {
 }): OnboardingFormState {
   return {
     name: profile?.name || '',
-    currentRank: profile?.currentRank ? normalizeRankId(profile.currentRank) : '',
+    currentRank: profile?.currentRank ? normalizeRankId(profile.currentRank) : 'none',
     targetEagleDate: profile?.targetEagleDate || '',
     meetingsPerMonthOverride:
       profile?.meetingsPerMonthOverride && profile.meetingsPerMonthOverride > 0
@@ -85,10 +82,10 @@ function createOnboardingFormState(profile?: {
 }
 
 function getInputClasses(hasError: boolean) {
-  return `w-full rounded-xl border bg-white px-4 py-3 text-slate-900 shadow-sm transition-all duration-200 focus:border-transparent focus:ring-4 motion-reduce:transition-none ${
+  return `w-full rounded-xl border border-stone-200 bg-white px-3.5 py-2.5 text-stone-900 shadow-sm transition-all duration-200 focus:border-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-300 motion-reduce:transition-none ${
     hasError
-      ? 'border-rose-300 focus:ring-rose-100'
-      : 'border-slate-200 focus:ring-emerald-100 hover:border-slate-300'
+      ? 'border-red-300 focus:border-red-400 focus:ring-red-100'
+      : 'hover:border-stone-300'
   }`;
 }
 
@@ -102,8 +99,6 @@ function OnboardingPage() {
   const [step, setStep] = useState<OnboardingStep>(1);
   const [errors, setErrors] = useState<OnboardingErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSyncingCalendar, setIsSyncingCalendar] = useState(false);
-  const [calendarSyncSummary, setCalendarSyncSummary] = useState<string | null>(null);
 
   const nameInputRef = useRef<HTMLInputElement>(null);
   const rankSelectRef = useRef<HTMLSelectElement>(null);
@@ -193,7 +188,10 @@ function OnboardingPage() {
     const profilePayload = {
       hasCompletedOnboarding: true,
       name: form.name.trim(),
-      currentRank: normalizeRankId(form.currentRank),
+      currentRank:
+        form.currentRank && form.currentRank !== 'none'
+          ? normalizeRankId(form.currentRank)
+          : null,
       targetEagleDate: includeOptionalFields
         ? form.targetEagleDate || null
         : userData?.profile.targetEagleDate || null,
@@ -234,44 +232,6 @@ function OnboardingPage() {
     }
   };
 
-  const handleSyncCalendar = async () => {
-    const trimmedUrl = form.scoutbookCalendarUrl.trim();
-    const calendarUrlError =
-      validateCalendarUrl(trimmedUrl) || (!trimmedUrl ? 'Add a calendar URL before syncing.' : null);
-
-    if (calendarUrlError) {
-      setErrors((current) => ({
-        ...current,
-        scoutbookCalendarUrl: calendarUrlError,
-      }));
-      focusField('scoutbookCalendarUrl');
-      return;
-    }
-
-    setIsSyncingCalendar(true);
-    setCalendarSyncSummary(null);
-
-    try {
-      await storage.updateCalendarUrl(trimmedUrl);
-      const syncedUser = await storage.syncScoutbookCalendar();
-      const syncedEvents = (syncedUser.events || []).filter((event) => event.source === 'scoutbook');
-
-      await queryClient.invalidateQueries({ queryKey: ['userData'] });
-      setCalendarSyncSummary(
-        syncedEvents.length > 0
-          ? `Synced ${syncedEvents.length} Scoutbook event${syncedEvents.length === 1 ? '' : 's'}.`
-          : 'Calendar synced successfully.',
-      );
-      showToast('success', 'Calendar saved and synced.');
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Calendar sync failed.';
-      setCalendarSyncSummary(null);
-      showToast('error', message);
-    } finally {
-      setIsSyncingCalendar(false);
-    }
-  };
-
   const completedRequiredFields = [Boolean(form.name.trim()), Boolean(form.currentRank)].filter(
     Boolean,
   ).length;
@@ -295,43 +255,37 @@ function OnboardingPage() {
   }
 
   return (
-    <div className="app-shell">
-      <div className="app-shell__grid fixed inset-0" />
-      <div className="app-shell__glow app-shell__glow--top fixed" />
-      <div className="app-shell__glow app-shell__glow--bottom fixed" />
-
+    <div className="app-shell bg-stone-50 min-h-screen">
       <div className="app-shell__content mx-auto max-w-4xl px-6 py-10">
-        <section className="app-surface mb-6 rounded-3xl p-6">
+        <section className="bg-white border border-stone-200 shadow-sm mb-6 rounded-2xl p-6">
           <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
             <div>
               <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-[#24584b] to-[#1f3448] text-white shadow-[0_12px_24px_rgba(31,52,72,0.26)]">
-                  <ScoutFleurDeLis className="h-6 w-6" />
-                </div>
+                <ScoutFleurDeLis size={32} />
                 <div>
-                  <p className="text-sm font-semibold text-slate-950">Scoutly onboarding</p>
-                  <p className="text-sm text-slate-600">
+                  <p className="text-sm font-semibold text-stone-900">Scoutly onboarding</p>
+                  <p className="text-sm text-stone-500">
                     Fast setup with optional details you can refine later.
                   </p>
                 </div>
               </div>
 
-              <div className="mb-3 h-2 w-full max-w-xl overflow-hidden rounded-full bg-slate-200">
+              <div className="mb-3 h-2 w-full max-w-xl overflow-hidden rounded-full bg-stone-100">
                 <div
-                  className="h-full rounded-full bg-linear-to-r from-emerald-600 to-sky-600 transition-all duration-500 ease-out motion-reduce:transition-none"
+                  className="h-full rounded-full bg-stone-800 transition-all duration-500 ease-out motion-reduce:transition-none"
                   style={{ width: `${Math.max(completionPercent, 10)}%` }}
                 />
               </div>
-              <p className="text-xs font-medium uppercase tracking-[0.14em] text-slate-500">
+              <p className="text-xs font-medium uppercase tracking-[0.14em] text-stone-500">
                 {completionPercent}% complete
               </p>
             </div>
 
             <div className="grid w-full max-w-xs gap-2 text-sm sm:grid-cols-2 md:w-auto md:grid-cols-1">
-              <div className="rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-3 py-2 text-slate-700">
+              <div className="rounded-2xl border border-stone-200 bg-white shadow-sm px-3 py-2 text-stone-600">
                 Required: {completedRequiredFields}/{REQUIRED_FIELD_COUNT}
               </div>
-              <div className="rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-3 py-2 text-slate-700">
+              <div className="rounded-2xl border border-stone-200 bg-white shadow-sm px-3 py-2 text-stone-600">
                 Optional: {completedOptionalFields}/{OPTIONAL_FIELD_COUNT}
               </div>
             </div>
@@ -352,22 +306,22 @@ function OnboardingPage() {
                     if (!isEnabled || isSubmitting) return;
                     setStep(normalizedStepValue);
                   }}
-                  className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition-all motion-reduce:transition-none ${
+                  className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-all motion-reduce:transition-none ${
                     isCurrentStep
-                      ? 'border-slate-900 bg-slate-900 text-white shadow-[0_8px_16px_rgba(15,23,42,0.2)] hover:shadow-[0_8px_20px_rgba(15,23,42,0.3)] hover:-translate-y-0.5 shadow-sm'
+                      ? 'border-stone-800 bg-stone-800 text-white shadow-sm'
                       : isComplete
-                        ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                        : 'border-slate-200 bg-white text-slate-600'
-                  } ${!isEnabled ? 'cursor-not-allowed opacity-55' : 'hover:border-slate-300'}`}
+                        ? 'border-stone-200 bg-stone-200 text-stone-600'
+                        : 'border-stone-100 bg-stone-100 text-stone-500'
+                  } ${!isEnabled ? 'cursor-not-allowed opacity-55' : 'hover:border-stone-300 hover:bg-stone-50'}`}
                   disabled={!isEnabled || isSubmitting}
                 >
                   <span
                     className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold ${
                       isCurrentStep
-                        ? 'bg-white/20 text-white'
+                        ? 'bg-white text-stone-800'
                         : isComplete
-                          ? 'bg-emerald-600 text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)] hover:shadow-[0_8px_20px_rgba(16,185,129,0.3)] hover:-translate-y-0.5'
-                          : 'bg-slate-100 text-slate-600'
+                          ? 'bg-stone-300 text-stone-700'
+                          : 'bg-stone-200 text-stone-400'
                     }`}
                   >
                     {isComplete ? <CheckCircle2 className="h-3 w-3" /> : stepValue}
@@ -379,18 +333,18 @@ function OnboardingPage() {
           </div>
         </section>
 
-        <section className="app-surface rounded-3xl p-6 md:p-7">
-          <div className="overflow-hidden rounded-[1.45rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+        <section className="bg-white border border-stone-200 shadow-sm rounded-2xl p-6 md:p-7">
+          <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm">
             <div key={step} className="animate-fadeIn p-5 md:p-6">
               {step === 1 ? (
                 <section>
                   <div className="mb-5 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-stone-100 text-stone-600">
                       <UserRound className="h-5 w-5" />
                     </div>
                     <div>
-                      <h1 className="text-lg font-semibold text-slate-950">Start with the essentials</h1>
-                      <p className="text-sm text-slate-600">
+                      <h1 className="text-3xl font-semibold tracking-tight text-stone-900">Start with the essentials</h1>
+                      <p className="text-sm text-stone-500">
                         Two quick details unlock the full workspace.
                       </p>
                     </div>
@@ -408,14 +362,15 @@ function OnboardingPage() {
                       />
                     </Field>
 
-                    <Field label="Current rank" required error={errors.currentRank}>
+                    <Field label="Current rank" error={errors.currentRank}>
                       <select
                         ref={rankSelectRef}
                         value={form.currentRank}
                         onChange={(event) => handleFieldChange('currentRank', event.target.value)}
                         className={getInputClasses(Boolean(errors.currentRank))}
                       >
-                        <option value="">Select rank</option>
+                        <option value="">Select rank (optional)</option>
+                        <option value="none">No rank yet</option>
                         {RANK_ORDER.map((rankId) => (
                           <option key={rankId} value={rankId}>
                             {getRankDisplayName(rankId)}
@@ -428,14 +383,14 @@ function OnboardingPage() {
               ) : (
                 <section>
                   <div className="mb-5 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-stone-100 text-stone-600">
                       <Users className="h-5 w-5" />
                     </div>
                     <div>
-                      <h1 className="text-lg font-semibold text-slate-950">
+                      <h1 className="text-3xl font-semibold tracking-tight text-stone-900">
                         Optional planning details
                       </h1>
-                      <p className="text-sm text-slate-600">
+                      <p className="text-sm text-stone-500">
                         Add what you know now. You can edit everything later in Profile and Events.
                       </p>
                     </div>
@@ -511,7 +466,7 @@ function OnboardingPage() {
                       error={errors.scoutbookCalendarUrl}
                     >
                       <div className="relative">
-                        <Link2 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                        <Link2 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
                         <input
                           ref={calendarUrlInputRef}
                           type="url"
@@ -528,82 +483,39 @@ function OnboardingPage() {
                     </Field>
                   </div>
 
-                  <div className="mt-4 rounded-2xl border border-sky-100 bg-linear-to-r from-sky-50 via-white to-emerald-50 px-4 py-4">
-                    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                      <div>
-                        <p className="inline-flex items-center gap-2 text-sm font-semibold text-slate-950">
-                          <CalendarRange className="h-4 w-4 text-sky-600" />
-                          Pull your troop calendar in right now
-                        </p>
-                        <p className="mt-1 text-sm text-slate-600">
-                          Save the Scoutbook link and sync events before you finish onboarding.
-                        </p>
-                        <p className="mt-2 text-xs text-slate-500">
-                          {calendarSyncSummary
-                            ? calendarSyncSummary
-                            : userData?.profile.lastCalendarSync
-                              ? `Last synced ${formatDateTime(userData.profile.lastCalendarSync)}`
-                              : 'No Scoutbook sync yet.'}
-                        </p>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={handleSyncCalendar}
-                        disabled={isSyncingCalendar || isSubmitting}
-                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white shadow-[0_8px_16px_rgba(14,165,233,0.2)] hover:shadow-[0_8px_20px_rgba(14,165,233,0.3)] hover:-translate-y-0.5 transition-all hover:bg-sky-500 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
-                      >
-                        <RefreshCw className={`h-4 w-4 ${isSyncingCalendar ? 'animate-spin' : ''}`} />
-                        {isSyncingCalendar ? 'Syncing...' : 'Save URL + Sync now'}
-                      </button>
-                    </div>
-                  </div>
                 </section>
               )}
             </div>
           </div>
 
-          <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 md:flex-row md:items-center md:justify-between">
-            <p className="text-sm text-slate-600">
-              {step === 1
-                ? 'Step 1 is required to continue.'
-                : 'Step 2 is optional. Save what you have now and refine anytime.'}
-            </p>
+          <div className="mt-5 flex flex-col gap-3 px-1 py-1 md:flex-row md:items-center md:justify-end">
 
             {step === 1 ? (
               <button
                 type="button"
                 onClick={handleContinue}
                 disabled={isSubmitting}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1f3448] px-5 py-3 text-sm font-semibold text-white transition-all hover:bg-[#182b3b] hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-stone-800 px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-stone-700 hover:shadow-sm disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
               >
                 Continue
                 <ArrowRight className="h-4 w-4" />
               </button>
             ) : (
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="flex w-full flex-wrap items-center justify-start gap-3">
                 <button
                   type="button"
                   onClick={() => setStep(1)}
                   disabled={isSubmitting}
-                  className="inline-flex items-center gap-2 rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-4 py-3 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
+                  className="inline-flex items-center gap-2 rounded-xl border border-stone-200 bg-white shadow-sm px-4 py-2.5 text-sm font-medium text-stone-800 transition-all hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   Back
                 </button>
                 <button
                   type="button"
-                  onClick={() => saveOnboarding(false)}
-                  disabled={isSubmitting}
-                  className="inline-flex items-center rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-4 py-3 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
-                >
-                  Skip for now
-                </button>
-                <button
-                  type="button"
                   onClick={() => saveOnboarding(true)}
                   disabled={isSubmitting}
-                  className="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-[#24584b] to-[#1f3448] px-5 py-3 text-sm font-semibold text-white transition-all hover:brightness-105 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
+                  className="inline-flex items-center gap-2 rounded-xl bg-stone-800 px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-stone-700 hover:shadow-sm disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
                 >
                   {isSubmitting ? 'Saving...' : 'Open dashboard'}
                   {isSubmitting ? <Sparkles className="h-4 w-4 animate-pulse" /> : <ArrowRight className="h-4 w-4" />}
@@ -633,16 +545,16 @@ function Field({
   return (
     <label className="block">
       <div className="mb-2 flex items-center gap-2">
-        <span className="text-sm font-semibold text-slate-800">{label}</span>
+        <span className="text-sm font-semibold text-stone-700">{label}</span>
         {required ? (
-          <span className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
+          <span className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-400">
             Required
           </span>
         ) : null}
       </div>
       {children}
-      {error ? <p className="mt-2 text-sm text-rose-700">{error}</p> : null}
-      {!error && hint ? <p className="mt-2 text-sm text-slate-500">{hint}</p> : null}
+      {error ? <p className="mt-2 text-sm text-red-700">{error}</p> : null}
+      {!error && hint ? <p className="mt-2 text-sm text-stone-500">{hint}</p> : null}
     </label>
   );
 }

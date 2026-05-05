@@ -38,17 +38,17 @@ export function useToast(): ToastContextValue {
 }
 
 const ICONS: Record<ToastType, ReactNode> = {
-  success: <CheckCircle2 className="h-5 w-5 text-emerald-600" />,
-  error: <XCircle className="h-5 w-5 text-rose-600" />,
-  warning: <AlertTriangle className="h-5 w-5 text-amber-600" />,
-  info: <Info className="h-5 w-5 text-sky-600" />,
+  success: <CheckCircle2 className="h-5 w-5 text-stone-500" />,
+  error: <XCircle className="h-5 w-5 text-stone-600" />,
+  warning: <AlertTriangle className="h-5 w-5 text-stone-500" />,
+  info: <Info className="h-5 w-5 text-stone-500" />,
 };
 
 const BG: Record<ToastType, string> = {
-  success: 'border-emerald-200 bg-emerald-50',
-  error: 'border-rose-200 bg-rose-50',
-  warning: 'border-amber-200 bg-amber-50',
-  info: 'border-sky-200 bg-sky-50',
+  success: 'border-stone-200 bg-white',
+  error: 'border-stone-300 bg-white',
+  warning: 'border-stone-200 bg-white',
+  info: 'border-stone-200 bg-white',
 };
 
 export function ToastProvider({ children }: { children: ReactNode }) {
@@ -108,10 +108,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             role="alert"
           >
             {ICONS[toast.type]}
-            <span className="text-sm font-medium text-slate-800">{toast.message}</span>
+            <span className="text-sm font-medium text-stone-800">{toast.message}</span>
             <button
               onClick={() => dismissToast(toast.id)}
-              className="ml-2 text-slate-400 transition-colors hover:text-slate-700"
+              className="ml-2 text-stone-400 transition-colors hover:text-stone-600"
               aria-label="Dismiss notification"
             >
               <X className="h-4 w-4" />
@@ -122,7 +122,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
       {/* Confirm dialog */}
       {confirmState && (
-        <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-slate-950/20 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-stone-950/20 backdrop-blur-sm">
           <div
             className="app-surface w-full max-w-md rounded-2xl p-6 shadow-2xl animate-fadeIn"
             role="alertdialog"
@@ -130,17 +130,17 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             aria-labelledby="confirm-title"
             aria-describedby="confirm-message"
           >
-            <h3 id="confirm-title" className="mb-2 text-lg font-semibold text-slate-950">
+            <h3 id="confirm-title" className="mb-2 text-lg font-semibold text-stone-800">
               {confirmState.options.title}
             </h3>
-            <p id="confirm-message" className="mb-6 text-sm text-slate-600">
+            <p id="confirm-message" className="mb-6 text-sm text-stone-500">
               {confirmState.options.message}
             </p>
             <div className="flex justify-end gap-3">
               <button
                 ref={confirmRef}
                 onClick={() => handleConfirm(false)}
-                className="rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                className="rounded-xl border border-stone-100 bg-white  px-4 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-50"
               >
                 {confirmState.options.cancelLabel || 'Cancel'}
               </button>
@@ -148,8 +148,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 onClick={() => handleConfirm(true)}
                 className={`rounded-xl px-4 py-2 text-sm font-semibold text-white transition-colors ${
                   confirmState.options.destructive
-                    ? 'bg-rose-600 hover:bg-rose-500'
-                    : 'bg-emerald-600 hover:bg-emerald-500'
+                    ? 'bg-stone-800 hover:bg-stone-600'
+                    : 'bg-stone-900 hover:bg-stone-800'
                 }`}
               >
                 {confirmState.options.confirmLabel || 'Confirm'}

@@ -36,7 +36,6 @@ export function isOnboardingComplete(userData: UserData | null | undefined) {
 
   const hasCorePlanningFields =
     hasProfileValue(userData.profile.name) &&
-    hasProfileValue(userData.profile.currentRank) &&
     hasProfileValue(userData.profile.targetEagleDate);
 
   return hasCorePlanningFields || hasReturningUserActivity(userData);

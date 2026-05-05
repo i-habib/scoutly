@@ -92,12 +92,27 @@ export const updateRequirementProgress = async ({
   return user;
 };
 
+// Batch-update multiple requirements for a badge in a single write
+export const batchUpdateRequirementProgress = async (
+  updates: { requirementId: string; badgeId: string; completedDate: string | null }[],
+): Promise<UserData> => {
+  const user = await fetchUserData();
+  for (const { requirementId, badgeId, completedDate } of updates) {
+    if (!user.progress[badgeId]) {
+      user.progress[badgeId] = {};
+    }
+    user.progress[badgeId][requirementId] = completedDate;
+  }
+  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
+  return user;
+};
+
 // Update user profile information
 export const updateProfile = async (profileData: Partial<UserData['profile']>): Promise<UserData> => {
   const user = await fetchUserData();
   
-  // Auto-complete rank requirements if currentRank changes
-  if (profileData.currentRank && profileData.currentRank !== user.profile.currentRank) {
+  // Auto-complete rank requirements whenever currentRank is provided
+  if (profileData.currentRank) {
     const newRankId = normalizeRankId(profileData.currentRank);
     const newRankIndex = RANK_ORDER.indexOf(newRankId as (typeof RANK_ORDER)[number]);
     
@@ -112,16 +127,26 @@ export const updateProfile = async (profileData: Partial<UserData['profile']>): 
         
         const rankData = rankRequirementsData.find(r => r.id === rankId);
         if (rankData) {
-          rankData.requirements.forEach(req => {
-            // Check off main requirement
+          rankData.requirements.forEach((req, reqIndex) => {
+            const mainLegacyKey = `req_${reqIndex}`;
+
+            // Check off main requirement using both schema keys
             if (!user.rankProgress![rankId][req.id]) {
               user.rankProgress![rankId][req.id] = today;
             }
-            // Check off sub-requirements
+            if (!user.rankProgress![rankId][mainLegacyKey]) {
+              user.rankProgress![rankId][mainLegacyKey] = today;
+            }
+
+            // Check off sub-requirements using both schema keys
             if ('sub_requirements' in req && (req as any).sub_requirements) {
-              (req as any).sub_requirements.forEach((subReq: any) => {
+              (req as any).sub_requirements.forEach((subReq: any, subIndex: number) => {
+                const subLegacyKey = `req_${reqIndex}_${subIndex}`;
                 if (!user.rankProgress![rankId][subReq.id]) {
                   user.rankProgress![rankId][subReq.id] = today;
+                }
+                if (!user.rankProgress![rankId][subLegacyKey]) {
+                  user.rankProgress![rankId][subLegacyKey] = today;
                 }
               });
             }

@@ -251,23 +251,19 @@ function AICoach() {
   if (!userData) {
     return (
       <div className="app-shell flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-stone-600" />
       </div>
     );
   }
 
   return (
     <div className="app-shell light-overrides">
-      <div className="app-shell__grid fixed inset-0" />
-      <div className="app-shell__glow app-shell__glow--top fixed" />
-      <div className="app-shell__glow app-shell__glow--bottom fixed" />
-
       <div className="app-shell__content max-w-7xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <button
             onClick={() => navigate({ to: '/' })}
-            className="flex items-center gap-2 text-emerald-700 hover:text-emerald-800 transition-colors"
+            className="flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-medium text-stone-800 hover:bg-stone-50 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
             Back to Dashboard
@@ -275,7 +271,7 @@ function AICoach() {
           {chatHistory.length > 0 && (
             <button
               onClick={handleClearHistory}
-              className="text-sm text-slate-500 hover:text-slate-700 transition-colors"
+              className="rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-medium text-stone-800 hover:bg-stone-50 transition-colors"
             >
               Clear History
             </button>
@@ -284,17 +280,17 @@ function AICoach() {
 
         <div className="mb-6">
           <div className="app-surface rounded-2xl overflow-hidden">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between px-6 py-4 border-b border-slate-200 bg-emerald-50/70">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between px-6 py-4 border-b border-stone-200 bg-stone-50">
               <div>
-                <h2 className="text-lg font-semibold text-slate-900">Monthly Focus Briefing</h2>
-                <p className="text-sm text-slate-600">
+                <h2 className="text-lg font-semibold text-stone-900">Monthly Focus Briefing</h2>
+                <p className="text-sm text-stone-500">
                   Highlights for the next 30 days pulled from your analyzed events.
                 </p>
               </div>
               <button
                 onClick={handleGenerateMonthlySummary}
                 disabled={isSummarizing}
-                className="self-start md:self-auto px-4 py-2 bg-linear-to-r from-emerald-600 to-sky-600 text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)] hover:shadow-[0_12px_24px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 font-semibold rounded-xl hover:from-emerald-500 hover:to-sky-500 transition-all disabled:opacity-50 flex items-center gap-2 text-sm"
+                className="self-start md:self-auto rounded-xl bg-stone-800 px-4 py-2.5 text-sm font-medium text-white hover:bg-stone-700 transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 {isSummarizing ? (
                   <>
@@ -320,42 +316,42 @@ function AICoach() {
                     remarkPlugins={[remarkGfm]}
                     components={{
                       h2: ({ children }) => (
-                        <h2 className="text-base font-semibold text-slate-900 mb-2 mt-3">{children}</h2>
+                        <h2 className="text-base font-semibold text-stone-900 mb-2 mt-3">{children}</h2>
                       ),
                       h3: ({ children }) => (
-                        <h3 className="text-sm font-semibold text-emerald-700 mb-1 mt-2">{children}</h3>
+                        <h3 className="text-sm font-semibold text-stone-700 mb-1 mt-2">{children}</h3>
                       ),
                       p: ({ children }) => (
-                        <p className="text-slate-700 text-sm mb-2 leading-relaxed">{children}</p>
+                        <p className="text-stone-600 text-sm mb-2 leading-relaxed">{children}</p>
                       ),
                       ul: ({ children }) => (
-                        <ul className="space-y-1 text-slate-700 mb-3 text-sm">{children}</ul>
+                        <ul className="space-y-1 text-stone-600 mb-3 text-sm">{children}</ul>
                       ),
                       li: ({ children }) => (
-                        <li className="ml-4 text-slate-700 text-sm">{children}</li>
+                        <li className="ml-4 text-stone-600 text-sm">{children}</li>
                       ),
                       strong: ({ children }) => (
-                        <strong className="text-emerald-700 font-semibold">{children}</strong>
+                        <strong className="text-stone-700 font-semibold">{children}</strong>
                       ),
                       table: ({ children }) => (
                         <div className="overflow-x-auto my-2">
-                          <table className="w-full border-collapse border border-slate-200 text-sm">{children}</table>
+                          <table className="w-full border-collapse border border-stone-200 text-sm">{children}</table>
                         </div>
                       ),
                       thead: ({ children }) => (
-                        <thead className="bg-emerald-50">{children}</thead>
+                        <thead className="bg-stone-50">{children}</thead>
                       ),
                       tbody: ({ children }) => (
-                        <tbody className="divide-y divide-slate-200">{children}</tbody>
+                        <tbody className="divide-y divide-stone-200">{children}</tbody>
                       ),
                       tr: ({ children }) => (
-                        <tr className="border-b border-slate-200">{children}</tr>
+                        <tr className="border-b border-stone-200">{children}</tr>
                       ),
                       th: ({ children }) => (
-                        <th className="px-2 py-1 text-left text-emerald-700 font-semibold border border-slate-200 text-xs">{children}</th>
+                        <th className="px-2 py-1 text-left text-stone-700 font-semibold border border-stone-200 text-xs">{children}</th>
                       ),
                       td: ({ children }) => (
-                        <td className="px-2 py-1 text-slate-700 border border-slate-200 text-xs">{children}</td>
+                        <td className="px-2 py-1 text-stone-600 border border-stone-200 text-xs">{children}</td>
                       ),
                     }}
                   >
@@ -363,7 +359,7 @@ function AICoach() {
                   </ReactMarkdown>
                 </div>
               ) : !summaryError ? (
-                <p className="text-slate-600 text-sm">
+                <p className="text-stone-500 text-sm">
                   Run an event analysis and regenerate to see your personalized monthly focus.
                 </p>
               ) : null}
@@ -376,27 +372,27 @@ function AICoach() {
           <div className="lg:col-span-3">
             <div className="app-surface rounded-2xl overflow-hidden">
               {/* Chat Header */}
-              <div className="bg-emerald-50/70 border-b border-slate-200 px-6 py-4">
+              <div className="bg-stone-50 border-b border-stone-200 px-6 py-4">
                 <div className="flex items-center justify-between gap-3 mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-linear-to-br from-emerald-600 to-sky-600 rounded-xl">
+                    <div className="p-2 bg-stone-800 rounded-2xl">
                       <ScoutFleurDeLis className="w-6 h-6 text-white" size={24} />
                     </div>
                     <div>
-                      <h1 className="text-xl font-bold text-slate-900">AI Eagle Scout Coach</h1>
-                      <p className="text-sm text-slate-600">Your personalized guide to Eagle</p>
+                      <h1 className="text-3xl font-semibold tracking-tight text-stone-900">AI Eagle Scout Coach</h1>
+                      <p className="text-sm text-stone-500">Your personalized guide to Eagle</p>
                     </div>
                   </div>
                 </div>
                 
                 {/* Chat Mode Toggle */}
-                <div className="flex items-center gap-2 p-1 bg-slate-100 rounded-lg border border-slate-200">
+                <div className="flex items-center gap-2 p-1 bg-stone-100 rounded-2xl border border-stone-200">
                   <button
                     onClick={() => setChatMode('tactical')}
-                    className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors ${
                       chatMode === 'tactical'
-                        ? 'bg-linear-to-r from-emerald-600 to-sky-600 text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)] hover:shadow-[0_12px_24px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 shadow-md'
-                        : 'text-slate-600 hover:text-slate-900'
+                        ? 'bg-stone-800 text-white hover:bg-stone-700'
+                        : 'border border-stone-200 bg-white text-stone-800 hover:bg-stone-50'
                     }`}
                   >
                     <div className="flex flex-col items-center gap-0.5">
@@ -406,10 +402,10 @@ function AICoach() {
                   </button>
                   <button
                     onClick={() => setChatMode('strategic')}
-                    className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors ${
                       chatMode === 'strategic'
-                        ? 'bg-linear-to-r from-emerald-600 to-sky-600 text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)] hover:shadow-[0_12px_24px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 shadow-md'
-                        : 'text-slate-600 hover:text-slate-900'
+                        ? 'bg-stone-800 text-white hover:bg-stone-700'
+                        : 'border border-stone-200 bg-white text-stone-800 hover:bg-stone-50'
                     }`}
                   >
                     <div className="flex flex-col items-center gap-0.5">
@@ -424,17 +420,17 @@ function AICoach() {
               <div className="h-[500px] overflow-y-auto p-6 space-y-4">
                 {chatHistory.length === 0 && !currentPlan && (
                   <div className="text-center py-12">
-                    <ScoutFleurDeLis className="w-16 h-16 text-green-500/50 mx-auto mb-4" size={64} />
-                    <h3 className="text-xl font-semibold text-slate-900 mb-2">
+                    <ScoutFleurDeLis className="w-16 h-16 text-stone-400 mx-auto mb-4" size={64} />
+                    <h3 className="text-xl font-semibold text-stone-900 mb-2">
                       Welcome to Your AI Coach!
                     </h3>
-                    <p className="text-slate-600 mb-6">
+                    <p className="text-stone-500 mb-6">
                       Let's create a personalized plan to help you reach Eagle Scout.
                     </p>
                     <button
                       onClick={handleGenerateInitialPlan}
                       disabled={isGeneratingPlan}
-                      className="px-6 py-3 bg-linear-to-r from-emerald-600 to-sky-600 text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)] hover:shadow-[0_12px_24px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 font-semibold rounded-xl hover:from-emerald-500 hover:to-sky-500 transition-all disabled:opacity-50"
+                      className="rounded-xl bg-stone-800 px-4 py-2.5 text-sm font-medium text-white hover:bg-stone-700 transition-colors disabled:opacity-50"
                     >
                       {isGeneratingPlan ? (
                         <span className="flex items-center gap-2">
@@ -456,8 +452,8 @@ function AICoach() {
                     <div
                       className={`max-w-[80%] px-4 py-3 rounded-2xl ${
                         message.role === 'user'
-                          ? 'bg-linear-to-br from-emerald-600 to-sky-600 text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)] hover:shadow-[0_12px_24px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 font-semibold'
-                          : 'bg-white text-slate-800 border border-slate-200 shadow-sm'
+                          ? 'bg-stone-800 text-white font-medium'
+                          : 'bg-white text-stone-700 border border-stone-200 shadow-sm'
                       }`}
                     >
                       {message.role === 'user' ? (
@@ -468,19 +464,19 @@ function AICoach() {
                             remarkPlugins={[remarkGfm]}
                             components={{
                               h2: ({ children }) => (
-                                <h2 className="text-base font-bold text-slate-900 mb-2 mt-3">{children}</h2>
+                                <h2 className="text-base font-semibold text-stone-900 mb-2 mt-3">{children}</h2>
                               ),
                               h3: ({ children }) => (
-                                <h3 className="text-sm font-semibold text-emerald-700 mb-1 mt-2">{children}</h3>
+                                <h3 className="text-sm font-semibold text-stone-700 mb-1 mt-2">{children}</h3>
                               ),
                               p: ({ children }) => (
-                                <p className="text-slate-700 text-sm mb-2 leading-relaxed">{children}</p>
+                                <p className="text-stone-600 text-sm mb-2 leading-relaxed">{children}</p>
                               ),
                               ul: ({ children }) => (
-                                <ul className="space-y-1 text-slate-700 mb-3 text-sm">{children}</ul>
+                                <ul className="space-y-1 text-stone-600 mb-3 text-sm">{children}</ul>
                               ),
                               ol: ({ children }) => (
-                                <ol className="space-y-1 text-slate-700 mb-3 text-sm list-decimal list-inside">{children}</ol>
+                                <ol className="space-y-1 text-stone-600 mb-3 text-sm list-decimal list-inside">{children}</ol>
                               ),
                               li: ({ children }) => {
                                 const childText = flattenChildrenToText(children);
@@ -493,7 +489,7 @@ function AICoach() {
                                   const isChecked = checkedItems[checkboxId] ?? isInitiallyChecked;
                                   
                                   return (
-                                    <li className="flex items-start gap-1.5 text-slate-700 text-sm">
+                                    <li className="flex items-start gap-1.5 text-stone-600 text-sm">
                                       <input
                                         type="checkbox"
                                         checked={isChecked}
@@ -505,35 +501,35 @@ function AICoach() {
                                           setCheckedItems(newCheckedItems);
                                           localStorage.setItem('scoutly_plan_checkboxes', JSON.stringify(newCheckedItems));
                                         }}
-                                        className="mt-0.5 w-3 h-3 rounded border-emerald-400 text-emerald-600 bg-white cursor-pointer"
+                                        className="mt-0.5 w-3 h-3 rounded border-stone-400 text-stone-600 bg-white cursor-pointer"
                                       />
-                                      <span className={`text-xs ${isChecked ? 'line-through text-slate-500' : ''}`}>{text}</span>
+                                      <span className={`text-xs ${isChecked ? 'line-through text-stone-400' : ''}`}>{text}</span>
                                     </li>
                                   );
                                 }
-                                return <li className="text-slate-700 ml-4 text-sm">{children}</li>;
+                                return <li className="text-stone-600 ml-4 text-sm">{children}</li>;
                               },
                               strong: ({ children }) => (
-                                <strong className="text-emerald-700 font-semibold">{children}</strong>
+                                <strong className="text-stone-700 font-semibold">{children}</strong>
                               ),
                               em: ({ children }) => (
-                                <em className="text-sky-700 italic">{children}</em>
+                                <em className="text-stone-700 italic">{children}</em>
                               ),
                               code: ({ children }) => (
-                                <code className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded text-xs font-mono">{children}</code>
+                                <code className="bg-stone-100 text-stone-600 px-1.5 py-0.5 rounded text-xs font-mono">{children}</code>
                               ),
                               pre: ({ children }) => (
-                                <pre className="bg-slate-100 text-slate-700 p-3 rounded-lg text-xs overflow-x-auto my-2">{children}</pre>
+                                <pre className="bg-stone-100 text-stone-600 p-3 rounded-2xl text-xs overflow-x-auto my-2">{children}</pre>
                               ),
                               blockquote: ({ children }) => (
-                                <blockquote className="border-l-4 border-emerald-300 pl-4 italic text-slate-600 my-2">{children}</blockquote>
+                                <blockquote className="border-l-4 border-stone-300 pl-4 italic text-stone-500 my-2">{children}</blockquote>
                               ),
                               a: ({ href, children }) => {
                                 const linkText = flattenChildrenToText(children);
                                 return (
                                   <a 
                                     href={href} 
-                                    className="text-emerald-700 hover:text-emerald-800 underline text-sm"
+                                    className="text-stone-700 hover:text-stone-800 underline text-sm"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
@@ -542,27 +538,27 @@ function AICoach() {
                                 );
                               },
                               hr: () => (
-                                <hr className="border-slate-200 my-3" />
+                                <hr className="border-stone-200 my-3" />
                               ),
                               table: ({ children }) => (
                                 <div className="overflow-x-auto my-2">
-                                  <table className="w-full border-collapse border border-slate-200 text-sm">{children}</table>
+                                  <table className="w-full border-collapse border border-stone-200 text-sm">{children}</table>
                                 </div>
                               ),
                               thead: ({ children }) => (
-                                <thead className="bg-emerald-50">{children}</thead>
+                                <thead className="bg-stone-50">{children}</thead>
                               ),
                               tbody: ({ children }) => (
-                                <tbody className="divide-y divide-slate-200">{children}</tbody>
+                                <tbody className="divide-y divide-stone-200">{children}</tbody>
                               ),
                               tr: ({ children }) => (
-                                <tr className="border-b border-slate-200">{children}</tr>
+                                <tr className="border-b border-stone-200">{children}</tr>
                               ),
                               th: ({ children }) => (
-                                <th className="px-2 py-1 text-left text-emerald-700 font-semibold border border-slate-200 text-xs">{children}</th>
+                                <th className="px-2 py-1 text-left text-stone-700 font-semibold border border-stone-200 text-xs">{children}</th>
                               ),
                               td: ({ children }) => (
-                                <td className="px-2 py-1 text-slate-700 border border-slate-200 text-xs">{children}</td>
+                                <td className="px-2 py-1 text-stone-600 border border-stone-200 text-xs">{children}</td>
                               ),
                             }}
                           >
@@ -572,7 +568,7 @@ function AICoach() {
                       )}
                       <p
                         className={`text-xs mt-2 ${
-                          message.role === 'user' ? 'text-white/75' : 'text-slate-500'
+                          message.role === 'user' ? 'text-white/75' : 'text-stone-400'
                         }`}
                       >
                         {new Date(message.timestamp).toLocaleTimeString()}
@@ -583,8 +579,8 @@ function AICoach() {
 
                 {isLoading && (
                   <div className="flex justify-start">
-                    <div className="bg-white border border-slate-200 px-4 py-3 rounded-2xl shadow-sm">
-                      <Loader2 className="w-5 h-5 animate-spin text-emerald-600" />
+                    <div className="bg-white border border-stone-200 px-4 py-3 rounded-2xl shadow-sm">
+                      <Loader2 className="w-5 h-5 animate-spin text-stone-600" />
                     </div>
                   </div>
                 )}
@@ -593,16 +589,16 @@ function AICoach() {
               </div>
 
               {/* Input */}
-              <div className="border-t border-slate-200 p-4 bg-white/70">
+              <div className="border-t border-stone-200 p-4 bg-white/70">
                 {/* Mode Description */}
-                <div className="mb-3 px-2 text-xs text-slate-600">
+                <div className="mb-3 px-2 text-xs text-stone-500">
                   {chatMode === 'tactical' ? (
                     <p>
-                      💡 <span className="text-emerald-700 font-semibold">Tactical Mode:</span> Get detailed action plans for the next 2-4 weeks with specific steps.
+                      💡 <span className="text-stone-700 font-semibold">Tactical Mode:</span> Get detailed action plans for the next 2-4 weeks with specific steps.
                     </p>
                   ) : (
                     <p>
-                      🎯 <span className="text-emerald-700 font-semibold">Strategic Mode:</span> Get high-level guidance for long-term planning (6+ months).
+                      🎯 <span className="text-stone-700 font-semibold">Strategic Mode:</span> Get high-level guidance for long-term planning (6+ months).
                     </p>
                   )}
                 </div>
@@ -619,12 +615,12 @@ function AICoach() {
                         : "Ask: How do I reach Eagle by June 2026?"
                     }
                     disabled={isLoading || !currentPlan}
-                    className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+                    className="flex-1 rounded-xl border border-stone-200 bg-white px-3.5 py-2.5 text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-300 focus:border-stone-400 disabled:opacity-50"
                   />
                   <button
                     onClick={handleSendMessage}
                     disabled={!input.trim() || isLoading || !currentPlan}
-                    className="px-6 py-3 bg-linear-to-r from-emerald-600 to-sky-600 text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)] hover:shadow-[0_12px_24px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 font-semibold rounded-xl hover:from-emerald-500 hover:to-sky-500 transition-all disabled:opacity-50 flex items-center gap-2"
+                    className="rounded-xl bg-stone-800 px-4 py-2.5 text-sm font-medium text-white hover:bg-stone-700 transition-colors disabled:opacity-50 flex items-center gap-2"
                   >
                     <Send className="w-4 h-4" />
                   </button>
@@ -637,8 +633,8 @@ function AICoach() {
           <div className="lg:col-span-2">
             <div className="app-surface rounded-2xl p-6 sticky top-6">
               <div className="flex items-center gap-2 mb-4">
-                <FileText className="w-5 h-5 text-emerald-600" />
-                <h2 className="text-lg font-semibold text-slate-900">Your Eagle Plan</h2>
+                <FileText className="w-5 h-5 text-stone-600" />
+                <h2 className="text-lg font-semibold text-stone-900">Your Eagle Plan</h2>
               </div>
 
               {currentPlan ? (
@@ -647,36 +643,36 @@ function AICoach() {
                     remarkPlugins={[remarkGfm]}
                     components={{
                       h2: ({ children }) => (
-                        <h2 className="text-base font-bold text-slate-900 mb-2 mt-3">{children}</h2>
+                        <h2 className="text-base font-semibold text-stone-900 mb-2 mt-3">{children}</h2>
                       ),
                       h3: ({ children }) => (
-                        <h3 className="text-sm font-semibold text-emerald-700 mb-1 mt-2">{children}</h3>
+                        <h3 className="text-sm font-semibold text-stone-700 mb-1 mt-2">{children}</h3>
                       ),
                       p: ({ children }) => (
-                        <p className="text-slate-700 text-sm mb-2 leading-relaxed">{children}</p>
+                        <p className="text-stone-600 text-sm mb-2 leading-relaxed">{children}</p>
                       ),
                       ul: ({ children }) => (
-                        <ul className="space-y-1 text-slate-700 mb-3 text-sm">{children}</ul>
+                        <ul className="space-y-1 text-stone-600 mb-3 text-sm">{children}</ul>
                       ),
                       table: ({ children }) => (
                         <div className="overflow-x-auto my-2">
-                          <table className="w-full border-collapse border border-slate-200 text-sm">{children}</table>
+                          <table className="w-full border-collapse border border-stone-200 text-sm">{children}</table>
                         </div>
                       ),
                       thead: ({ children }) => (
-                        <thead className="bg-emerald-50">{children}</thead>
+                        <thead className="bg-stone-50">{children}</thead>
                       ),
                       tbody: ({ children }) => (
-                        <tbody className="divide-y divide-slate-200">{children}</tbody>
+                        <tbody className="divide-y divide-stone-200">{children}</tbody>
                       ),
                       tr: ({ children }) => (
-                        <tr className="border-b border-slate-200">{children}</tr>
+                        <tr className="border-b border-stone-200">{children}</tr>
                       ),
                       th: ({ children }) => (
-                        <th className="px-2 py-1 text-left text-emerald-700 font-semibold border border-slate-200 text-xs">{children}</th>
+                        <th className="px-2 py-1 text-left text-stone-700 font-semibold border border-stone-200 text-xs">{children}</th>
                       ),
                       td: ({ children }) => (
-                        <td className="px-2 py-1 text-slate-700 border border-slate-200 text-xs">{children}</td>
+                        <td className="px-2 py-1 text-stone-600 border border-stone-200 text-xs">{children}</td>
                       ),
                       li: ({ children }) => {
                         const childText = flattenChildrenToText(children);
@@ -689,7 +685,7 @@ function AICoach() {
                           const isChecked = checkedItems[checkboxId] ?? isInitiallyChecked;
                           
                           return (
-                            <li className="flex items-start gap-1.5 text-slate-700 text-sm">
+                            <li className="flex items-start gap-1.5 text-stone-600 text-sm">
                               <input
                                 type="checkbox"
                                 checked={isChecked}
@@ -701,16 +697,16 @@ function AICoach() {
                                   setCheckedItems(newCheckedItems);
                                   localStorage.setItem('scoutly_plan_checkboxes', JSON.stringify(newCheckedItems));
                                 }}
-                                className="mt-0.5 w-3 h-3 rounded border-emerald-400 text-emerald-600 bg-white cursor-pointer"
+                                className="mt-0.5 w-3 h-3 rounded border-stone-400 text-stone-600 bg-white cursor-pointer"
                               />
-                              <span className={`text-xs ${isChecked ? 'line-through text-slate-500' : ''}`}>{text}</span>
+                              <span className={`text-xs ${isChecked ? 'line-through text-stone-400' : ''}`}>{text}</span>
                             </li>
                           );
                         }
-                        return <li className="text-slate-700 ml-4 text-sm">{children}</li>;
+                        return <li className="text-stone-600 ml-4 text-sm">{children}</li>;
                       },
                       strong: ({ children }) => (
-                        <strong className="text-emerald-700 font-semibold">{children}</strong>
+                        <strong className="text-stone-700 font-semibold">{children}</strong>
                       ),
                       a: ({ href, children }) => {
                         // Extract text from children (handle both string and array cases)
@@ -719,29 +715,29 @@ function AICoach() {
                         return (
                           <a 
                             href={href} 
-                            className="text-emerald-700 hover:text-emerald-800 underline text-sm"
+                            className="text-stone-700 hover:text-stone-800 underline text-sm"
                           >
                             {linkText}
                           </a>
                         );
                       },
                       hr: () => (
-                        <hr className="border-slate-200 my-3" />
+                        <hr className="border-stone-200 my-3" />
                       ),
                     }}
                   >
                     {currentPlan}
                   </ReactMarkdown>
                   {userData.aiPlan?.lastUpdated && (
-                    <p className="text-xs text-slate-500 mt-4">
+                    <p className="text-xs text-stone-400 mt-4">
                       Last updated: {new Date(userData.aiPlan.lastUpdated).toLocaleDateString()}
                     </p>
                   )}
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <FileText className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-                  <p className="text-slate-500 text-sm">
+                  <FileText className="w-12 h-12 text-stone-500 mx-auto mb-3" />
+                  <p className="text-stone-400 text-sm">
                     Generate a plan to get started
                   </p>
                 </div>

@@ -3,6 +3,8 @@ import rankRequirementsData from '../data/rank-reqs.json';
 import type { UserData } from '../data/userData';
 import { RANK_ORDER, getRankDisplayName, normalizeRankId, type RankOrderId } from './constants';
 import { computeBadgeProgressByMeta, countEagleRequiredCompleted, splitEagleRequiredByStatus } from './progress';
+import { buildTimelineState } from './buildTimeline';
+import { formatRequirementsPerMeeting, getRequirementsPerMeeting } from './pacing';
 
 export type FocusTrack = 'signoffs' | 'meritBadges';
 
@@ -19,11 +21,15 @@ export interface FocusBadgeItem {
 }
 
 export function getWorkingRankId(currentRankId: string | null | undefined): RankOrderId {
-  const normalized = normalizeRankId(currentRankId || 'rank_scout') as RankOrderId;
+  if (!currentRankId) {
+    return 'rank_scout';
+  }
+
+  const normalized = normalizeRankId(currentRankId) as RankOrderId;
   const currentIndex = RANK_ORDER.indexOf(normalized);
 
   if (currentIndex < 0) {
-    return 'rank_tenderfoot';
+    return 'rank_scout';
   }
 
   if (currentIndex >= RANK_ORDER.length - 1) {
@@ -35,7 +41,7 @@ export function getWorkingRankId(currentRankId: string | null | undefined): Rank
 
 export function getFocusTrackForRank(rankId: string): FocusTrack {
   const normalized = normalizeRankId(rankId);
-  return ['rank_tenderfoot', 'rank_second_class', 'rank_first_class'].includes(normalized)
+  return ['rank_scout', 'rank_tenderfoot', 'rank_second_class', 'rank_first_class'].includes(normalized)
     ? 'signoffs'
     : 'meritBadges';
 }
@@ -154,31 +160,43 @@ export function getSignoffPaceSummary(userData: UserData) {
     return `You have ${remainingCount} signoff${remainingCount === 1 ? '' : 's'} left for ${progress.rankName}. Add a target Eagle date to estimate pacing.`;
   }
 
-  const today = new Date();
-  const daysRemaining = Math.ceil((targetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-
-  if (daysRemaining <= 0) {
-    return 'Your target date has already passed. Update the goal to rebuild a realistic signoff pace.';
+  const timeline = buildTimelineState(userData);
+  if (!timeline.ok) {
+    return `You have ${remainingCount} signoff${remainingCount === 1 ? '' : 's'} left for ${progress.rankName}. Set up your timeline to see pace.`;
   }
 
-  const meetingsPerMonth = userData.profile.meetingsPerMonthOverride || 4;
-  const monthsRemaining = Math.max(daysRemaining / 30, 1);
-  const signoffsPerMonth = remainingCount / monthsRemaining;
-  const signoffsPerMeeting = remainingCount / Math.max(meetingsPerMonth * monthsRemaining, 1);
+  const phaseKey = progress.rankName === 'Scout' ? 'scout'
+    : progress.rankName === 'Tenderfoot' ? 'tenderfoot'
+    : progress.rankName === 'Second Class' ? 'secondClass'
+    : progress.rankName === 'First Class' ? 'firstClass'
+    : null;
 
-  if (signoffsPerMeeting <= 0.5) {
-    return `Comfortable pace. ${progress.rankName} needs about ${signoffsPerMonth.toFixed(1)} signoffs per month, roughly ${signoffsPerMeeting.toFixed(1)} per meeting.`;
+  const phase: any = phaseKey ? (timeline.phases as any)[phaseKey] : null;
+  const meetingsPerWeek: any = (timeline as any).meetingsPerWeek;
+
+  const reqsPerMeeting = phase?.signoffsPerWeek
+    ? getRequirementsPerMeeting(phase.signoffsPerWeek, meetingsPerWeek)
+    : timeline.reqsPerMeeting;
+
+  const displayPerMeeting = phase?.signoffsPerWeek
+    ? formatRequirementsPerMeeting(phase.signoffsPerWeek, meetingsPerWeek)
+    : (Number.isInteger(reqsPerMeeting) ? String(reqsPerMeeting) : reqsPerMeeting.toFixed(1));
+
+  const signoffsPerMonth = reqsPerMeeting * timeline.meetingsPerMonth;
+
+  if (reqsPerMeeting <= 1) {
+    return `Comfortable pace. ${progress.rankName} needs about ${signoffsPerMonth.toFixed(1)} signoffs per month, roughly ${displayPerMeeting} per meeting.`;
   }
 
-  if (signoffsPerMeeting <= 1) {
-    return `On track. ${progress.rankName} needs about ${signoffsPerMonth.toFixed(1)} signoffs per month, about one per meeting.`;
+  if (reqsPerMeeting <= 2) {
+    return `On track. ${progress.rankName} needs about ${displayPerMeeting} per meeting.`;
   }
 
-  if (signoffsPerMeeting <= 2) {
-    return `Push a little harder. ${progress.rankName} needs about ${signoffsPerMonth.toFixed(1)} signoffs per month, roughly ${signoffsPerMeeting.toFixed(1)} each meeting.`;
+  if (reqsPerMeeting <= 3) {
+    return `Push a little harder. ${progress.rankName} needs about ${signoffsPerMonth.toFixed(1)} signoffs per month, roughly ${displayPerMeeting} each meeting.`;
   }
 
-  return `Aggressive pace. ${progress.rankName} needs about ${signoffsPerMonth.toFixed(1)} signoffs per month, around ${signoffsPerMeeting.toFixed(1)} each meeting.`;
+  return `Aggressive pace. ${progress.rankName} needs about ${signoffsPerMonth.toFixed(1)} signoffs per month, around ${displayPerMeeting} each meeting.`;
 }
 
 export function getMeritBadgePaceSummary(userData: UserData) {
@@ -201,19 +219,18 @@ export function getMeritBadgePaceSummary(userData: UserData) {
 
   const monthsRemaining = Math.max(daysRemaining / 30, 1);
   const badgesPerMonth = badgesRemaining / monthsRemaining;
-  const requirementsPerWeek = meritBadgeSummary.remainingRequirements / Math.max(daysRemaining / 7, 1);
 
   if (badgesPerMonth <= 0.5) {
-    return `Comfortable pace. You need about ${badgesPerMonth.toFixed(1)} Eagle-required badges per month and ${requirementsPerWeek.toFixed(1)} badge requirements per week.`;
+    return `Comfortable pace. You need about ${badgesPerMonth.toFixed(1)} Eagle-required badges per month.`;
   }
 
   if (badgesPerMonth <= 1) {
-    return `On track. You need about one Eagle-required badge per month and ${requirementsPerWeek.toFixed(1)} badge requirements per week.`;
+    return `You need about one Eagle-required badge per month.`;
   }
 
   if (badgesPerMonth <= 2) {
-    return `Fast pace. You need about ${badgesPerMonth.toFixed(1)} Eagle-required badges per month and ${requirementsPerWeek.toFixed(1)} badge requirements per week.`;
+    return `Fast pace. You need about ${badgesPerMonth.toFixed(1)} Eagle-required badges per month.`;
   }
 
-  return `Very aggressive pace. You need about ${badgesPerMonth.toFixed(1)} Eagle-required badges per month and ${requirementsPerWeek.toFixed(1)} badge requirements per week.`;
+  return `Very aggressive pace. You need about ${badgesPerMonth.toFixed(1)} Eagle-required badges per month.`;
 }

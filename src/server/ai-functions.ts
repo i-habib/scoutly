@@ -211,8 +211,9 @@ export const analyzeCalendarEvents = createServerFn({
   }
 
   // Get Scout's current rank
-  const currentRank = userData.profile?.currentRank || 'rank_scout'
-  const currentRankName = currentRank.replace('rank_', '').replace('_', ' ')
+  const hasCurrentRank = Boolean(userData.profile?.currentRank)
+  const currentRank = hasCurrentRank ? userData.profile.currentRank! : null
+  const currentRankName = (currentRank || 'rank_scout').replace('rank_', '').replace('_', ' ')
   // Estimate meetings/month from events and honor user override if present
   const estimateMeetingsPerMonth = () => {
     const evts = userData.events || []
@@ -271,12 +272,15 @@ export const analyzeCalendarEvents = createServerFn({
   
   // Determine if Scout should focus on rank advancement or merit badges
   const rankOrder = ['rank_scout', 'rank_tenderfoot', 'rank_second_class', 'rank_first_class', 'rank_star', 'rank_life', 'rank_eagle']
-  const currentRankIndex = rankOrder.indexOf(currentRank)
+  const currentRankIndex = currentRank ? rankOrder.indexOf(currentRank) : -1
   const isFirstClassOrAbove = currentRankIndex >= 3 // First Class, Star, Life, Eagle
   
-  // Get NEXT rank requirements (what they're working toward)
-  const nextRankIndex = currentRankIndex + 1
-  const nextRank = nextRankIndex < rankOrder.length ? rankOrder[nextRankIndex] : null
+  // Get in-progress rank requirements. If no rank yet, in-progress rank is Scout.
+  const nextRank = currentRankIndex < 0
+    ? 'rank_scout'
+    : currentRankIndex + 1 < rankOrder.length
+      ? rankOrder[currentRankIndex + 1]
+      : null
   const nextRankData = nextRank ? rankRequirementsData.find((r: any) => r.id === nextRank) : null
   
   const nextRankRequirements: string[] = []

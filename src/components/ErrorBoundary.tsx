@@ -36,21 +36,21 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="app-shell flex min-h-[60vh] items-center justify-center px-6">
           <div className="text-center max-w-md">
-            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-50 text-rose-500">
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-stone-100 text-stone-400">
               <ScoutFleurDeLis className="h-7 w-7" />
             </div>
-            <h2 className="mb-2 text-2xl font-semibold text-slate-950">
+            <h2 className="mb-2 text-2xl font-semibold text-stone-800">
               Something went wrong
             </h2>
-            <p className="mb-6 text-sm leading-relaxed text-slate-600">
+            <p className="mb-6 text-sm leading-relaxed text-stone-500">
               An unexpected error occurred. Your data is safe — try refreshing the page or click below to retry.
             </p>
             {this.state.error && (
-              <details className="mb-6 rounded-xl border border-slate-200 bg-slate-50 p-4 text-left">
-                <summary className="cursor-pointer text-xs font-medium text-slate-500">
+              <details className="mb-6 rounded-xl border border-stone-200 bg-stone-50 p-4 text-left">
+                <summary className="cursor-pointer text-xs font-medium text-stone-400">
                   Error details
                 </summary>
-                <pre className="mt-2 overflow-x-auto text-xs text-rose-600">
+                <pre className="mt-2 overflow-x-auto text-xs text-stone-600">
                   {this.state.error.message}
                 </pre>
               </details>
@@ -58,13 +58,13 @@ export class ErrorBoundary extends Component<Props, State> {
             <div className="flex justify-center gap-3">
               <button
                 onClick={this.handleReset}
-                className="rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-5 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                className="rounded-xl border border-stone-100 bg-white  px-5 py-2.5 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-50"
               >
                 Try Again
               </button>
               <button
                 onClick={() => window.location.reload()}
-                className="rounded-xl bg-[#1f3448] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#182b3b]"
+                className="rounded-xl bg-stone-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-stone-800"
               >
                 Reload Page
               </button>

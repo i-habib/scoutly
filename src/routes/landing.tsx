@@ -40,21 +40,21 @@ function LandingPage() {
 
       <div className="app-shell__content mx-auto max-w-6xl px-6 py-10">
         <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-          <div className="app-surface rounded-2xl p-8">
+          <div className="rounded-2xl border border-stone-200 bg-white p-8 shadow-sm">
             <div className="mb-4 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1f3448] text-white">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-stone-100 text-stone-600">
                 <ScoutFleurDeLis className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-900">Scoutly</p>
-                <p className="text-xs text-slate-500">Eagle planning workspace</p>
+                <p className="text-sm font-semibold text-stone-800">Scoutly</p>
+                <p className="text-xs text-stone-400">Eagle planning workspace</p>
               </div>
             </div>
 
-            <h1 className="max-w-3xl text-4xl font-semibold leading-tight text-slate-950 md:text-5xl">
+            <h1 className="max-w-3xl text-3xl font-semibold leading-tight tracking-tight text-stone-900 md:text-5xl">
               Track rank progress, merit badges, and troop events in one place.
             </h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
+            <p className="mt-4 max-w-2xl text-base leading-7 text-stone-500">
               Built for Scouts and families who need a straightforward system for planning the path to Eagle.
             </p>
 
@@ -62,7 +62,7 @@ function LandingPage() {
               <Link
                 to={entryRoute}
                 preload="intent"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1f3448] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#182b3b]"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-stone-800 px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-stone-700"
               >
                 Open Workspace
                 <ArrowRight className="h-4 w-4" />
@@ -70,15 +70,15 @@ function LandingPage() {
               <Link
                 to="/merit-badges"
                 preload="intent"
-                className="inline-flex items-center justify-center rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-5 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 hover:text-slate-950"
+                className="inline-flex items-center justify-center rounded-xl border border-stone-200 bg-white px-5 py-3 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-50"
               >
                 Browse Merit Badges
               </Link>
             </div>
           </div>
 
-          <div className="app-surface rounded-2xl p-6">
-            <h2 className="text-lg font-semibold text-slate-950">Core functions</h2>
+          <div className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-stone-800">Core functions</h2>
             <div className="mt-4 space-y-3">
               <PreviewRow
                 icon={<RouteIcon className="h-5 w-5" />}
@@ -119,10 +119,10 @@ function MetricCard({
   detail: string;
 }) {
   return (
-    <div className="rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-4">
-      <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</div>
-      <div className="mt-2 text-2xl font-semibold text-slate-950">{value}</div>
-      <div className="mt-2 text-sm leading-6 text-slate-600">{detail}</div>
+    <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
+      <div className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-400">{label}</div>
+      <div className="mt-2 text-2xl font-semibold text-stone-800">{value}</div>
+      <div className="mt-2 text-sm leading-6 text-stone-500">{detail}</div>
     </div>
   );
 }
@@ -137,14 +137,14 @@ function PreviewRow({
   description: string;
 }) {
   return (
-    <div className="rounded-[1.25rem] border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-4">
+    <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-stone-100 text-stone-600">
           {icon}
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-slate-950">{title}</h3>
-          <p className="text-sm leading-6 text-slate-600">{description}</p>
+          <h3 className="text-lg font-semibold text-stone-800">{title}</h3>
+          <p className="text-sm leading-6 text-stone-500">{description}</p>
         </div>
       </div>
     </div>

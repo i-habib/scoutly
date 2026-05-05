@@ -32,10 +32,6 @@ export function validateStepOne(form: OnboardingFormState): OnboardingErrors {
     errors.name = 'Enter the Scout name to continue.';
   }
 
-  if (!form.currentRank) {
-    errors.currentRank = 'Select the current rank to continue.';
-  }
-
   return errors;
 }
 

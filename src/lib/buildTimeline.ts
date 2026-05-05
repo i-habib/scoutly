@@ -13,19 +13,6 @@ const timeConsumingBadges = (timeConsumingBadgesData as any).timeConsumingBadges
 const weekMs = 7 * 24 * 60 * 60 * 1000
 const weekToMs = (w: number) => w * weekMs
 
-function safeSpan(phaseStart: Date, phaseEnd: Date, weeks: number) {
-  const finish = new Date(phaseEnd)
-  const rawStart = new Date(finish.getTime() - weekToMs(weeks))
-  const start = rawStart.getTime() < phaseStart.getTime() ? new Date(phaseStart) : rawStart
-  return { start, finish }
-}
-
-function chooseWave(name: string, weeks: number): 1 | 2 {
-  const longThreshold = 8
-  const nameBias = name.length > 14 ? 1 : 0
-  return (weeks + nameBias) <= longThreshold ? 1 : 2
-}
-
 function getBadgeByName(name: string) {
   const b = meritBadges.find((x: any) => x.name.toLowerCase() === name.toLowerCase())
   return b ? { id: b.id, name: b.name } : null
@@ -279,145 +266,177 @@ export const buildTimelineState: BuildTimeline = (userData, options) => {
     const emergencyChoice = choices.emergency || 'Emergency Preparedness'
     const environmentChoice = choices.environment || 'Environmental Science'
     const electivePicks: string[] = userData.profile?.electiveBadges || []
-    const electiveBadgesCatalog = meritBadges.filter((badge: any) => !badge.eagleRequired)
-    const electiveById = (id: string) => electiveBadgesCatalog.find((badge: any) => badge.id === id)
-    const badgePlanOld: BadgePlanItem[] = []
-    const scheduledIdsOld = new Set<string>()
+const electiveBadgesCatalog = meritBadges.filter((badge: any) => !badge.eagleRequired)
+const electiveById = (id: string) => electiveBadgesCatalog.find((badge: any) => badge.id === id)
+const badgePlanOld: BadgePlanItem[] = []
+const scheduledIdsOld = new Set<string>()
 
-    const postFirstClassStartKey =
-      hasExplicitCurrentRank
-        ? nextPhaseByCurrentRank[normalizedCurrentRank] ?? null
-        : 'Star'
-    const POST_FIRST_CLASS_PHASES: Array<{ key: string; start: Date; end: Date; items: any[] }> =
-      ((planningGuide as any).phases || [])
-        .filter((phase: any) => phase.key === 'Star' || phase.key === 'Life')
-        .filter((phase: any) =>
-          postFirstClassStartKey
-            ? ['Star', 'Life'].indexOf(phase.key) >= ['Star', 'Life'].indexOf(postFirstClassStartKey)
-            : false,
-        )
-        .map((phase: any) => ({
-          key: phase.key,
-          start: phase.key === 'Star' ? starStart : lifeStart,
-          end: phase.key === 'Star' ? starEnd : lifeEnd,
-          items: phase.items,
-        }))
+const availableWeeksTotalOld = Math.max(1, Math.round((eagleTargetDate.getTime() - now.getTime()) / weekMs))
+const plannedWeeksRawOld = (() => {
+  let sum = 0
+  const allPhases = (planningGuide as any).phases || []
+  allPhases.forEach((ph: any) => {
+    ph.items.forEach((it: any) => {
+      if (typeof it === 'string') sum += BADGE_WEEKS[it] || 6
+      else if (typeof it === 'object') {
+        if (it.type === 'Elective') sum += electiveWeeks
+        else if (it.type === 'Choice') sum += Math.max(...it.options.map((o: string) => BADGE_WEEKS[o] || 6))
+        else if (it.type === 'Long') sum += BADGE_WEEKS[it.name] || 12
+      }
+    })
+  })
+  return sum
+})()
+const workloadMultiplierOld = plannedWeeksRawOld > availableWeeksTotalOld ? plannedWeeksRawOld / availableWeeksTotalOld : 1
+function scaleWeeksOld(base: number) { return workloadMultiplierOld <= 1 ? base : Math.max(2, Math.round(base / workloadMultiplierOld)) }
 
-    let electiveIndexOld = 0
+const POST_FIRST_CLASS_PHASES: Array<{ key: string; start: Date; end: Date; items: any[] }> =
+((planningGuide as any).phases || [])
+.map((phase: any) => {
+let start = now, end = now
+if (phase.key === 'Tenderfoot') { start = now; end = now }
+else if (phase.key === 'Second Class') { start = now; end = now }
+else if (phase.key === 'First Class') { start = now; end = now }
+else if (phase.key === 'Star') { start = starStart; end = starEnd }
+else if (phase.key === 'Life') { start = lifeStart; end = lifeEnd }
+return { key: phase.key, start, end, items: phase.items }
+})
 
-    for (const phase of POST_FIRST_CLASS_PHASES) {
-      const phaseDurationMs = phase.end.getTime() - phase.start.getTime()
+let electiveIndexOld = 0
 
-      for (let itemIndex = 0; itemIndex < phase.items.length; itemIndex++) {
-        const raw = phase.items[itemIndex]
-        const finishFraction = (itemIndex + 1) / (phase.items.length + 1)
-        const finish = new Date(phase.start.getTime() + finishFraction * phaseDurationMs)
+  // Badge date formula: ALL badges in same phase start at phaseStart (no stagger).
+  // startDate = phaseStart, targetDate = max(phaseStart + scaledWeeks, phaseEnd), capped at eagleTargetDate.
+  for (const phase of POST_FIRST_CLASS_PHASES) {
+    const phaseEnd = phase.end
+    const phaseStart = phase.start
 
-        if (typeof raw === 'string') {
-          const meta = getBadgeByName(raw)
-          if (!meta || scheduledIdsOld.has(meta.id)) continue
-          const baseWeeks = BADGE_WEEKS[raw] || 6
-          const span = safeSpan(phase.start, finish, baseWeeks)
+    for (let itemIndex = 0; itemIndex < phase.items.length; itemIndex++) {
+      const raw = phase.items[itemIndex]
+
+      if (typeof raw === 'string') {
+        const meta = getBadgeByName(raw)
+        if (!meta || scheduledIdsOld.has(meta.id)) continue
+        const baseWeeks = BADGE_WEEKS[raw] || 6
+        const weeks = scaleWeeksOld(baseWeeks)
+        const startDate = new Date(phaseStart.getTime())
+        const baseFinish = new Date(startDate.getTime() + weekToMs(weeks))
+        const targetDate = baseFinish.getTime() > phaseEnd.getTime() ? baseFinish : new Date(phaseEnd.getTime())
+        const finalTarget = targetDate.getTime() > eagleTargetDate.getTime() ? new Date(eagleTargetDate.getTime()) : targetDate
+        const accelerated = weeks < baseWeeks
+        badgePlanOld.push({
+          id: meta.id,
+          name: meta.name,
+          phase: phase.key as PhaseKey,
+          durationWeeks: weeks,
+          accelerated,
+          wave: null,
+          startDate,
+          targetDate: finalTarget,
+        })
+        scheduledIdsOld.add(meta.id)
+        continue
+      }
+
+      if (typeof raw === 'object' && raw.type === 'Choice') {
+        const selected = raw.group === 'aquatic'
+          ? aquaticChoice
+          : raw.group === 'emergency'
+          ? emergencyChoice
+          : environmentChoice
+        const meta = getBadgeByName(selected)
+        if (!meta || scheduledIdsOld.has(meta.id)) continue
+        const baseWeeks = BADGE_WEEKS[selected] || 6
+        const weeks = scaleWeeksOld(baseWeeks)
+        const startDate = new Date(phaseStart.getTime())
+        const baseFinish = new Date(startDate.getTime() + weekToMs(weeks))
+        const targetDate = baseFinish.getTime() > phaseEnd.getTime() ? baseFinish : new Date(phaseEnd.getTime())
+        const finalTarget = targetDate.getTime() > eagleTargetDate.getTime() ? new Date(eagleTargetDate.getTime()) : targetDate
+        const accelerated = weeks < baseWeeks
+        badgePlanOld.push({
+          id: meta.id,
+          name: meta.name,
+          phase: phase.key as PhaseKey,
+          durationWeeks: weeks,
+          accelerated,
+          wave: null,
+          startDate,
+          targetDate: finalTarget,
+          isChoice: true,
+          choiceGroup: raw.group,
+          options: raw.options,
+        })
+        scheduledIdsOld.add(meta.id)
+        continue
+      }
+
+      if (typeof raw === 'object' && raw.type === 'Elective') {
+        const electiveId = electivePicks[electiveIndexOld]
+        const electiveBadge = electiveId ? electiveById(electiveId) : null
+        const weeks = scaleWeeksOld(electiveWeeks)
+        const startDate = new Date(phaseStart.getTime())
+        const baseFinish = new Date(startDate.getTime() + weekToMs(weeks))
+        const targetDate = baseFinish.getTime() > phaseEnd.getTime() ? baseFinish : new Date(phaseEnd.getTime())
+        const finalTarget = targetDate.getTime() > eagleTargetDate.getTime() ? new Date(eagleTargetDate.getTime()) : targetDate
+        const accelerated = weeks < electiveWeeks
+
+        if (electiveBadge) {
           badgePlanOld.push({
-            id: meta.id,
-            name: meta.name,
+            id: electiveBadge.id,
+            name: electiveBadge.name,
             phase: phase.key as PhaseKey,
-            durationWeeks: baseWeeks,
-            accelerated: false,
+            durationWeeks: weeks,
+            accelerated,
             wave: null,
-            startDate: span.start,
-            targetDate: span.finish,
+            startDate,
+            targetDate: finalTarget,
+            isElective: true,
           })
-          scheduledIdsOld.add(meta.id)
-          continue
-        }
-
-        if (typeof raw === 'object' && raw.type === 'Choice') {
-          const selected =
-            raw.group === 'aquatic'
-              ? aquaticChoice
-              : raw.group === 'emergency'
-                ? emergencyChoice
-                : environmentChoice
-          const meta = getBadgeByName(selected)
-          if (!meta || scheduledIdsOld.has(meta.id)) continue
-          const baseWeeks = BADGE_WEEKS[selected] || 6
-          const span = safeSpan(phase.start, finish, baseWeeks)
+        } else {
           badgePlanOld.push({
-            id: meta.id,
-            name: meta.name,
+            id: `elective_${phase.key}_${itemIndex}`,
+            name: 'Elective (choose)',
             phase: phase.key as PhaseKey,
-            durationWeeks: baseWeeks,
-            accelerated: false,
+            durationWeeks: weeks,
+            accelerated,
             wave: null,
-            startDate: span.start,
-            targetDate: span.finish,
-            isChoice: true,
-            choiceGroup: raw.group,
-            options: raw.options,
+            startDate,
+            targetDate: finalTarget,
+            isElective: true,
+            placeholder: true,
           })
-          scheduledIdsOld.add(meta.id)
-          continue
         }
 
-        if (typeof raw === 'object' && raw.type === 'Elective') {
-          const electiveId = electivePicks[electiveIndexOld]
-          const electiveBadge = electiveId ? electiveById(electiveId) : null
-          const span = safeSpan(phase.start, finish, electiveWeeks)
+        electiveIndexOld++
+        continue
+      }
 
-          if (electiveBadge) {
-            badgePlanOld.push({
-              id: electiveBadge.id,
-              name: electiveBadge.name,
-              phase: phase.key as PhaseKey,
-              durationWeeks: electiveWeeks,
-              accelerated: false,
-              wave: null,
-              startDate: span.start,
-              targetDate: span.finish,
-              isElective: true,
-            })
-          } else {
-            badgePlanOld.push({
-              id: `elective_${phase.key}_${itemIndex}`,
-              name: 'Elective (choose)',
-              phase: phase.key as PhaseKey,
-              durationWeeks: electiveWeeks,
-              accelerated: false,
-              wave: null,
-              startDate: span.start,
-              targetDate: span.finish,
-              isElective: true,
-              placeholder: true,
-            })
-          }
-
-          electiveIndexOld++
-          continue
-        }
-
-        if (typeof raw === 'object' && raw.type === 'Long') {
-          const meta = getBadgeByName(raw.name)
-          if (!meta || scheduledIdsOld.has(meta.id)) continue
-          const baseWeeks = BADGE_WEEKS[raw.name] || 12
-          const span = safeSpan(phase.start, finish, baseWeeks)
-          badgePlanOld.push({
-            id: meta.id,
-            name: meta.name,
-            phase: phase.key as PhaseKey,
-            durationWeeks: baseWeeks,
-            accelerated: false,
-            wave: null,
-            startDate: span.start,
-            targetDate: span.finish,
-            isLong: true,
-          })
-          scheduledIdsOld.add(meta.id)
-        }
+      if (typeof raw === 'object' && raw.type === 'Long') {
+        const meta = getBadgeByName(raw.name)
+        if (!meta || scheduledIdsOld.has(meta.id)) continue
+        const baseWeeks = BADGE_WEEKS[raw.name] || 12
+        const weeks = scaleWeeksOld(baseWeeks)
+        const startDate = new Date(phaseStart.getTime())
+        const baseFinish = new Date(startDate.getTime() + weekToMs(weeks))
+        const targetDate = baseFinish.getTime() > lifeEnd.getTime() ? baseFinish : new Date(lifeEnd.getTime())
+        const finalTarget = targetDate.getTime() > eagleTargetDate.getTime() ? new Date(eagleTargetDate.getTime()) : targetDate
+        const accelerated = weeks < baseWeeks
+        badgePlanOld.push({
+          id: meta.id,
+          name: meta.name,
+          phase: phase.key as PhaseKey,
+          durationWeeks: weeks,
+          accelerated,
+          wave: null,
+          startDate,
+          targetDate: finalTarget,
+          isLong: true,
+        })
+        scheduledIdsOld.add(meta.id)
       }
     }
+  }
 
-    // Campout priority metrics (already First Class branch)
+// Campout priority metrics (already First Class branch)
     const threshold = 4
     const excess = Math.max(0, reqsPerMeetingOld - threshold)
     const campoutPriorityScore = Math.max(0, Math.min(1, excess / 2))
@@ -485,18 +504,18 @@ export const buildTimelineState: BuildTimeline = (userData, options) => {
   let totalWeightedReqs = 0
   const rankWeightedReqs: { [key: string]: { weighted: number; actual: number; total: number } } = {}
 
-  for (let i = nextRankStartIndex; i <= firstClassIndex; i++) {
-    const rank = RANKS[i]
-    if (!rank) continue
-    const rankName = rank.name
-    const rankData = remainingRanks.find((r) => r.title === rankName)
-    const ratio = baseRatios[rankName] || 0
-    if (rankData) {
-      const weighted = rankData.requirementsRemaining * ratio
-      totalWeightedReqs += weighted
-      rankWeightedReqs[rankName] = { weighted, actual: rankData.requirementsRemaining, total: rankData.totalRequirements }
-    }
+for (let i = currentRankIndex; i <= firstClassIndex; i++) {
+  const rank = RANKS[i]
+  if (!rank) continue
+  const rankName = rank.name
+  const rankData = remainingRanks.find((r) => r.title === rankName)
+  const ratio = baseRatios[rankName] || 0
+  if (rankData) {
+    const weighted = rankData.requirementsRemaining * ratio
+    totalWeightedReqs += weighted
+    rankWeightedReqs[rankName] = { weighted, actual: rankData.requirementsRemaining, total: rankData.totalRequirements }
   }
+}
 
   const eaglePhaseRemainingReqs = starReqs + lifeReqs + eagleReqs
   const eagleWeightedReqs = eaglePhaseRemainingReqs * 1.0
@@ -504,8 +523,8 @@ export const buildTimelineState: BuildTimeline = (userData, options) => {
   if (totalWeightedReqs <= 0) return { ok: false, error: { kind: 'NO_REQUIREMENTS', message: 'No remaining requirements detected.' } }
 
   const daysPerWeightedReq = remainingDaysAfterWaiting / totalWeightedReqs
-  const rankDays: { [key: string]: number } = {}
-  for (let i = nextRankStartIndex; i <= firstClassIndex; i++) {
+const rankDays: { [key: string]: number } = {}
+for (let i = currentRankIndex; i <= firstClassIndex; i++) {
     const rank = RANKS[i]
     if (!rank) continue
     const rankName = rank.name
@@ -582,12 +601,12 @@ export const buildTimelineState: BuildTimeline = (userData, options) => {
   const electiveBadgesCatalog = meritBadges.filter((b: any) => !b.eagleRequired)
   const electiveById = (id: string) => electiveBadgesCatalog.find((b: any) => b.id === id)
 
-  const tfStart = rankPreviousDates['Tenderfoot'] || now
-  const tfEnd = rankDeadlines['Tenderfoot'] || firstClassCompletionDate
-  const scStart = rankPreviousDates['Second Class'] || tfEnd
-  const scEnd = rankDeadlines['Second Class'] || firstClassCompletionDate
-  const fcStart = rankPreviousDates['First Class'] || scEnd
-  const fcEnd = firstClassCompletionDate
+const tfStart = rankPreviousDates['Tenderfoot'] || now
+const tfEnd = rankDeadlines['Tenderfoot'] || firstClassCompletionDate
+const scStart = rankDeadlines['Second Class'] ? (rankDeadlines['Second Class'] as Date) : firstClassCompletionDate
+const scEnd = rankDeadlines['Second Class'] || firstClassCompletionDate
+const fcStart = firstClassCompletionDate
+const fcEnd = firstClassCompletionDate
   const starStart = firstClassCompletionDate
   const starEnd = starPromotionDate
   const lifeStart = starPromotionDate
@@ -604,17 +623,12 @@ export const buildTimelineState: BuildTimeline = (userData, options) => {
     return { key: gp.key, start, end, items: gp.items }
   })
 
-  const phaseOrderKeys = ['Tenderfoot', 'Second Class', 'First Class', 'Star', 'Life']
-  const startPhaseKey = hasExplicitCurrentRank
-    ? nextPhaseByCurrentRank[normalizedCurrentRank] ?? null
-    : 'Tenderfoot'
-  const startPhaseIdx = startPhaseKey ? phaseOrderKeys.indexOf(startPhaseKey) : phaseOrderKeys.length
-  const effectivePhases = PHASES.filter((p) => phaseOrderKeys.indexOf(p.key) >= (startPhaseIdx === -1 ? 0 : startPhaseIdx))
+const phaseOrderKeys = ['Tenderfoot', 'Second Class', 'First Class', 'Star', 'Life']
+const effectivePhases = PHASES
 
   // Overdue carry-over UI was removed; we simply schedule items in upcoming phases
   const badgePlan: BadgePlanItem[] = []
-  const weekMsLocal = weekMs
-  const availableWeeksTotal = Math.max(1, Math.round((eagleTargetDate.getTime() - now.getTime()) / weekMsLocal))
+  const availableWeeksTotal = Math.max(1, Math.round((eagleTargetDate.getTime() - now.getTime()) / weekMs))
   const plannedWeeksRaw = (() => {
     let sum = 0
     PHASES.forEach((ph) => {
@@ -634,67 +648,75 @@ export const buildTimelineState: BuildTimeline = (userData, options) => {
   const scheduledIds = new Set<string>()
   let electiveIndex = 0
 
-  // Phase-level pass: resolve items while preventing duplicates
-  for (const phase of effectivePhases) {
-    const isEarlyPhase = ['Tenderfoot', 'Second Class', 'First Class'].includes(phase.key)
-    const phaseDurationMs = phase.end.getTime() - phase.start.getTime()
-    for (let itemIndex = 0; itemIndex < phase.items.length; itemIndex++) {
-      const raw = phase.items[itemIndex]
-      const finishFraction = (itemIndex + 1) / (phase.items.length + 1)
-      if (typeof raw === 'string') {
-        const meta = getBadgeByName(raw)
-        if (!meta || scheduledIds.has(meta.id)) continue
-        const baseWeeks = (planningGuide as any).badgeWeeks?.[raw] || 6
-        const weeks = scaleWeeks(baseWeeks)
-        const wave = isEarlyPhase ? chooseWave(raw, weeks) : null
-        const finish = isEarlyPhase ? (wave === 1 ? new Date(phase.start.getTime() + phaseDurationMs / 2) : new Date(phase.end)) : new Date(phase.start.getTime() + finishFraction * phaseDurationMs)
-        const span = safeSpan(phase.start, finish, weeks)
-        const accelerated = weeks < baseWeeks
-        badgePlan.push({ id: meta.id, name: meta.name, phase: phase.key as PhaseKey, durationWeeks: weeks, accelerated, wave, startDate: span.start, targetDate: span.finish })
-        scheduledIds.add(meta.id)
-        continue
+// Badge date formula: ALL badges in same phase start at phaseStart (no stagger).
+// startDate = phaseStart, targetDate = max(phaseStart + scaledWeeks, phaseEnd), capped at eagleTargetDate.
+for (const phase of effectivePhases) {
+  const phaseEnd = phase.end
+  const phaseStart = phase.start
+
+  for (let itemIndex = 0; itemIndex < phase.items.length; itemIndex++) {
+    const raw = phase.items[itemIndex]
+
+    if (typeof raw === 'string') {
+      const meta = getBadgeByName(raw)
+      if (!meta || scheduledIds.has(meta.id)) continue
+      const baseWeeks = (planningGuide as any).badgeWeeks?.[raw] || 6
+      const weeks = scaleWeeks(baseWeeks)
+      const startDate = new Date(phaseStart.getTime())
+      const baseFinish = new Date(startDate.getTime() + weekToMs(weeks))
+      const targetDate = baseFinish.getTime() > phaseEnd.getTime() ? baseFinish : new Date(phaseEnd.getTime())
+      const finalTarget = targetDate.getTime() > eagleTargetDate.getTime() ? new Date(eagleTargetDate.getTime()) : targetDate
+      const accelerated = weeks < baseWeeks
+      badgePlan.push({ id: meta.id, name: meta.name, phase: phase.key as PhaseKey, durationWeeks: weeks, accelerated, wave: null, startDate, targetDate: finalTarget })
+      scheduledIds.add(meta.id)
+      continue
+    }
+    if (typeof raw === 'object' && raw.type === 'Choice') {
+      const sel = raw.group === 'aquatic' ? aquaticChoice : raw.group === 'emergency' ? emergencyChoice : environmentChoice
+      const meta = getBadgeByName(sel)
+      if (!meta || scheduledIds.has(meta.id)) continue
+      const baseWeeks = (planningGuide as any).badgeWeeks?.[sel] || 6
+      const weeks = scaleWeeks(baseWeeks)
+      const startDate = new Date(phaseStart.getTime())
+      const baseFinish = new Date(startDate.getTime() + weekToMs(weeks))
+      const targetDate = baseFinish.getTime() > phaseEnd.getTime() ? baseFinish : new Date(phaseEnd.getTime())
+      const finalTarget = targetDate.getTime() > eagleTargetDate.getTime() ? new Date(eagleTargetDate.getTime()) : targetDate
+      const accelerated = weeks < baseWeeks
+      badgePlan.push({ id: meta.id, name: meta.name, phase: phase.key as PhaseKey, durationWeeks: weeks, accelerated, wave: null, startDate, targetDate: finalTarget, isChoice: true, choiceGroup: raw.group, options: raw.options })
+      scheduledIds.add(meta.id)
+      continue
+    }
+    if (typeof raw === 'object' && raw.type === 'Elective') {
+      const electiveId = electivePicks[electiveIndex]
+      const electiveBadge = electiveId ? electiveById(electiveId) : null
+      const weeks = scaleWeeks(electiveWeeks)
+      const startDate = new Date(phaseStart.getTime())
+      const baseFinish = new Date(startDate.getTime() + weekToMs(weeks))
+      const targetDate = baseFinish.getTime() > phaseEnd.getTime() ? baseFinish : new Date(phaseEnd.getTime())
+      const finalTarget = targetDate.getTime() > eagleTargetDate.getTime() ? new Date(eagleTargetDate.getTime()) : targetDate
+      const accelerated = weeks < electiveWeeks
+      if (electiveBadge) {
+        badgePlan.push({ id: electiveBadge.id, name: electiveBadge.name, phase: phase.key as PhaseKey, durationWeeks: weeks, accelerated, wave: null, startDate, targetDate: finalTarget, isElective: true })
+      } else {
+        badgePlan.push({ id: `elective_${phase.key}_${itemIndex}`, name: 'Elective (choose)', phase: phase.key as PhaseKey, durationWeeks: weeks, accelerated, wave: null, startDate, targetDate: finalTarget, isElective: true, placeholder: true })
       }
-      if (typeof raw === 'object' && raw.type === 'Choice') {
-        const sel = raw.group === 'aquatic' ? aquaticChoice : raw.group === 'emergency' ? emergencyChoice : environmentChoice
-        const meta = getBadgeByName(sel)
-        if (!meta || scheduledIds.has(meta.id)) continue
-        const baseWeeks = (planningGuide as any).badgeWeeks?.[sel] || 6
-        const weeks = scaleWeeks(baseWeeks)
-        const wave = isEarlyPhase ? chooseWave(sel, weeks) : null
-        const finish = isEarlyPhase ? (wave === 1 ? new Date(phase.start.getTime() + phaseDurationMs / 2) : new Date(phase.end)) : new Date(phase.start.getTime() + finishFraction * phaseDurationMs)
-        const span = safeSpan(phase.start, finish, weeks)
-        const accelerated = weeks < baseWeeks
-        badgePlan.push({ id: meta.id, name: meta.name, phase: phase.key as PhaseKey, durationWeeks: weeks, accelerated, wave, startDate: span.start, targetDate: span.finish, isChoice: true, choiceGroup: raw.group, options: raw.options })
-        scheduledIds.add(meta.id)
-        continue
-      }
-      if (typeof raw === 'object' && raw.type === 'Elective') {
-        const electiveId = electivePicks[electiveIndex]
-        const electiveBadge = electiveId ? electiveById(electiveId) : null
-        const weeks = scaleWeeks(electiveWeeks)
-        const wave = isEarlyPhase ? chooseWave(electiveBadge?.name || 'Elective', weeks) : null
-        const finish = isEarlyPhase ? (wave === 1 ? new Date(phase.start.getTime() + phaseDurationMs / 2) : new Date(phase.end)) : new Date(phase.start.getTime() + finishFraction * phaseDurationMs)
-        const span = safeSpan(phase.start, finish, weeks)
-        if (electiveBadge) {
-          badgePlan.push({ id: electiveBadge.id, name: electiveBadge.name, phase: phase.key as PhaseKey, durationWeeks: weeks, accelerated: weeks < electiveWeeks, wave, startDate: span.start, targetDate: span.finish, isElective: true })
-        } else {
-          badgePlan.push({ id: `elective_${phase.key}_${itemIndex}`, name: 'Elective (choose)', phase: phase.key as PhaseKey, durationWeeks: weeks, accelerated: weeks < electiveWeeks, wave, startDate: span.start, targetDate: span.finish, isElective: true, placeholder: true })
-        }
-        electiveIndex++
-        continue
-      }
-      if (typeof raw === 'object' && raw.type === 'Long') {
-        const meta = getBadgeByName(raw.name)
-        if (!meta || scheduledIds.has(meta.id)) continue
-        const baseWeeks = (planningGuide as any).badgeWeeks?.[raw.name] || 12
-        const weeks = scaleWeeks(baseWeeks)
-        const finish = new Date(lifeEnd)
-        const startCandidate = new Date(Math.max(phase.start.getTime(), finish.getTime() - weekToMs(weeks)))
-        badgePlan.push({ id: meta.id, name: meta.name, phase: phase.key as PhaseKey, durationWeeks: weeks, accelerated: weeks < baseWeeks, wave: null, startDate: startCandidate, targetDate: finish, isLong: true, note: `Finishes in Life (started in ${raw.startPhase})` })
-        scheduledIds.add(meta.id)
-      }
+      electiveIndex++
+      continue
+    }
+    if (typeof raw === 'object' && raw.type === 'Long') {
+      const meta = getBadgeByName(raw.name)
+      if (!meta || scheduledIds.has(meta.id)) continue
+      const baseWeeks = (planningGuide as any).badgeWeeks?.[raw.name] || 12
+      const weeks = scaleWeeks(baseWeeks)
+      const startDate = new Date(phaseStart.getTime())
+      const baseFinish = new Date(startDate.getTime() + weekToMs(weeks))
+      const targetDate = baseFinish.getTime() > lifeEnd.getTime() ? baseFinish : new Date(lifeEnd.getTime())
+      const finalTarget = targetDate.getTime() > eagleTargetDate.getTime() ? new Date(eagleTargetDate.getTime()) : targetDate
+      badgePlan.push({ id: meta.id, name: meta.name, phase: phase.key as PhaseKey, durationWeeks: weeks, accelerated: weeks < baseWeeks, wave: null, startDate, targetDate: finalTarget, isLong: true })
+      scheduledIds.add(meta.id)
     }
   }
+}
 
   const totalSignoffsNeeded = preFirstClassReqs + starReqs + lifeReqs + eagleReqs
 

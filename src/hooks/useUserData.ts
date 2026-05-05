@@ -34,6 +34,13 @@ export function useUserData() {
     },
   });
 
+  const batchUpdateProgressMutation = useMutation({
+    mutationFn: storage.batchUpdateRequirementProgress,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['userData'] });
+    },
+  });
+
   const updateAIPlanMutation = useMutation({
     mutationFn: ({ plan, chatHistory }: { plan: string; chatHistory: any[] }) =>
       storage.updateAIPlan(plan, chatHistory),
@@ -62,6 +69,7 @@ export function useUserData() {
     updateProfile: updateProfileMutation.mutate,
     updateProfileAsync: updateProfileMutation.mutateAsync,
     updateProgress: updateProgressMutation.mutate,
+    batchUpdateProgress: batchUpdateProgressMutation.mutate,
     updateAIPlan: (plan: string, chatHistory: any[]) =>
       updateAIPlanMutation.mutateAsync({ plan, chatHistory }),
     addChatMessage: (message: any) => addChatMessageMutation.mutateAsync(message),

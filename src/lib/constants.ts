@@ -23,14 +23,52 @@ export const RANK_DISPLAY_NAMES: Record<string, string> = {
   rank_eagle: 'Eagle',
 };
 
+// ── Unified Rank Color System ──────────────────────────────────────────
+// Progression: yellow → green → blue → reddish/pink → purple → pink → gold
+// All pages MUST import from here — never redefine rank colors locally.
+
+/** Solid badge/bullet background per rank */
 export const RANK_COLORS: Record<string, string> = {
-  rank_scout: 'from-yellow-500 to-amber-600',
-  rank_tenderfoot: 'from-green-500 to-emerald-600',
-  rank_second_class: 'from-blue-500 to-cyan-600',
-  rank_first_class: 'from-red-500 to-rose-600',
-  rank_star: 'from-purple-500 to-violet-600',
-  rank_life: 'from-pink-500 to-fuchsia-600',
-  rank_eagle: 'from-amber-500 to-yellow-600',
+  rank_scout: 'bg-amber-500',
+  rank_tenderfoot: 'bg-emerald-600',
+  rank_second_class: 'bg-sky-600',
+  rank_first_class: 'bg-rose-600',
+  rank_star: 'bg-violet-600',
+  rank_life: 'bg-pink-500',
+  rank_eagle: 'bg-amber-600',
+};
+
+/** Text + border + bg accent per rank (pill/badge/card styles) */
+export const RANK_ACCENT_COLORS: Record<string, string> = {
+  rank_scout: 'border-amber-200 bg-amber-50 text-amber-800',
+  rank_tenderfoot: 'border-emerald-200 bg-emerald-50 text-emerald-800',
+  rank_second_class: 'border-sky-200 bg-sky-50 text-sky-800',
+  rank_first_class: 'border-rose-200 bg-rose-50 text-rose-800',
+  rank_star: 'border-violet-200 bg-violet-50 text-violet-800',
+  rank_life: 'border-pink-200 bg-pink-50 text-pink-800',
+  rank_eagle: 'border-amber-300 bg-amber-50 text-amber-800',
+};
+
+/** Ring/focus color per rank */
+export const RANK_RING_COLORS: Record<string, string> = {
+  rank_scout: 'ring-amber-500',
+  rank_tenderfoot: 'ring-emerald-600',
+  rank_second_class: 'ring-sky-600',
+  rank_first_class: 'ring-rose-600',
+  rank_star: 'ring-violet-600',
+  rank_life: 'ring-pink-500',
+  rank_eagle: 'ring-amber-600',
+};
+
+/** Text-only color per rank */
+export const RANK_TEXT_COLORS: Record<string, string> = {
+  rank_scout: 'text-amber-700',
+  rank_tenderfoot: 'text-emerald-700',
+  rank_second_class: 'text-sky-700',
+  rank_first_class: 'text-rose-700',
+  rank_star: 'text-violet-700',
+  rank_life: 'text-pink-700',
+  rank_eagle: 'text-amber-700',
 };
 
 /**
