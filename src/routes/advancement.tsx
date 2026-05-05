@@ -108,7 +108,7 @@ function AdvancementPage() {
   let completedReqs = 0;
   
   rankData.requirements.forEach((req, reqIndex) => {
-    const mainReqId = `req_${reqIndex}`;
+    const mainReqId = req.id;
     
     if (req.sub_requirements && req.sub_requirements.length > 0) {
       // For requirements with sub-requirements, count the main requirement
@@ -116,9 +116,9 @@ function AdvancementPage() {
       if (rankProgress[mainReqId]) completedReqs++;
       
       // Also count each sub-requirement
-      req.sub_requirements.forEach((_, subIndex) => {
+      req.sub_requirements.forEach((subReq) => {
         totalReqs++;
-        const subReqId = `req_${reqIndex}_${subIndex}`;
+        const subReqId = subReq.id;
         if (rankProgress[subReqId]) completedReqs++;
       });
     } else {
@@ -154,7 +154,9 @@ function AdvancementPage() {
     currentUserData.profile.currentRank = activeRank;
     
     localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
-    queryClient.invalidateQueries({ queryKey: ['userData'] });
+    // Immediately update React Query cache so all pages see the change
+    queryClient.setQueryData(['userData'], currentUserData);
+    queryClient.refetchQueries({ queryKey: ['userData'] });
   };
 
   const handleMarkAllComplete = async () => {
@@ -394,7 +396,7 @@ function AdvancementPage() {
 
           {rankData.requirements.map((req, index) => {
             const hasSubReqs = req.sub_requirements && req.sub_requirements.length > 0;
-            const mainReqId = `req_${index}`;
+            const mainReqId = req.id;
             const isMainCompleted = rankProgress[mainReqId];
             
             return (
@@ -430,7 +432,7 @@ function AdvancementPage() {
                   {hasSubReqs && (
                     <div className="ml-10 space-y-3 mt-4">
                       {req.sub_requirements.map((subReq, subIndex) => {
-                        const subReqId = `req_${index}_${subIndex}`;
+                        const subReqId = subReq.id;
                         const isSubCompleted = rankProgress[subReqId];
                         
                         return (

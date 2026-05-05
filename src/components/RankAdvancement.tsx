@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { Award, CheckCircle2, ShieldCheck, Target } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { RANK_COLORS, RANK_ORDER as RANK_PROGRESSION, normalizeRankId } from '../lib/constants';
 import type { UserData } from '../data/userData';
 import rankRequirementsData from '../data/rank-reqs.json';
@@ -19,6 +20,7 @@ interface RankAdvancementProps {
 }
 
 export function RankAdvancement({ userData }: RankAdvancementProps) {
+  const queryClient = useQueryClient();
   const currentRankId = userData.profile.currentRank || null;
   const workingRankId = getWorkingRankId(currentRankId);
   const focusTrack = getUserFocusTrack(userData);
@@ -197,7 +199,9 @@ export function RankAdvancement({ userData }: RankAdvancementProps) {
                       },
                     };
                     localStorage.setItem('scoutly_user_data', JSON.stringify(updatedUserData));
-                    window.dispatchEvent(new Event('storage'));
+                    // Immediately update React Query cache so all pages see the change
+                    queryClient.setQueryData(['userData'], updatedUserData);
+                    queryClient.refetchQueries({ queryKey: ['userData'] });
                   }}
                   className="peer sr-only"
                 />
