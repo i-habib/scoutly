@@ -12,6 +12,7 @@ import {
   getUserFocusTrack,
   getWorkingRankId,
 } from '../lib/scoutFocus';
+import { determineActiveRank } from '../lib/rankProgress';
 
 const RANK_REQUIREMENTS = rankRequirementsData;
 
@@ -191,12 +192,17 @@ export function RankAdvancement({ userData }: RankAdvancementProps) {
                       newProgress[req.id] = new Date().toISOString().split('T')[0];
                     }
 
+                    const mergedRankProgress = {
+                      ...userData.rankProgress,
+                      [nextRank.id]: newProgress,
+                    };
                     const updatedUserData = {
                       ...userData,
-                      rankProgress: {
-                        ...userData.rankProgress,
-                        [nextRank.id]: newProgress,
+                      profile: {
+                        ...userData.profile,
+                        currentRank: determineActiveRank(mergedRankProgress),
                       },
+                      rankProgress: mergedRankProgress,
                     };
                     localStorage.setItem('scoutly_user_data', JSON.stringify(updatedUserData));
                     // Immediately update React Query cache so all pages see the change

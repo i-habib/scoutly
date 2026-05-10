@@ -224,14 +224,16 @@ function getIncompleteWorkingRankRequirements(userData: UserData): RequirementCa
 
   workingRank.requirements.forEach((requirement, reqIndex) => {
     const mainStorageId = `req_${reqIndex}`;
-    if (!progressMap[mainStorageId]) {
+    const mainDone =
+      Boolean(progressMap[requirement.id]) || Boolean(progressMap[mainStorageId]);
+    if (!mainDone) {
       candidates.push(
         buildRequirementCandidate(
           workingRankId,
           workingRank.name,
           requirement.id,
           requirement.text,
-          mainStorageId,
+          requirement.id,
           reqIndex * 10,
         ),
       );
@@ -240,14 +242,16 @@ function getIncompleteWorkingRankRequirements(userData: UserData): RequirementCa
     if (requirement.sub_requirements && requirement.sub_requirements.length > 0) {
       requirement.sub_requirements.forEach((subRequirement, subIndex) => {
         const subStorageId = `req_${reqIndex}_${subIndex}`;
-        if (!progressMap[subStorageId]) {
+        const subDone =
+          Boolean(progressMap[subRequirement.id]) || Boolean(progressMap[subStorageId]);
+        if (!subDone) {
           candidates.push(
             buildRequirementCandidate(
               workingRankId,
               workingRank.name,
               subRequirement.id,
               subRequirement.text,
-              subStorageId,
+              subRequirement.id,
               reqIndex * 10 + subIndex + 1,
             ),
           );

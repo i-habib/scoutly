@@ -8,6 +8,7 @@ import * as storage from '../services/storageService';
 import { MeritBadgeIcon } from '../components/ScoutIcons';
 import { RANK_ORDER, getRankDisplayName, normalizeRankId, RANK_COLORS, RANK_ACCENT_COLORS, RANK_RING_COLORS, RANK_TEXT_COLORS } from '../lib/constants';
 import { getMeritBadgePaceSummary, getUserFocusTrack, getWorkingRankId } from '../lib/scoutFocus';
+import { determineActiveRank } from '../lib/rankProgress';
 import { useToast } from '../components/Toast';
 
 export const Route = createFileRoute('/advancement')({
@@ -15,41 +16,6 @@ export const Route = createFileRoute('/advancement')({
 });
 
 // RANK_ORDER, RANK_COLORS, and display helpers imported from lib/constants.ts
-
-// Determine the highest rank for which ALL requirements are complete.
-// This represents the Scout's *current* rank; they are always working toward the NEXT rank.
-const determineActiveRank = (rankProgress: Record<string, Record<string, string | null>> | undefined) => {
-  for (const rankId of RANK_ORDER) {
-    const rankData = rankRequirementsData.find((rank) => rank.id === rankId);
-    if (!rankData) continue;
-
-    const progressForRank = rankProgress?.[rankId] || {};
-    const isRankComplete = rankData.requirements.every((req, reqIndex) => {
-      const mainReqId = `req_${reqIndex}`;
-      const mainComplete = Boolean(progressForRank[mainReqId]);
-
-      if (req.sub_requirements && req.sub_requirements.length > 0) {
-        const subComplete = req.sub_requirements.every((_, subIndex) => {
-          const subReqId = `req_${reqIndex}_${subIndex}`;
-          return Boolean(progressForRank[subReqId]);
-        });
-
-        return mainComplete && subComplete;
-      }
-
-      return mainComplete;
-    });
-
-    if (!isRankComplete) {
-      // As soon as we find an incomplete rank, the current rank is the previous one
-      const currentIndex = RANK_ORDER.indexOf(rankId);
-      const previousRankId = currentIndex > 0 ? RANK_ORDER[currentIndex - 1] : null;
-      return previousRankId;
-    }
-  }
-  // If all ranks are complete, the Scout is Eagle
-  return 'rank_eagle';
-};
 
 function AdvancementPage() {
   const { userData } = useUserData();
@@ -107,7 +73,7 @@ function AdvancementPage() {
   let totalReqs = 0;
   let completedReqs = 0;
   
-  rankData.requirements.forEach((req, reqIndex) => {
+  rankData.requirements.forEach((req) => {
     const mainReqId = req.id;
     
     if (req.sub_requirements && req.sub_requirements.length > 0) {
@@ -174,24 +140,23 @@ function AdvancementPage() {
     
     const today = new Date().toISOString().split('T')[0];
     
-    // Mark all main requirements and sub-requirements as complete
-    rankData.requirements.forEach((req, reqIndex) => {
-      const mainReqId = `req_${reqIndex}`;
-      rankProgressMap[selectedRankId][mainReqId] = today;
-      
+    // Use the same requirement ids as the checklist (JSON id strings), not req_0-style keys
+    rankData.requirements.forEach((req) => {
+      rankProgressMap[selectedRankId][req.id] = today;
+
       if (req.sub_requirements && req.sub_requirements.length > 0) {
-        req.sub_requirements.forEach((_, subIndex) => {
-          const subReqId = `req_${reqIndex}_${subIndex}`;
-          rankProgressMap[selectedRankId][subReqId] = today;
+        req.sub_requirements.forEach((subReq) => {
+          rankProgressMap[selectedRankId][subReq.id] = today;
         });
       }
     });
 
     const activeRank = determineActiveRank(rankProgressMap);
     currentUserData.profile.currentRank = activeRank;
-    
+
     localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
-    queryClient.invalidateQueries({ queryKey: ['userData'] });
+    queryClient.setQueryData(['userData'], currentUserData);
+    queryClient.refetchQueries({ queryKey: ['userData'] });
   };
 
   const handleClearAllProgress = async () => {

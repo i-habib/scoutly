@@ -71,28 +71,30 @@ export function getRankProgressSummary(userData: UserData, rankId: string) {
   let completed = 0;
 
   rankData.requirements.forEach((requirement, reqIndex) => {
-    const mainReqId = `req_${reqIndex}`;
+    const canonicalMainId = requirement.id;
+    const legacyMainId = `req_${reqIndex}`;
     total += 1;
 
-    if (rankProgress[mainReqId]) {
+    if (rankProgress[canonicalMainId] || rankProgress[legacyMainId]) {
       completed += 1;
     } else {
       remaining.push({
-        id: mainReqId,
+        id: canonicalMainId,
         label: `${requirement.id}. ${requirement.text}`,
       });
     }
 
     if (requirement.sub_requirements && requirement.sub_requirements.length > 0) {
       requirement.sub_requirements.forEach((subRequirement, subIndex) => {
-        const subReqId = `req_${reqIndex}_${subIndex}`;
+        const canonicalSubId = subRequirement.id;
+        const legacySubId = `req_${reqIndex}_${subIndex}`;
         total += 1;
 
-        if (rankProgress[subReqId]) {
+        if (rankProgress[canonicalSubId] || rankProgress[legacySubId]) {
           completed += 1;
         } else {
           remaining.push({
-            id: subReqId,
+            id: canonicalSubId,
             label: `${subRequirement.id}. ${subRequirement.text}`,
           });
         }

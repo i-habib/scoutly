@@ -1,3 +1,6 @@
+import rankRequirementsData from '../data/rank-reqs.json';
+import { RANK_ORDER } from './constants';
+
 // Normalized rank progress summarization
 // Handles both new-style generated IDs (req_X, req_X_Y) and legacy IDs embedded in JSON (req.id)
 export interface RankRequirement {
@@ -11,6 +14,45 @@ export interface RankProgressSummary {
   completed: number;
   remaining: number;
   missingIds: string[];
+}
+
+/** Highest earned rank id, or null if nothing completed yet; `rank_eagle` when all ranks complete. */
+export function determineActiveRank(
+  rankProgress: Record<string, Record<string, string | null>> | undefined,
+): string | null {
+  if (!rankProgress) {
+    return null;
+  }
+
+  for (const rankId of RANK_ORDER) {
+    const rankData = rankRequirementsData.find((rank) => rank.id === rankId);
+    if (!rankData) continue;
+
+    const progressForRank = rankProgress[rankId] || {};
+    const isRankComplete = rankData.requirements.every((req, reqIndex) => {
+      const mainDone =
+        Boolean(req.id && progressForRank[req.id]) ||
+        Boolean(progressForRank[`req_${reqIndex}`]);
+
+      if (req.sub_requirements && req.sub_requirements.length > 0) {
+        const subsDone = req.sub_requirements.every(
+          (subReq: { id: string }, subIndex: number) =>
+            Boolean(subReq.id && progressForRank[subReq.id]) ||
+            Boolean(progressForRank[`req_${reqIndex}_${subIndex}`]),
+        );
+        return mainDone && subsDone;
+      }
+
+      return mainDone;
+    });
+
+    if (!isRankComplete) {
+      const currentIndex = RANK_ORDER.indexOf(rankId as (typeof RANK_ORDER)[number]);
+      return currentIndex > 0 ? RANK_ORDER[currentIndex - 1]! : null;
+    }
+  }
+
+  return 'rank_eagle';
 }
 
 export function summarizeRankProgress(
@@ -36,14 +78,17 @@ export function summarizeRankProgress(
       missingIds.push(legacyId || mainReqId);
     }
     if (req.sub_requirements && req.sub_requirements.length > 0) {
-      req.sub_requirements.forEach((_, subIndex) => {
+      req.sub_requirements.forEach((subReq: { id?: string }, subIndex: number) => {
         total++;
-        const subId = `req_${reqIndex}_${subIndex}`;
-        const subDone = !!rankProgress[subId];
+        const subLegacyKey = `req_${reqIndex}_${subIndex}`;
+        const subDone = !!(
+          rankProgress[subLegacyKey] ||
+          (subReq.id && rankProgress[subReq.id])
+        );
         if (subDone) {
           completed++;
         } else {
-          missingIds.push(subId);
+          missingIds.push(subReq.id || subLegacyKey);
         }
       });
     }
