@@ -1,11 +1,13 @@
 {
   "buildCommand": "pnpm run build",
   "outputDirectory": "dist/client",
-  "routes": [
+  "rewrites": [
     {
-      "src": "/zohoverify/verifyforzoho.html",
-      "dest": "/zohoverify/verifyforzoho.html"
-    },
+      "source": "/zohoverify/verifyforzoho.html",
+      "destination": "/zohoverify/verifyforzoho.html"
+    }
+  ],
+  "routes": [
     {
       "src": "/assets/(.*)",
       "dest": "assets/$1"
