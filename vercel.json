@@ -3,11 +3,15 @@
   "outputDirectory": "dist/client",
   "routes": [
     {
+      "src": "/zohoverify/verifyforzoho.html",
+      "dest": "/zohoverify/verifyforzoho.html"
+    },
+    {
       "src": "/assets/(.*)",
       "dest": "assets/$1"
     },
     {
-      "src": "/(favicon\\.ico|.*\\.png|.*\\.svg|.*\\.json|robots\\.txt|zohoverify/.*)",
+      "src": "/(favicon\\.ico|.*\\.png|.*\\.svg|.*\\.json|robots\\.txt)",
       "dest": "/$1"
     },
     {
@@ -16,4 +20,3 @@
     }
   ]
 }
-
