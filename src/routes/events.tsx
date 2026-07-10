@@ -10,7 +10,7 @@ import meritBadgesData from '../data/merit-badges.json';
 import { getUserTimezone, RANK_COLORS } from '../lib/constants';
 import { getWorkingRankId } from '../lib/scoutFocus';
 import { useToast } from '../components/Toast';
-import { syncScoutbookCalendar, updateCalendarUrl } from '../services/storageService';
+import { persistUserData, syncScoutbookCalendar, updateCalendarUrl } from '../services/storageService';
 
 export const Route = createFileRoute('/events')({
   component: EventsPage,
@@ -373,7 +373,7 @@ function EventsPage() {
 
     const currentUserData = JSON.parse(localStorage.getItem('scoutly_user_data') || '{}');
     currentUserData.events = [];
-    localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
+    await persistUserData(currentUserData);
 
     dispatchStorageRefresh();
   };
@@ -403,7 +403,7 @@ function EventsPage() {
       }));
 
   currentUserData.events = [...existingEvents, ...newEvents];
-      localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
+      await persistUserData(currentUserData);
       
       dispatchStorageRefresh();
 
@@ -419,7 +419,7 @@ function EventsPage() {
     }
   };
 
-  const handleAddEvent = () => {
+  const handleAddEvent = async () => {
     if (!newEvent.name || !newEvent.startTime) {
       showToast('warning', 'Please fill in event name and start time');
       return;
@@ -433,7 +433,7 @@ function EventsPage() {
     };
 
     currentUserData.events = [...(currentUserData.events || []), event];
-    localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
+    await persistUserData(currentUserData);
     
     dispatchStorageRefresh();
 
@@ -447,7 +447,7 @@ function EventsPage() {
 
     const currentUserData = JSON.parse(localStorage.getItem('scoutly_user_data') || '{}');
     currentUserData.events = currentUserData.events.filter((e: Event) => e.id !== eventId);
-    localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
+    await persistUserData(currentUserData);
 
     dispatchStorageRefresh();
   };

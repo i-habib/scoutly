@@ -119,7 +119,7 @@ function AdvancementPage() {
     const activeRank = determineActiveRank(rankProgressMap);
     currentUserData.profile.currentRank = activeRank;
     
-    localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
+    await storage.persistUserData(currentUserData);
     // Immediately update React Query cache so all pages see the change
     queryClient.setQueryData(['userData'], currentUserData);
     queryClient.refetchQueries({ queryKey: ['userData'] });
@@ -154,7 +154,7 @@ function AdvancementPage() {
     const activeRank = determineActiveRank(rankProgressMap);
     currentUserData.profile.currentRank = activeRank;
 
-    localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
+    await storage.persistUserData(currentUserData);
     queryClient.setQueryData(['userData'], currentUserData);
     queryClient.refetchQueries({ queryKey: ['userData'] });
   };
@@ -175,7 +175,7 @@ function AdvancementPage() {
     const activeRank = determineActiveRank(rankProgressMap);
   currentUserData.profile.currentRank = activeRank;
     
-    localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
+    await storage.persistUserData(currentUserData);
     queryClient.invalidateQueries({ queryKey: ['userData'] });
   };
 

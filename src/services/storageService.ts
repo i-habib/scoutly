@@ -5,12 +5,23 @@ import { isOnboardingComplete } from '../lib/onboarding';
 import rankRequirementsData from '../data/rank-reqs.json';
 import { parseICSContent, inferEventType } from '../lib/icsParser';
 import { fetchCalendarICS } from '../server/calendar-functions';
-import { saveOnboardingProfile } from './supabaseProfileService';
+import { loadUserData, saveUserData } from './supabaseProfileService';
 
 const USER_DATA_KEY = 'scoutly_user_data';
 
+export const persistUserData = async (user: UserData): Promise<UserData> => {
+  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
+  await saveUserData(user);
+  return user;
+};
+
 // Mimics fetching the entire user object
 export const fetchUserData = async (): Promise<UserData> => {
+  const cloudUserData = await loadUserData();
+  if (cloudUserData) {
+    localStorage.setItem(USER_DATA_KEY, JSON.stringify(cloudUserData));
+    return cloudUserData;
+  }
   const data = localStorage.getItem(USER_DATA_KEY);
   if (data) {
     const parsed = JSON.parse(data) as Partial<UserData>;
@@ -89,8 +100,7 @@ export const updateRequirementProgress = async ({
     user.progress[badgeId] = {};
   }
   user.progress[badgeId][requirementId] = completedDate; // e.g., "2025-11-03" or null
-  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
-  return user;
+  return persistUserData(user);
 };
 
 // Batch-update multiple requirements for a badge in a single write
@@ -104,8 +114,7 @@ export const batchUpdateRequirementProgress = async (
     }
     user.progress[badgeId][requirementId] = completedDate;
   }
-  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
-  return user;
+  return persistUserData(user);
 };
 
 // Update user profile information
@@ -158,8 +167,7 @@ export const updateProfile = async (profileData: Partial<UserData['profile']>): 
   }
 
   user.profile = { ...user.profile, ...profileData };
-  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
-  return user;
+  return persistUserData(user);
 };
 
 /**
@@ -183,10 +191,7 @@ export const saveOnboardingData = async (
     ...user.profile.troopInfo,
     ...troopData,
   };
-  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
-
-  await saveOnboardingProfile(user.profile);
-  return user;
+  return persistUserData(user);
 };
 
 // Add a new event
@@ -198,8 +203,7 @@ export const addEvent = async (event: Omit<Event, 'id' | 'createdAt'>): Promise<
     ...event,
   };
   user.events = [...user.events, newEvent];
-  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
-  return user;
+  return persistUserData(user);
 };
 
 // Update an existing event
@@ -208,16 +212,14 @@ export const updateEvent = async (eventId: string, eventData: Partial<Event>): P
   user.events = user.events.map((event) =>
     event.id === eventId ? { ...event, ...eventData } : event
   );
-  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
-  return user;
+  return persistUserData(user);
 };
 
 // Delete an event
 export const deleteEvent = async (eventId: string): Promise<UserData> => {
   const user = await fetchUserData();
   user.events = user.events.filter((event) => event.id !== eventId);
-  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
-  return user;
+  return persistUserData(user);
 };
 
 // Get all events
@@ -241,8 +243,7 @@ export const updateNotificationPreferences = async (
     ...user.profile.notificationPreferences,
     ...preferences,
   };
-  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
-  return user;
+  return persistUserData(user);
 };
 
 // Update troop information
@@ -256,8 +257,7 @@ export const updateTroopInfo = async (
     meetingTime: null,
   };
   user.profile.troopInfo = { ...defaults, ...user.profile.troopInfo, ...troopData };
-  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
-  return user;
+  return persistUserData(user);
 };
 
 // Add a note to a requirement
@@ -279,8 +279,7 @@ export const addRequirementNote = async ({
       completedAt: '',
       notes: note,
     };
-    localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
-    return user;
+    return persistUserData(user);
   }
   
   // Store both completion date and notes
@@ -297,14 +296,12 @@ export const addRequirementNote = async ({
     };
   }
   
-  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
-  return user;
+  return persistUserData(user);
 };
 
 // Reset all user data (useful for testing or starting over)
 export const resetUserData = async (): Promise<UserData> => {
-  localStorage.setItem(USER_DATA_KEY, JSON.stringify(initialUserData));
-  return initialUserData;
+  return persistUserData(initialUserData);
 };
 
 // Export user data (for backup or migration)
@@ -317,8 +314,7 @@ export const exportUserData = async (): Promise<string> => {
 export const importUserData = async (jsonData: string): Promise<UserData> => {
   try {
     const userData = JSON.parse(jsonData);
-    localStorage.setItem(USER_DATA_KEY, JSON.stringify(userData));
-    return userData;
+    return persistUserData(userData);
   } catch (error) {
     throw new Error('Invalid user data format');
   }
@@ -365,8 +361,7 @@ export const updateAIPlan = async (plan: string, chatHistory: ChatMessage[]): Pr
     lastUpdated: new Date().toISOString(),
     chatHistory,
   };
-  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
-  return user;
+  return persistUserData(user);
 };
 
 export const addChatMessage = async (message: ChatMessage): Promise<UserData> => {
@@ -379,8 +374,7 @@ export const addChatMessage = async (message: ChatMessage): Promise<UserData> =>
     };
   }
   user.aiPlan.chatHistory.push(message);
-  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
-  return user;
+  return persistUserData(user);
 };
 
 export const clearChatHistory = async (): Promise<UserData> => {
@@ -388,8 +382,7 @@ export const clearChatHistory = async (): Promise<UserData> => {
   if (user.aiPlan) {
     user.aiPlan.chatHistory = [];
   }
-  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
-  return user;
+  return persistUserData(user);
 };
 
 // ─── Scoutbook Calendar Sync ─────────────────────────────────────────────────
@@ -398,8 +391,7 @@ export const clearChatHistory = async (): Promise<UserData> => {
 export const updateCalendarUrl = async (url: string | null): Promise<UserData> => {
   const user = await fetchUserData();
   user.profile.scoutbookCalendarUrl = url || null;
-  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
-  return user;
+  return persistUserData(user);
 };
 
 /**
@@ -452,6 +444,5 @@ export const syncScoutbookCalendar = async (): Promise<UserData> => {
   user.events = [...keptEvents, ...freshEvents];
   user.profile.lastCalendarSync = now;
 
-  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
-  return user;
+  return persistUserData(user);
 };

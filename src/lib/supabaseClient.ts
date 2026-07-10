@@ -2,15 +2,8 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
 let supabaseClient: SupabaseClient | undefined
 
-function getRequiredEnv(name: 'VITE_SUPABASE_URL' | 'VITE_SUPABASE_PUBLISHABLE_KEY'): string {
-  const value = import.meta.env[name]
-
-  if (!value) {
-    throw new Error(`Missing ${name}. Add it to .env.local before using Supabase.`)
-  }
-
-  return value
-}
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
 
 /**
  * Returns the browser Supabase client used for authentication and future data
@@ -18,9 +11,17 @@ function getRequiredEnv(name: 'VITE_SUPABASE_URL' | 'VITE_SUPABASE_PUBLISHABLE_K
  */
 export function getSupabaseClient(): SupabaseClient {
   if (!supabaseClient) {
+    if (!supabaseUrl) {
+      throw new Error('Missing VITE_SUPABASE_URL. Add it to .env.local before using Supabase.')
+    }
+
+    if (!supabasePublishableKey) {
+      throw new Error('Missing VITE_SUPABASE_PUBLISHABLE_KEY. Add it to .env.local before using Supabase.')
+    }
+
     supabaseClient = createClient(
-      getRequiredEnv('VITE_SUPABASE_URL'),
-      getRequiredEnv('VITE_SUPABASE_PUBLISHABLE_KEY'),
+      supabaseUrl,
+      supabasePublishableKey,
       {
         auth: {
           autoRefreshToken: true,

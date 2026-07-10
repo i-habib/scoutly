@@ -93,7 +93,7 @@ function MeritBadgeDetail() {
         }
       });
     }
-    localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
+    await storage.persistUserData(currentUserData);
     queryClient.invalidateQueries({ queryKey: ['userData'] });
   };
 
@@ -156,7 +156,7 @@ function MeritBadgeDetail() {
     }
     
     // Save all updates at once
-    localStorage.setItem('scoutly_user_data', JSON.stringify(currentUserData));
+    await storage.persistUserData(currentUserData);
     
     // Invalidate the query to refresh the UI
     queryClient.invalidateQueries({ queryKey: ['userData'] });

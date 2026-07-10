@@ -13,6 +13,7 @@ import {
   getWorkingRankId,
 } from '../lib/scoutFocus';
 import { determineActiveRank } from '../lib/rankProgress';
+import { persistUserData } from '../services/storageService';
 
 const RANK_REQUIREMENTS = rankRequirementsData;
 
@@ -182,7 +183,7 @@ export function RankAdvancement({ userData }: RankAdvancementProps) {
                   type="checkbox"
                   checked={!!isCompleted}
                   disabled={!!hasSubRequirements}
-                  onChange={() => {
+                  onChange={async () => {
                     if (hasSubRequirements) return;
 
                     const newProgress = { ...rankProgress };
@@ -204,7 +205,7 @@ export function RankAdvancement({ userData }: RankAdvancementProps) {
                       },
                       rankProgress: mergedRankProgress,
                     };
-                    localStorage.setItem('scoutly_user_data', JSON.stringify(updatedUserData));
+                    await persistUserData(updatedUserData);
                     // Immediately update React Query cache so all pages see the change
                     queryClient.setQueryData(['userData'], updatedUserData);
                     queryClient.refetchQueries({ queryKey: ['userData'] });
