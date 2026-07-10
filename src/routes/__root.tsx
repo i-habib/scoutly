@@ -28,11 +28,27 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'Scoutly | Eagle Scout Planning Workspace',
+        title: 'ScoutingIQ | A clearer path to Eagle',
       },
       {
         name: 'description',
-        content: 'Plan your Eagle Scout journey with intelligent progression tracking, requirement management, timeline planning, and troop event coordination.',
+        content: 'ScoutingIQ brings rank requirements, merit badges, and troop life into one clear plan for the journey to Eagle.',
+      },
+      {
+        property: 'og:title',
+        content: 'ScoutingIQ | A clearer path to Eagle',
+      },
+      {
+        property: 'og:description',
+        content: 'Rank requirements, merit badges, and troop life in one clear plan.',
+      },
+      {
+        property: 'og:image',
+        content: 'https://www.scoutingiq.tech/og.png',
+      },
+      {
+        name: 'twitter:card',
+        content: 'summary_large_image',
       },
     ],
     links: [

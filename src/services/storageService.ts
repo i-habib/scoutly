@@ -5,6 +5,7 @@ import { isOnboardingComplete } from '../lib/onboarding';
 import rankRequirementsData from '../data/rank-reqs.json';
 import { parseICSContent, inferEventType } from '../lib/icsParser';
 import { fetchCalendarICS } from '../server/calendar-functions';
+import { saveOnboardingProfile } from './supabaseProfileService';
 
 const USER_DATA_KEY = 'scoutly_user_data';
 
@@ -158,6 +159,33 @@ export const updateProfile = async (profileData: Partial<UserData['profile']>): 
 
   user.profile = { ...user.profile, ...profileData };
   localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
+  return user;
+};
+
+/**
+ * Completes onboarding locally and persists the same profile to the user's
+ * Supabase row. Supabase is the durable source for account-owned onboarding
+ * data; local storage only keeps the current device responsive.
+ */
+export const saveOnboardingData = async (
+  profileData: Partial<UserData['profile']>,
+  troopData: Partial<NonNullable<UserData['profile']['troopInfo']>>,
+): Promise<UserData> => {
+  const user = await updateProfile(profileData);
+  const defaults = {
+    troopNumber: null,
+    meetingDay: null,
+    meetingTime: null,
+  };
+
+  user.profile.troopInfo = {
+    ...defaults,
+    ...user.profile.troopInfo,
+    ...troopData,
+  };
+  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
+
+  await saveOnboardingProfile(user.profile);
   return user;
 };
 

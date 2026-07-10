@@ -81,6 +81,10 @@ export default function Header() {
     'group relative z-10 flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-stone-500 transition-colors hover:text-stone-800';
   const navActiveClass = 'text-stone-800 font-semibold';
 
+  if (location.pathname === '/landing' || location.pathname === '/onboarding') {
+    return null;
+  }
+
   return (
     <>
       <header className="sticky top-0 z-50 border-b border-stone-200 bg-white px-4 py-3 text-stone-800">
@@ -99,9 +103,9 @@ export default function Header() {
                 <ScoutFleurDeLis className="h-5 w-5 text-white" />
               </div>
               <div className="min-w-0">
-                <div className="truncate text-xl font-semibold tracking-tight text-stone-800">Scoutly</div>
+                <div className="truncate text-xl font-semibold tracking-tight text-stone-800">ScoutingIQ</div>
                 <div className="truncate text-xs font-medium text-stone-400">
-                  Eagle planning workspace
+                  Eagle advancement planner
                 </div>
               </div>
             </Link>

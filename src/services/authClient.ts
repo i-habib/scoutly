@@ -1,3 +1,5 @@
+import { getSupabaseClient } from '../lib/supabaseClient'
+
 export interface AuthUser {
   id: string
   email: string | null
@@ -6,67 +8,71 @@ export interface AuthUser {
   app_metadata?: Record<string, unknown>
 }
 
-interface SessionResponse {
+export interface SessionResponse {
   user: AuthUser | null
   error?: string
   emailConfirmationRequired?: boolean
 }
 
-async function request<T>(input: string, init: RequestInit = {}): Promise<T> {
-  const response = await fetch(input, {
-    ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init.headers ?? {}),
-    },
-    credentials: 'include',
-  })
-
-  const text = await response.text()
-  const data = text ? (JSON.parse(text) as T) : ({} as T)
-
-  if (!response.ok) {
-    const message = (data as any)?.error ?? response.statusText
-    throw new Error(typeof message === 'string' ? message : 'Request failed')
+function toAuthUser(user: {
+  id: string
+  email?: string
+  role?: string
+  user_metadata: Record<string, unknown>
+  app_metadata: Record<string, unknown>
+}): AuthUser {
+  return {
+    id: user.id,
+    email: user.email ?? null,
+    role: user.role,
+    user_metadata: user.user_metadata,
+    app_metadata: user.app_metadata,
   }
-
-  return data
 }
 
 export async function fetchSession(): Promise<SessionResponse | null> {
-  const response = await fetch('/api/auth/session', {
-    method: 'GET',
-    credentials: 'include',
-  })
+  const { data, error } = await getSupabaseClient().auth.getUser()
 
-  if (response.status === 401) {
+  if (!data.user && (!error || error.name === 'AuthSessionMissingError')) {
     return null
   }
 
-  if (!response.ok) {
-    const text = await response.text()
-    throw new Error(text || 'Failed to fetch session')
+  if (error) {
+    throw error
   }
 
-  return (await response.json()) as SessionResponse
+  return { user: data.user ? toAuthUser(data.user) : null }
 }
 
 export async function signIn(email: string, password: string): Promise<SessionResponse> {
-  return request<SessionResponse>('/api/auth/login', {
-    method: 'POST',
-    body: JSON.stringify({ email, password }),
-  })
+  const { data, error } = await getSupabaseClient().auth.signInWithPassword({ email, password })
+
+  if (error) throw error
+
+  return { user: data.user ? toAuthUser(data.user) : null }
 }
 
 export async function signUp(email: string, password: string): Promise<SessionResponse> {
-  return request<SessionResponse>('/api/auth/signup', {
-    method: 'POST',
-    body: JSON.stringify({ email, password }),
+  const emailRedirectTo =
+    typeof window === 'undefined'
+      ? undefined
+      : new URL('/onboarding', window.location.origin).toString()
+
+  const { data, error } = await getSupabaseClient().auth.signUp({
+    email,
+    password,
+    options: emailRedirectTo ? { emailRedirectTo } : undefined,
   })
+
+  if (error) throw error
+
+  return {
+    user: data.user ? toAuthUser(data.user) : null,
+    emailConfirmationRequired: Boolean(data.user && !data.session),
+  }
 }
 
 export async function signOut(): Promise<void> {
-  await request('/api/auth/logout', {
-    method: 'POST',
-  })
+  const { error } = await getSupabaseClient().auth.signOut()
+  if (error) throw error
 }

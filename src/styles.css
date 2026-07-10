@@ -52,6 +52,14 @@ textarea {
   font: inherit;
 }
 
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2378716c' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.5rem;
+}
+
 code {
   font-family: "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
 }
@@ -98,6 +106,16 @@ code {
   z-index: 10;
   animation: pageSlideIn 0.34s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform, opacity;
+}
+
+.landing-hero__topography {
+  background-color: #f6f0e5;
+  background-image:
+    radial-gradient(circle at 80% 18%, rgba(228, 180, 77, 0.3), transparent 26rem),
+    linear-gradient(115deg, rgba(21, 55, 45, 0.06) 1px, transparent 1px),
+    linear-gradient(25deg, rgba(21, 55, 45, 0.045) 1px, transparent 1px),
+    linear-gradient(180deg, #fffaf0 0%, #f5ead6 100%);
+  background-size: auto, 32px 32px, 48px 48px, auto;
 }
 
 @media (prefers-reduced-motion: reduce) {

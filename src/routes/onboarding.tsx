@@ -11,6 +11,7 @@ import {
   Users,
 } from 'lucide-react';
 import { useUserData } from '../hooks/useUserData';
+import { useAuth } from '../hooks/useAuth';
 import { PageSkeleton } from '../components/SkeletonLoader';
 import { ScoutFleurDeLis } from '../components/ScoutIcons';
 import { useToast } from '../components/Toast';
@@ -92,13 +93,19 @@ function getInputClasses(hasError: boolean) {
 function OnboardingPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { userData, isLoading, updateProfileAsync } = useUserData();
+  const { userData, isLoading } = useUserData();
+  const { user, isAuthLoading, signIn, signUp, isSigningIn, isSigningUp } = useAuth();
   const { showToast } = useToast();
 
   const [form, setForm] = useState<OnboardingFormState>(EMPTY_FORM);
   const [step, setStep] = useState<OnboardingStep>(1);
   const [errors, setErrors] = useState<OnboardingErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [accountMode, setAccountMode] = useState<'signup' | 'signin'>('signup');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [accountError, setAccountError] = useState<string | null>(null);
+  const [accountMessage, setAccountMessage] = useState<string | null>(null);
 
   const nameInputRef = useRef<HTMLInputElement>(null);
   const rankSelectRef = useRef<HTMLSelectElement>(null);
@@ -115,10 +122,10 @@ function OnboardingPage() {
   }, [userData]);
 
   useEffect(() => {
-    if (!isLoading && userData && isOnboardingComplete(userData)) {
+    if (!isLoading && user && userData && isOnboardingComplete(userData)) {
       navigate({ to: '/', replace: true });
     }
-  }, [isLoading, navigate, userData]);
+  }, [isLoading, navigate, user, userData]);
 
   const focusField = (field: keyof OnboardingFormState) => {
     if (field === 'name') {
@@ -221,14 +228,37 @@ function OnboardingPage() {
     setIsSubmitting(true);
 
     try {
-      await updateProfileAsync(profilePayload);
-      await storage.updateTroopInfo(troopPayload);
+      await storage.saveOnboardingData(profilePayload, troopPayload);
       await queryClient.invalidateQueries({ queryKey: ['userData'] });
       navigate({ to: '/', replace: true });
     } catch {
       showToast('error', 'Unable to complete setup right now.');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleAccountSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setAccountError(null);
+    setAccountMessage(null);
+
+    if (!email || !password) {
+      setAccountError('Email and password are required.');
+      return;
+    }
+
+    try {
+      if (accountMode === 'signup') {
+        const response = await signUp({ email, password });
+        if (response.emailConfirmationRequired) {
+          setAccountMessage('Check your email to confirm your account, then return here to finish setup.');
+        }
+      } else {
+        await signIn({ email, password });
+      }
+    } catch (error) {
+      setAccountError(error instanceof Error ? error.message : 'Unable to continue with this account.');
     }
   };
 
@@ -250,8 +280,29 @@ function OnboardingPage() {
   const completionPercent = Math.round((completedFields / totalFields) * 100);
   const isStepOneComplete = completedRequiredFields === REQUIRED_FIELD_COUNT;
 
-  if (isLoading || (!isLoading && userData && isOnboardingComplete(userData))) {
+  if (isLoading || isAuthLoading || (user && userData && isOnboardingComplete(userData))) {
     return <PageSkeleton />;
+  }
+
+  if (!user) {
+    return (
+      <AccountGate
+        mode={accountMode}
+        email={email}
+        password={password}
+        error={accountError}
+        message={accountMessage}
+        isSubmitting={isSigningIn || isSigningUp}
+        onEmailChange={setEmail}
+        onPasswordChange={setPassword}
+        onModeChange={(mode) => {
+          setAccountMode(mode);
+          setAccountError(null);
+          setAccountMessage(null);
+        }}
+        onSubmit={handleAccountSubmit}
+      />
+    );
   }
 
   return (
@@ -263,7 +314,7 @@ function OnboardingPage() {
               <div className="mb-4 flex items-center gap-3">
                 <ScoutFleurDeLis size={32} />
                 <div>
-                  <p className="text-sm font-semibold text-stone-900">Scoutly onboarding</p>
+                  <p className="text-sm font-semibold text-stone-900">ScoutingIQ onboarding</p>
                   <p className="text-sm text-stone-500">
                     Fast setup with optional details you can refine later.
                   </p>
@@ -367,7 +418,7 @@ function OnboardingPage() {
                         ref={rankSelectRef}
                         value={form.currentRank}
                         onChange={(event) => handleFieldChange('currentRank', event.target.value)}
-                        className={getInputClasses(Boolean(errors.currentRank))}
+                        className={`${getInputClasses(Boolean(errors.currentRank))} pr-10`}
                       >
                         <option value="">Select rank (optional)</option>
                         <option value="none">No rank yet</option>
@@ -440,7 +491,7 @@ function OnboardingPage() {
                       <select
                         value={form.meetingDay}
                         onChange={(event) => handleFieldChange('meetingDay', event.target.value)}
-                        className={getInputClasses(Boolean(errors.meetingDay))}
+                        className={`${getInputClasses(Boolean(errors.meetingDay))} pr-10`}
                       >
                         <option value="">Select day</option>
                         {MEETING_DAY_OPTIONS.map((day) => (
@@ -556,5 +607,104 @@ function Field({
       {error ? <p className="mt-2 text-sm text-red-700">{error}</p> : null}
       {!error && hint ? <p className="mt-2 text-sm text-stone-500">{hint}</p> : null}
     </label>
+  );
+}
+
+function AccountGate({
+  mode,
+  email,
+  password,
+  error,
+  message,
+  isSubmitting,
+  onEmailChange,
+  onPasswordChange,
+  onModeChange,
+  onSubmit,
+}: {
+  mode: 'signup' | 'signin';
+  email: string;
+  password: string;
+  error: string | null;
+  message: string | null;
+  isSubmitting: boolean;
+  onEmailChange: (value: string) => void;
+  onPasswordChange: (value: string) => void;
+  onModeChange: (mode: 'signup' | 'signin') => void;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+}) {
+  return (
+    <div className="app-shell flex min-h-screen items-center justify-center px-4 py-12">
+      <div className="app-shell__grid" />
+      <div className="app-shell__glow app-shell__glow--top" />
+      <div className="app-shell__glow app-shell__glow--bottom" />
+      <main className="app-surface relative z-10 w-full max-w-lg rounded-2xl p-8">
+        <div className="mb-8 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-stone-800 text-white shadow-sm">
+            <ScoutFleurDeLis size={28} />
+          </div>
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-stone-500">ScoutingIQ setup</p>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-stone-900">
+            {mode === 'signup' ? 'Save your plan across every device.' : 'Continue building your plan.'}
+          </h1>
+          <p className="mt-3 text-sm leading-6 text-stone-500">
+            Your onboarding details are saved securely to your ScoutingIQ account.
+          </p>
+        </div>
+
+        <form className="space-y-4" onSubmit={onSubmit}>
+          <label className="block text-sm font-medium text-stone-600">
+            Email
+            <input
+              type="email"
+              value={email}
+              onChange={(event) => onEmailChange(event.target.value)}
+              className="mt-1 w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 outline-none transition focus:border-stone-400 focus:ring-2 focus:ring-stone-300"
+              placeholder="you@example.com"
+              autoComplete="email"
+              required
+            />
+          </label>
+          <label className="block text-sm font-medium text-stone-600">
+            Password
+            <input
+              type="password"
+              value={password}
+              onChange={(event) => onPasswordChange(event.target.value)}
+              className="mt-1 w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 outline-none transition focus:border-stone-400 focus:ring-2 focus:ring-stone-300"
+              placeholder="Choose a password"
+              autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+              required
+            />
+          </label>
+
+          {(error || message) && (
+            <p className={`rounded-xl border px-4 py-3 text-sm ${error ? 'border-rose-200 bg-rose-50 text-rose-700' : 'border-emerald-200 bg-emerald-50 text-emerald-700'}`}>
+              {error ?? message}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-stone-800 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isSubmitting ? 'Please wait…' : mode === 'signup' ? 'Create account and continue' : 'Sign in and continue'}
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </form>
+
+        <p className="mt-7 text-center text-sm text-stone-500">
+          {mode === 'signup' ? 'Already have an account?' : 'New to ScoutingIQ?'}
+          <button
+            type="button"
+            onClick={() => onModeChange(mode === 'signup' ? 'signin' : 'signup')}
+            className="ml-1 font-semibold text-stone-800 hover:text-stone-600"
+          >
+            {mode === 'signup' ? 'Sign in' : 'Create an account'}
+          </button>
+        </p>
+      </main>
+    </div>
   );
 }

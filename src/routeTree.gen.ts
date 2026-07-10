@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TimelineRouteImport } from './routes/timeline'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
-import { Route as LoginRouteImport } from './routes/login'
 import { Route as LandingRouteImport } from './routes/landing'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as AiCoachRouteImport } from './routes/ai-coach'
@@ -34,11 +33,6 @@ const ProfileRoute = ProfileRouteImport.update({
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LandingRoute = LandingRouteImport.update({
@@ -83,7 +77,6 @@ export interface FileRoutesByFullPath {
   '/ai-coach': typeof AiCoachRoute
   '/events': typeof EventsRoute
   '/landing': typeof LandingRoute
-  '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/profile': typeof ProfileRoute
   '/timeline': typeof TimelineRoute
@@ -96,7 +89,6 @@ export interface FileRoutesByTo {
   '/ai-coach': typeof AiCoachRoute
   '/events': typeof EventsRoute
   '/landing': typeof LandingRoute
-  '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/profile': typeof ProfileRoute
   '/timeline': typeof TimelineRoute
@@ -110,7 +102,6 @@ export interface FileRoutesById {
   '/ai-coach': typeof AiCoachRoute
   '/events': typeof EventsRoute
   '/landing': typeof LandingRoute
-  '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/profile': typeof ProfileRoute
   '/timeline': typeof TimelineRoute
@@ -125,7 +116,6 @@ export interface FileRouteTypes {
     | '/ai-coach'
     | '/events'
     | '/landing'
-    | '/login'
     | '/onboarding'
     | '/profile'
     | '/timeline'
@@ -138,7 +128,6 @@ export interface FileRouteTypes {
     | '/ai-coach'
     | '/events'
     | '/landing'
-    | '/login'
     | '/onboarding'
     | '/profile'
     | '/timeline'
@@ -151,7 +140,6 @@ export interface FileRouteTypes {
     | '/ai-coach'
     | '/events'
     | '/landing'
-    | '/login'
     | '/onboarding'
     | '/profile'
     | '/timeline'
@@ -165,7 +153,6 @@ export interface RootRouteChildren {
   AiCoachRoute: typeof AiCoachRoute
   EventsRoute: typeof EventsRoute
   LandingRoute: typeof LandingRoute
-  LoginRoute: typeof LoginRoute
   OnboardingRoute: typeof OnboardingRoute
   ProfileRoute: typeof ProfileRoute
   TimelineRoute: typeof TimelineRoute
@@ -194,13 +181,6 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/landing': {
@@ -261,7 +241,6 @@ const rootRouteChildren: RootRouteChildren = {
   AiCoachRoute: AiCoachRoute,
   EventsRoute: EventsRoute,
   LandingRoute: LandingRoute,
-  LoginRoute: LoginRoute,
   OnboardingRoute: OnboardingRoute,
   ProfileRoute: ProfileRoute,
   TimelineRoute: TimelineRoute,

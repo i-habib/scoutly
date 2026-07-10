@@ -9,7 +9,7 @@ export function useRequireAuth() {
   useEffect(() => {
     if (isAuthLoading) return
     if (!user) {
-      navigate({ to: '/login', replace: true })
+      navigate({ to: '/onboarding', replace: true })
     }
   }, [user, isAuthLoading, navigate])
 

@@ -334,7 +334,7 @@ function Profile() {
                       <select
                         value={form.currentRank}
                         onChange={(event) => handleFieldChange('currentRank', event.target.value)}
-                        className="w-full rounded-xl border border-stone-200 bg-white px-3.5 py-2.5 text-stone-900 shadow-sm focus:border-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-300"
+                        className="w-full rounded-xl border border-stone-200 bg-white px-3.5 py-2.5 text-stone-900 shadow-sm focus:border-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-300 pr-10"
                       >
                         <option value="">Select rank (optional)</option>
                         <option value="none">No rank yet</option>
@@ -395,7 +395,7 @@ function Profile() {
                       <select
                         value={form.meetingDay}
                         onChange={(event) => handleFieldChange('meetingDay', event.target.value)}
-                        className="w-full rounded-xl border border-stone-200 bg-white px-3.5 py-2.5 text-stone-900 shadow-sm focus:border-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-300"
+                        className="w-full rounded-xl border border-stone-200 bg-white px-3.5 py-2.5 text-stone-900 shadow-sm focus:border-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-300 pr-10"
                       >
                         <option value="">Select day</option>
                         {MEETING_DAY_OPTIONS.map((day) => (
