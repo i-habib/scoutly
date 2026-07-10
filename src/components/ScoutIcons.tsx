@@ -6,24 +6,14 @@ interface IconProps {
 }
 
 export const ScoutFleurDeLis: React.FC<IconProps> = ({ className = '', size = 24 }) => {
-  const imageSize = Math.round(size * 1.1);
-  const frameSize = imageSize + 16;
-
   return (
     <span
-      className={`inline-flex items-center justify-center rounded-xl bg-white border-2 border-black ${className}`}
+      className={`inline-flex shrink-0 items-center justify-center font-serif font-bold leading-none text-current ${className}`}
       aria-hidden="true"
       role="presentation"
-      style={{ width: frameSize, height: frameSize }}
+      style={{ width: size, height: size, fontSize: Math.round(size * 0.82) }}
     >
-      <img
-        src="/scout-fleur-de-lis.png"
-        width={imageSize}
-        height={imageSize}
-        alt=""
-        role="presentation"
-        style={{ objectFit: 'contain', display: 'block' }}
-      />
+      ⚜
     </span>
   );
 };
