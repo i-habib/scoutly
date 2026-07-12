@@ -29,7 +29,7 @@ const navItems: NavItem[] = [
   { to: '/profile', label: 'Profile', icon: UserRound },
 ];
 
-export default function Header() {
+export default function Header({ isPublicSite = false }: { isPublicSite?: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const navRef = useRef<HTMLDivElement | null>(null);
@@ -87,7 +87,7 @@ export default function Header() {
     'group relative z-10 flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-stone-500 transition-colors hover:text-stone-800';
   const navActiveClass = 'text-stone-800 font-semibold';
 
-  if (location.pathname === '/landing' || location.pathname === '/onboarding') {
+  if (isPublicSite || location.pathname === '/landing' || location.pathname === '/onboarding') {
     return null;
   }
 

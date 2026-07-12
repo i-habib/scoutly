@@ -8,6 +8,9 @@ import { RANKS } from '../data/ranks';
 import { needsOnboarding } from '../lib/onboarding';
 import { RANK_COLORS } from '../lib/constants';
 import { getWorkingRankId } from '../lib/scoutFocus';
+import { LandingPage } from './landing';
+import { Route as RootRoute } from './__root';
+import { dashboardUrl, isPublicSiteHost } from '../lib/siteDomains';
 
 const RankAdvancement = lazy(() =>
   import('../components/RankAdvancement').then((module) => ({
@@ -15,7 +18,17 @@ const RankAdvancement = lazy(() =>
   })),
 );
 
-export const Route = createFileRoute('/')({ component: Dashboard });
+export const Route = createFileRoute('/')({ component: RootPage });
+
+function RootPage() {
+  const { hostname } = RootRoute.useRouteContext();
+
+  if (isPublicSiteHost(hostname)) {
+    return <LandingPage appHref={dashboardUrl('/onboarding')} homeHref="/" />;
+  }
+
+  return <Dashboard />;
+}
 
 function Dashboard() {
   const { userData, isLoading } = useUserData();

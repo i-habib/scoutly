@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { ArrowRight, CalendarDays, Check, CircleDot, Compass, Flag, MapPinned } from 'lucide-react'
 import { ScoutFleurDeLis } from '../components/ScoutIcons'
 
@@ -6,18 +6,18 @@ export const Route = createFileRoute('/landing')({
   component: LandingPage,
 })
 
-function LandingPage() {
+export function LandingPage({ appHref = '/onboarding', homeHref = '/landing' }: { appHref?: string; homeHref?: string }) {
   return (
     <main className="min-h-screen bg-[#f4f5ef] text-[#13241d]">
       <div className="mx-auto max-w-6xl px-5 py-5 sm:px-8 lg:px-10">
         <nav className="flex items-center justify-between">
-          <Link to="/landing" className="flex items-center gap-2.5" aria-label="ScoutingIQ home">
+          <a href={homeHref} className="flex items-center gap-2.5" aria-label="ScoutingIQ home">
             <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#13241d] text-[#ffe19a]"><ScoutFleurDeLis size={22} /></span>
             <span className="text-lg font-extrabold tracking-[-0.045em]">ScoutingIQ</span>
-          </Link>
-          <Link to="/onboarding" className="rounded-lg border border-[#c5cdc0] bg-white px-4 py-2 text-sm font-bold transition hover:border-[#13241d]">
+          </a>
+          <a href={appHref} className="rounded-lg border border-[#c5cdc0] bg-white px-4 py-2 text-sm font-bold transition hover:border-[#13241d]">
             Open my plan
-          </Link>
+          </a>
         </nav>
 
         <section className="grid gap-12 pb-20 pt-16 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:pt-24">
@@ -32,9 +32,9 @@ function LandingPage() {
               ScoutingIQ turns rank work, merit badges, campouts, and target dates into one practical plan your Scout can act on this week.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <Link to="/onboarding" className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#13241d] px-5 py-3.5 text-sm font-extrabold text-white transition hover:bg-[#244232]">
+              <a href={appHref} className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#13241d] px-5 py-3.5 text-sm font-extrabold text-white transition hover:bg-[#244232]">
                 Build my Scout’s plan <ArrowRight className="h-4 w-4" />
-              </Link>
+              </a>
               <p className="text-sm leading-6 text-[#40574b]">Start with a name, rank, and troop schedule. Save it securely as you go.</p>
             </div>
           </div>
@@ -71,9 +71,9 @@ function LandingPage() {
             <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#b9dc98]">Ready when your Scout is</p>
             <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.05em]">Make the next step obvious.</h2>
           </div>
-          <Link to="/onboarding" className="inline-flex w-fit items-center gap-2 rounded-lg bg-[#d6efad] px-5 py-3.5 text-sm font-extrabold text-[#13241d] transition hover:bg-[#e4f7c6]">
+          <a href={appHref} className="inline-flex w-fit items-center gap-2 rounded-lg bg-[#d6efad] px-5 py-3.5 text-sm font-extrabold text-[#13241d] transition hover:bg-[#e4f7c6]">
             Start onboarding <ArrowRight className="h-4 w-4" />
-          </Link>
+          </a>
         </div>
       </section>
     </main>
