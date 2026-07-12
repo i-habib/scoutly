@@ -1,9 +1,11 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { HeadContent, Outlet, Scripts, createRootRoute } from '@tanstack/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Header from '../components/Header'
 import { Analytics } from "@vercel/analytics/react"
 import { ToastProvider } from '../components/Toast'
 import { ErrorBoundary } from '../components/ErrorBoundary'
+import { getRequestHostname } from '../lib/siteHost'
+import { isPublicSiteHost } from '../lib/siteDomains'
 
 import appCss from '../styles.css?url'
 
@@ -18,6 +20,7 @@ const queryClient = new QueryClient({
 })
 
 export const Route = createRootRoute({
+  beforeLoad: async () => ({ hostname: await getRequestHostname() }),
   head: () => ({
     meta: [
       {
@@ -64,8 +67,19 @@ export const Route = createRootRoute({
     ],
   }),
 
-  shellComponent: RootDocument,
+  component: RootComponent,
 })
+
+function RootComponent() {
+  const { hostname } = Route.useRouteContext()
+
+  return (
+    <RootDocument>
+      <Header isPublicSite={isPublicSiteHost(hostname)} />
+      <Outlet />
+    </RootDocument>
+  )
+}
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
@@ -83,7 +97,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <QueryClientProvider client={queryClient}>
           <ToastProvider>
             <ErrorBoundary>
-              <Header />
               <main id="main-content">
                 {children}
               </main>

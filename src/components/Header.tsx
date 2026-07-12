@@ -29,7 +29,7 @@ const navItems: NavItem[] = [
   { to: '/profile', label: 'Profile', icon: UserRound },
 ];
 
-export default function Header() {
+export default function Header({ isPublicSite = false }: { isPublicSite?: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const navRef = useRef<HTMLDivElement | null>(null);
@@ -68,20 +68,26 @@ export default function Header() {
   }, [isActive, location.pathname]);
 
   useLayoutEffect(() => {
-    const onResize = () => {
-      const activeItem = navItems.find((item) => isActive(item.to));
-      if (!activeItem) return;
-      moveIndicatorTo(activeItem.to);
-    };
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, [isActive]);
+    const activeItem = navItems.find((item) => isActive(item.to));
+    const navEl = navRef.current;
+    const activeEl = activeItem ? itemRefs.current[activeItem.to] : null;
+    if (!activeItem || !navEl || !activeEl) return;
+
+    const updateIndicator = () => moveIndicatorTo(activeItem.to);
+    const resizeObserver = new ResizeObserver(updateIndicator);
+    resizeObserver.observe(navEl);
+    resizeObserver.observe(activeEl);
+
+    void document.fonts?.ready.then(updateIndicator);
+
+    return () => resizeObserver.disconnect();
+  }, [isActive, location.pathname]);
 
   const navBaseClass =
     'group relative z-10 flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-stone-500 transition-colors hover:text-stone-800';
   const navActiveClass = 'text-stone-800 font-semibold';
 
-  if (location.pathname === '/landing' || location.pathname === '/onboarding') {
+  if (isPublicSite || location.pathname === '/landing' || location.pathname === '/onboarding') {
     return null;
   }
 
