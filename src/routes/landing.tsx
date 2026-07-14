@@ -1,50 +1,97 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { ArrowRight, CalendarDays, Check, CircleDot, Compass, Flag, MapPinned } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import {
+  ArrowRight,
+  Award,
+  CalendarDays,
+  CircleDot,
+  Compass,
+  Flag,
+  Route as RouteIcon,
+} from 'lucide-react'
 import { ScoutFleurDeLis } from '../components/ScoutIcons'
 
 export const Route = createFileRoute('/landing')({
   component: LandingPage,
 })
 
-export function LandingPage({ appHref = '/onboarding', homeHref = '/landing' }: { appHref?: string; homeHref?: string }) {
-  return (
-    <main className="min-h-screen bg-[#f4f5ef] text-[#13241d]">
-      <div className="mx-auto max-w-6xl px-5 py-5 sm:px-8 lg:px-10">
-        <nav className="flex items-center justify-between">
-          <a href={homeHref} className="flex items-center gap-2.5" aria-label="ScoutingIQ home">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#13241d] text-[#ffe19a]"><ScoutFleurDeLis size={22} /></span>
-            <span className="text-lg font-extrabold tracking-[-0.045em]">ScoutingIQ</span>
-          </a>
-          <a href={appHref} className="rounded-lg border border-[#c5cdc0] bg-white px-4 py-2 text-sm font-bold transition hover:border-[#13241d]">
-            Open my plan
-          </a>
-        </nav>
+const LOCAL_USER_DATA_KEY = 'scoutly_user_data'
 
-        <section className="grid gap-12 pb-20 pt-16 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:pt-24">
-          <div className="max-w-2xl">
-            <p className="inline-flex items-center gap-2 rounded-full bg-[#dce7d5] px-3 py-1.5 text-xs font-extrabold uppercase tracking-[0.16em] text-[#244d32]">
+const HIGHLIGHTS = [
+  { icon: RouteIcon, label: 'Rank requirements in order' },
+  { icon: Award, label: 'Merit badge progress' },
+  { icon: CalendarDays, label: 'Troop meetings & campouts' },
+]
+
+export function LandingPage({
+  dashboardHref = '/',
+  onboardingHref = '/onboarding',
+  homeHref = '/landing',
+}: {
+  dashboardHref?: string
+  onboardingHref?: string
+  homeHref?: string
+}) {
+  return (
+    <div className="landing-page min-h-screen">
+      <div className="landing-hero__topography border-b border-[var(--lp-line)]">
+        <div className="mx-auto max-w-6xl px-5 py-5 sm:px-8 lg:px-10">
+          <nav className="flex items-center justify-between gap-4">
+            <a href={homeHref} className="flex min-w-0 items-center gap-3" aria-label="ScoutingIQ home">
+              <span
+                className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl shadow-sm"
+                style={{ background: 'var(--lp-brand)', color: 'var(--lp-gold-soft)' }}
+              >
+                <ScoutFleurDeLis size={22} />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-xl font-semibold tracking-tight" style={{ color: 'var(--lp-ink)' }}>
+                  ScoutingIQ
+                </span>
+                <span className="block text-xs font-medium" style={{ color: 'var(--lp-muted)' }}>
+                  Eagle advancement planner
+                </span>
+              </span>
+            </a>
+            <LandingPlanLink
+              dashboardHref={dashboardHref}
+              onboardingHref={onboardingHref}
+              className="landing-btn-secondary shrink-0"
+            />
+          </nav>
+
+          <section className="landing-hero" aria-labelledby="landing-hero-title">
+            <p className="landing-eyebrow">
               <Compass className="h-3.5 w-3.5" /> Built for the road to Eagle
             </p>
-            <h1 className="mt-6 text-5xl font-extrabold leading-[0.98] tracking-[-0.065em] text-[#13241d] sm:text-6xl lg:text-7xl">
-              Know what to do before the next troop meeting.
+            <h1 id="landing-hero-title" className="landing-hero__title mt-8">
+              <span className="landing-hero__title-line">Know what to do</span>
+              <span className="landing-hero__title-line landing-hero__title-accent">
+                before the next troop meeting.
+              </span>
             </h1>
-            <p className="mt-7 max-w-xl text-lg leading-8 text-[#365247] sm:text-xl">
+            <p className="landing-hero__lead">
               ScoutingIQ turns rank work, merit badges, campouts, and target dates into one practical plan your Scout can act on this week.
             </p>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <a href={appHref} className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#13241d] px-5 py-3.5 text-sm font-extrabold text-white transition hover:bg-[#244232]">
-                Build my Scout’s plan <ArrowRight className="h-4 w-4" />
+            <div className="landing-hero__actions">
+              <a href={onboardingHref} className="landing-btn-primary landing-btn-primary--large">
+                Start your journey <ArrowRight className="h-4 w-4" />
               </a>
-              <p className="text-sm leading-6 text-[#40574b]">Start with a name, rank, and troop schedule. Save it securely as you go.</p>
             </div>
-          </div>
-
-          <WeeklyPlan />
-        </section>
+            <div className="landing-hero__highlights" aria-label="What ScoutingIQ covers">
+              {HIGHLIGHTS.map(({ icon: Icon, label }) => (
+                <div key={label} className="landing-hero__highlight">
+                  <Icon aria-hidden="true" />
+                  <span>{label}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
       </div>
 
-      <section className="border-y border-[#d6ddd1] bg-white">
-        <div className="mx-auto grid max-w-6xl divide-y divide-[#dfe5db] px-5 sm:px-8 md:grid-cols-3 md:divide-x md:divide-y-0 lg:px-10">
+      <section className="border-b border-[var(--lp-line)]" style={{ background: 'var(--lp-surface)' }}>
+        <div className="mx-auto grid max-w-6xl divide-y divide-[var(--lp-line)] px-5 sm:px-8 md:grid-cols-3 md:divide-x md:divide-y-0 lg:px-10">
           <Outcome icon={<CircleDot />} title="A real next step" text="See the rank item or badge requirement that is most useful to finish next." />
           <Outcome icon={<CalendarDays />} title="A plan that uses troop life" text="Connect meetings, campouts, and service projects to advancement instead of planning around them." />
           <Outcome icon={<Flag />} title="A pace you can trust" text="Spot when a target date needs attention before it becomes a last-minute scramble." />
@@ -54,8 +101,10 @@ export function LandingPage({ appHref = '/onboarding', homeHref = '/landing' }: 
       <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8 lg:px-10">
         <div className="grid gap-12 lg:grid-cols-[0.75fr_1.25fr]">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#557d5c]">Five minutes to a useful plan</p>
-            <h2 className="mt-4 text-4xl font-extrabold tracking-[-0.055em] sm:text-5xl">Less tracking. Better decisions.</h2>
+            <p className="landing-section-label">Five minutes to a useful plan</p>
+            <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl" style={{ color: 'var(--lp-ink)' }}>
+              Less tracking. Better decisions.
+            </h2>
           </div>
           <ol className="space-y-5">
             <PlanStep number="01" title="Tell us where your Scout is now" text="Add their current rank and the date they want to reach Eagle." />
@@ -65,50 +114,80 @@ export function LandingPage({ appHref = '/onboarding', homeHref = '/landing' }: 
         </div>
       </section>
 
-      <section className="bg-[#13241d] px-5 py-16 text-white sm:px-8 lg:px-10">
+      <section
+        className="border-t border-[color-mix(in_srgb,var(--lp-brand)_40%,transparent)] px-5 py-16 text-white sm:px-8 lg:px-10"
+        style={{ background: 'var(--lp-brand)' }}
+      >
         <div className="mx-auto flex max-w-6xl flex-col gap-7 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-xl">
-            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#b9dc98]">Ready when your Scout is</p>
-            <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.05em]">Make the next step obvious.</h2>
+            <p
+              className="landing-section-label"
+              style={{ color: 'color-mix(in srgb, var(--lp-gold-soft) 75%, white)' }}
+            >
+              Ready when your Scout is
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Make the next step obvious.</h2>
           </div>
-          <a href={appHref} className="inline-flex w-fit items-center gap-2 rounded-lg bg-[#d6efad] px-5 py-3.5 text-sm font-extrabold text-[#13241d] transition hover:bg-[#e4f7c6]">
+          <a href={onboardingHref} className="landing-btn-accent w-fit">
             Start onboarding <ArrowRight className="h-4 w-4" />
           </a>
         </div>
       </section>
-    </main>
+    </div>
   )
 }
 
-function WeeklyPlan() {
+function LandingPlanLink({
+  dashboardHref,
+  onboardingHref,
+  className,
+}: {
+  dashboardHref: string
+  onboardingHref: string
+  className: string
+}) {
+  const [isReady, setIsReady] = useState(false)
+  const [hasLocalPlan, setHasLocalPlan] = useState(false)
+
+  useEffect(() => {
+    const savedData = localStorage.getItem(LOCAL_USER_DATA_KEY)
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData) as { profile?: { hasCompletedOnboarding?: boolean } }
+        setHasLocalPlan(parsed.profile?.hasCompletedOnboarding === true)
+      } catch {
+        setHasLocalPlan(false)
+      }
+    }
+    setIsReady(true)
+  }, [])
+
+  const href = isReady && hasLocalPlan ? dashboardHref : onboardingHref
   return (
-    <section className="rounded-2xl border border-[#c9d3c4] bg-white p-4 shadow-[0_24px_60px_rgba(25,48,37,0.14)] sm:p-5" aria-label="Example weekly plan">
-      <div className="flex items-center justify-between border-b border-[#e3e8df] pb-4">
-        <div><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#708277]">This week</p><h2 className="mt-1 text-xl font-extrabold">A plan with context</h2></div>
-        <span className="rounded-full bg-[#eaf3e3] px-3 py-1 text-xs font-extrabold text-[#285a36]">On track</span>
-      </div>
-      <div className="mt-4 space-y-3">
-        <PlanCard time="Tue" title="Troop meeting" text="Bring your map and compass for First Class 4a." tone="green" />
-        <PlanCard time="Sat" title="Campout" text="Use the weekend to make progress on Camping and Cooking." tone="gold" />
-        <PlanCard time="Sun" title="Ten-minute check-in" text="Mark what was signed off and choose the next move." tone="slate" />
-      </div>
-      <div className="mt-5 rounded-xl bg-[#f3f6f0] p-4">
-        <div className="flex items-center gap-2 text-sm font-extrabold text-[#1f362a]"><MapPinned className="h-4 w-4 text-[#2f6a3e]" /> What this protects</div>
-        <p className="mt-2 text-sm leading-6 text-[#405b4d]">Your Scout keeps moving without losing sight of long-term requirements and dates.</p>
-      </div>
-    </section>
+    <a href={href} className={className} aria-busy={!isReady}>
+      {isReady && hasLocalPlan ? 'Open Dashboard' : 'Start your journey'}
+    </a>
   )
-}
-
-function PlanCard({ time, title, text, tone }: { time: string; title: string; text: string; tone: 'green' | 'gold' | 'slate' }) {
-  const toneClass = { green: 'bg-[#eaf3e3] text-[#285a36]', gold: 'bg-[#fff2cf] text-[#75420a]', slate: 'bg-[#edf0ed] text-[#37483f]' }[tone]
-  return <article className="flex gap-3 rounded-xl border border-[#d5ded0] bg-[#fcfdf9] p-3"><span className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg text-xs font-extrabold ${toneClass}`}>{time}</span><div><h3 className="text-sm font-extrabold text-[#1f362a]">{title}</h3><p className="mt-1 text-sm leading-5 text-[#405b4d]">{text}</p></div></article>
 }
 
 function Outcome({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
-  return <article className="p-7"><span className="text-[#356c43] [&>svg]:h-5 [&>svg]:w-5">{icon}</span><h2 className="mt-5 text-lg font-extrabold text-[#1f362a]">{title}</h2><p className="mt-2 text-sm leading-6 text-[#405b4d]">{text}</p></article>
+  return (
+    <article className="p-7">
+      <span className="landing-icon-badge">{icon}</span>
+      <h2 className="mt-5 text-lg font-semibold" style={{ color: 'var(--lp-ink)' }}>{title}</h2>
+      <p className="mt-2 text-sm leading-6" style={{ color: 'var(--lp-body)' }}>{text}</p>
+    </article>
+  )
 }
 
 function PlanStep({ number, title, text }: { number: string; title: string; text: string }) {
-  return <li className="grid grid-cols-[3.5rem_1fr] gap-4 border-b border-[#d7dfd2] pb-5 last:border-0"><span className="text-xl font-extrabold text-[#356c43]">{number}</span><div><h3 className="text-xl font-extrabold text-[#1f362a]">{title}</h3><p className="mt-2 leading-7 text-[#405b4d]">{text}</p></div></li>
+  return (
+    <li className="grid grid-cols-[3.5rem_1fr] gap-4 border-b border-[var(--lp-line)] pb-5 last:border-0">
+      <span className="text-xl font-semibold" style={{ color: 'var(--lp-gold)' }}>{number}</span>
+      <div>
+        <h3 className="text-xl font-semibold tracking-tight" style={{ color: 'var(--lp-ink)' }}>{title}</h3>
+        <p className="mt-2 leading-7" style={{ color: 'var(--lp-body)' }}>{text}</p>
+      </div>
+    </li>
+  )
 }

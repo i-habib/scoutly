@@ -24,7 +24,13 @@ function RootPage() {
   const { hostname } = RootRoute.useRouteContext();
 
   if (isPublicSiteHost(hostname)) {
-    return <LandingPage appHref={dashboardUrl('/onboarding')} homeHref="/" />;
+    return (
+      <LandingPage
+        dashboardHref={dashboardUrl('/')}
+        onboardingHref={dashboardUrl('/onboarding')}
+        homeHref="/"
+      />
+    );
   }
 
   return <Dashboard />;
