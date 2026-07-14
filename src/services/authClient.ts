@@ -1,5 +1,7 @@
 import { getSupabaseClient } from '../lib/supabaseClient'
 
+const LOCAL_ONLY = import.meta.env.VITE_LOCAL_ONLY === 'true'
+
 export interface AuthUser {
   id: string
   email: string | null
@@ -12,6 +14,14 @@ export interface SessionResponse {
   user: AuthUser | null
   error?: string
   emailConfirmationRequired?: boolean
+}
+
+function createLocalUser(email: string | null = null): AuthUser {
+  return {
+    id: 'local-user',
+    email,
+    role: 'authenticated',
+  }
 }
 
 function toAuthUser(user: {
@@ -31,6 +41,10 @@ function toAuthUser(user: {
 }
 
 export async function fetchSession(): Promise<SessionResponse | null> {
+  if (LOCAL_ONLY) {
+    return { user: createLocalUser() }
+  }
+
   const { data, error } = await getSupabaseClient().auth.getUser()
 
   if (!data.user && (!error || error.name === 'AuthSessionMissingError')) {
@@ -45,6 +59,10 @@ export async function fetchSession(): Promise<SessionResponse | null> {
 }
 
 export async function signIn(email: string, password: string): Promise<SessionResponse> {
+  if (LOCAL_ONLY) {
+    return { user: createLocalUser(email) }
+  }
+
   const { data, error } = await getSupabaseClient().auth.signInWithPassword({ email, password })
 
   if (error) throw error
@@ -53,6 +71,10 @@ export async function signIn(email: string, password: string): Promise<SessionRe
 }
 
 export async function signUp(email: string, password: string): Promise<SessionResponse> {
+  if (LOCAL_ONLY) {
+    return { user: createLocalUser(email) }
+  }
+
   const emailRedirectTo =
     typeof window === 'undefined'
       ? undefined
@@ -73,6 +95,8 @@ export async function signUp(email: string, password: string): Promise<SessionRe
 }
 
 export async function signOut(): Promise<void> {
+  if (LOCAL_ONLY) return
+
   const { error } = await getSupabaseClient().auth.signOut()
   if (error) throw error
 }

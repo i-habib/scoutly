@@ -8,16 +8,19 @@ import { fetchCalendarICS } from '../server/calendar-functions';
 import { loadUserData, saveUserData } from './supabaseProfileService';
 
 const USER_DATA_KEY = 'scoutly_user_data';
+const LOCAL_ONLY = import.meta.env.VITE_LOCAL_ONLY === 'true';
 
 export const persistUserData = async (user: UserData): Promise<UserData> => {
   localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
-  await saveUserData(user);
+  if (!LOCAL_ONLY) {
+    await saveUserData(user);
+  }
   return user;
 };
 
 // Mimics fetching the entire user object
 export const fetchUserData = async (): Promise<UserData> => {
-  const cloudUserData = await loadUserData();
+  const cloudUserData = LOCAL_ONLY ? null : await loadUserData();
   if (cloudUserData) {
     localStorage.setItem(USER_DATA_KEY, JSON.stringify(cloudUserData));
     return cloudUserData;
@@ -171,9 +174,8 @@ export const updateProfile = async (profileData: Partial<UserData['profile']>): 
 };
 
 /**
- * Completes onboarding locally and persists the same profile to the user's
- * Supabase row. Supabase is the durable source for account-owned onboarding
- * data; local storage only keeps the current device responsive.
+ * Completes onboarding locally and, unless local-only mode is enabled,
+ * persists the same profile to the user's Supabase row.
  */
 export const saveOnboardingData = async (
   profileData: Partial<UserData['profile']>,
